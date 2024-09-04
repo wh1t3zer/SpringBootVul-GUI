@@ -78,21 +78,21 @@ java -jar SpringBootVul_GUI.jar
 
 ### #1 密码脱敏
 
-![](/Users/wh1t3zer/hacker/渗透/springboot利用/GUI利用工具-sp/image/1725461792423.jpg)
+![](./image/1725461792423.jpg)
 
-![](/Users/wh1t3zer/hacker/渗透/springboot利用/GUI利用工具-sp/image/1725461834405.jpg)
+![](./image/1725461834405.jpg)
 
 ### #2 Spring Cloud Gateway 交互式命令
 
-![](/Users/wh1t3zer/hacker/渗透/springboot利用/GUI利用工具-sp/image/1725462083302.jpg)
+![](./image/1725462083302.jpg)
 
-![](/Users/wh1t3zer/hacker/渗透/springboot利用/GUI利用工具-sp/image/1725462104669.jpg)
+![](./image/1725462104669.jpg)
 
 ### #3 端点扫描
 
 端点扫描经过延时降速处理，防止请求频繁，heapdump文件无法下载，不过偶尔还会发生，直接手动下载就可以了
 
-![](/Users/wh1t3zer/hacker/渗透/springboot利用/GUI利用工具-sp/image/1725462287383.jpg)
+![](./image/1725462287383.jpg)
 
 ## 0x06参考项目
 
