@@ -1,0 +1,2 @@
+# SpringBootVul-GUI
+一个半自动化springboot打点工具，内置目前springboot所有漏洞
