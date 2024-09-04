@@ -1,0 +1,106 @@
+{
+  "VuLnList": [
+    {
+      "label": "端点泄露扫描",
+      "value": 1
+    },
+    {
+      "label": "密码脱敏漏洞1",
+      "value": 2
+    },
+    {
+      "label": "密码脱敏漏洞2",
+      "value": 3
+    },
+    {
+      "label": "密码脱敏漏洞3",
+      "value": 4
+    },
+    {
+      "label": "Spring Cloud SnakeYaml RCE漏洞",
+      "value": 5
+    },
+    {
+      "label": "Spring Cloud Gateway RCE漏洞",
+      "value": 6
+    },
+    {
+      "label": "SpEl注入 RCE漏洞",
+      "value": 7
+    },
+    {
+      "label": "Eureka Xstream Serialize RCE漏洞",
+      "value": 8
+    },
+    {
+      "label": "Jolokia Logback JNDI RCE漏洞",
+      "value": 9
+    },
+    {
+      "label": "Jolokia Realm JNDI RCE漏洞",
+      "value": 10
+    },
+    {
+      "label": "H2 Database Query属性 RCE漏洞",
+      "value": 11
+    },
+    {
+      "label": "H2 Database JNDI RCE漏洞",
+      "value": 12
+    },
+    {
+      "label": "Mysql Jdbc Serialize RCE漏洞",
+      "value": 13
+    },
+    {
+      "label": "Logging属性 Logback JNDI RCE漏洞",
+      "value": 14
+    },
+    {
+      "label": "Logging属性 Groovy RCE漏洞",
+      "value": 15
+    },
+    {
+      "label": "MainSource Groovy RCE漏洞",
+      "value": 16
+    },
+    {
+      "label": "H2 Database Datasource RCE漏洞",
+      "value": 17
+    },
+    {
+      "label": "Druid连接池密码爆破",
+      "value": 18
+    },
+    {
+      "label": "全部",
+      "value": 19
+    }
+  ],
+  "ClassList": [
+    {
+      "label": "",
+      "value": 1
+    },
+    {
+      "label": "",
+      "value": 2
+    },
+    {
+      "label": "",
+      "value": 3
+    },
+    {
+      "label": "",
+      "value": 4
+    },
+    {
+      "label": "",
+      "value": 5
+    },
+    {
+      "label": "",
+      "value": 6
+    }
+  ]
+}
