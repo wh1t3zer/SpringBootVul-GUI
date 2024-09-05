@@ -11,10 +11,11 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import src.main.Exp.ExpImp.ExpImp;
 import src.main.impl.ResultCallback;
-import src.main.module.GetSpPassWord_I;
-import src.main.module.ScanVul;
-import src.main.module.SpringGawRCE;
+import src.main.vul.GetSpPassWord_I;
+import src.main.vul.ScanVul;
+import src.main.vul.SpringGawRCE;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -26,10 +27,10 @@ import java.util.stream.Stream;
 public class springboot_vul extends Application {
         public int Vulvalue;
         public int clsValue;
-        private TextFlow consoleOutput;
-        private ExecutorService executorService;
-        private ScrollPane scrollPane; // 滚动
-        private ProgressBar progressBar; // 进度条
+        public static TextFlow consoleOutput;
+        public static ExecutorService executorService;
+        public static ScrollPane scrollPane; // 滚动
+        public static ProgressBar progressBar; // 进度条
 
         @Override
         public void start(Stage stage) throws UnsupportedEncodingException {
@@ -167,7 +168,13 @@ public class springboot_vul extends Application {
                 });
                 Expbtn.setPrefSize(80,60);
                 Button Shellbtn = new Button("Getshell");
-                Shellbtn.setOnAction(event -> handlerGetshell(Addrtf,Cmdtf));
+                Shellbtn.setOnAction(event -> {
+                        try {
+                                handlerGetshell(Addrtf);
+                        } catch (IOException e) {
+                                throw new RuntimeException(e);
+                        }
+                });
                 Shellbtn.setPrefSize(80,60);
                 HBox btnBox = new HBox(10);
                 btnBox.getChildren().addAll(Expbtn,Shellbtn);
@@ -214,10 +221,6 @@ public class springboot_vul extends Application {
                 ContextMenu contextMenu = new ContextMenu();
                 MenuItem copyItem = new MenuItem("复制");
                 contextMenu.getItems().add(copyItem);
-
-
-
-
 
                 // 状态栏
                 HBox statusBar = new HBox();
@@ -275,9 +278,9 @@ public class springboot_vul extends Application {
                 if (!address.startsWith("http://")) {
                                 address = "http://" + address;
                 }
-                consoleOutput.getChildren().addAll(new Text("端点扫描进行中，请勿关闭！\n"));
-                Vulvalue = 1;  // Set the value to 1 to indicate that this function was called
+                System.out.println(consoleOutput);
                 consoleOutput.getChildren().clear();
+                consoleOutput.getChildren().addAll(new Text("端点扫描进行中，请勿关闭！\n"));
                 ScanVul sv = new ScanVul(address);  // 执行具体扫描操作
                 executorService.submit(() -> {
                         try {
@@ -375,7 +378,6 @@ public class springboot_vul extends Application {
         public void handlerSpgRCE(String address, String command) throws IOException {
                 // 清空控制台输出
                 consoleOutput.getChildren().clear();
-                Vulvalue = 5;
                 // 暂无证书模块，待设置
                 if (address.endsWith("/")) {
                         address = address.replaceAll("/$", "");
@@ -444,40 +446,22 @@ public class springboot_vul extends Application {
         public void handleAllVulnerabilities(String address,String command){
 
         }
-        public void handlerGetshell(TextField addr,TextField cmdobj) {
-                // Your code for Getshell button
-        }
-        public void handlerExp(TextField addr,TextField args,TextField clsobj,TextField cmdobj) throws IOException {
+        public void handlerGetshell(TextField addr) throws IOException {
+                // 一键上内存马
                 String address = addr.getText();
-                String arg = args.getText();
-                String cls = clsobj.getText();
-                String command = cmdobj.getText();
-                if (addr.getText().isEmpty()) {
+                String command = "";
+                ExpImp exp = new ExpImp(address);
+                if (address.isEmpty()){
                         showAlertEmpty("地址为空！");
-                } else {
-                        switch (Vulvalue) {
+                }else{
+                        switch (Vulvalue){
                                 case -1:
                                         showAlertEmpty("你踏马还没选择漏洞类型呢！");
-                                case 0:
-                                        handlerAllScan(address);
-                                        break;
-                                case 1:
-                                        handlerScanVul(address);
-                                        break;
-                                case 2:
-                                        handlerGetSp_1(address,arg);
-                                        break;
-                                case 3:
-                                        handlerGetSp_2(address,arg);
-                                        break;
-                                case 4:
-                                        handlerGetSp_3(address,arg);
-                                        break;
                                 case 5:
-                                        handlerSpgRCE(address,command);
+                                        handlerSnakeYamlRce(address,command);
                                         break;
                                 case 6:
-                                        handlerSpgRCE(address,command);
+                                        exp.handlerSpgRCE(address);
                                         break;
                                 case 7:
                                         handlerSpElRCE(address, command);
@@ -517,6 +501,77 @@ public class springboot_vul extends Application {
                                         break;
                                 case 19:
                                         handleAllVulnerabilities(address, command);
+                                        break;
+                                default:
+                                        showAlertEmpty("你踏马还没选择漏洞类型呢！");
+                        }
+                }
+
+        }
+        public void handlerExp(TextField addr,TextField args,TextField clsobj,TextField cmdobj) throws IOException {
+                String address = addr.getText();
+                String arg = args.getText();
+                String cls = clsobj.getText();
+                String command = cmdobj.getText();
+                if (address.isEmpty()) {
+                        showAlertEmpty("地址为空！");
+                } else {
+                        switch (Vulvalue) {
+                                case -1:
+                                        showAlertEmpty("你踏马还没选择漏洞类型呢！");
+                                case 0:
+                                        handlerAllScan(address);
+                                        break;
+                                case 1:
+                                        handlerScanVul(address);
+                                        break;
+                                case 2:
+                                        handlerGetSp_1(address,arg);
+                                        break;
+                                case 3:
+                                        handlerGetSp_2(address,arg);
+                                        break;
+                                case 4:
+                                        handlerGetSp_3(address,arg);
+                                        break;
+                                case 5:
+                                        handlerSnakeYamlRce(address,command);
+                                        break;
+                                case 6:
+                                        handlerSpgRCE(address,command);
+                                        break;
+                                case 7:
+                                        handlerSpElRCE(address, command);
+                                        break;
+                                case 8:
+                                        handlerEurekaXstreamRCE(address, command);
+                                        break;
+                                case 9:
+                                        handlerJolokiaLogbackRCE(address, command);
+                                        break;
+                                case 10:
+                                        handlerJolokiaRealmRCE(address, command);
+                                        break;
+                                case 11:
+                                        handlerH2DatabaseQueryRCE(address, command);
+                                        break;
+                                case 12:
+                                        handlerH2DatabaseJNDIRCE(address, command);
+                                        break;
+                                case 13:
+                                        handlerMysqlJdbcRCE(address, command);
+                                        break;
+                                case 14:
+                                        handlerLoggingLogbackRCE(address, command);
+                                        break;
+                                case 15:
+                                        handlerLoggingGroovyRCE(address, command);
+                                        break;
+                                case 16:
+                                        handlerMainSourceGroovyRCE(address, command);
+                                        break;
+                                case 17:
+                                        handlerH2DatabaseDatasourceRCE(address, command);
                                         break;
                                 default:
                                         showAlertEmpty("你踏马还没选择漏洞类型呢！");

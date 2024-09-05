@@ -1,4 +1,4 @@
-package src.main.module;
+package src.main.vul;
 
 public class SnakeYamlRCE {
     public String address;

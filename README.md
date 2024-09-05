@@ -1,7 +1,11 @@
 # SpringBootVul-GUI
 一个半自动化springboot打点工具，内置目前springboot所有漏洞
 
+## 声明
 
+
+
+> **⚠️ 本项目所有内容仅作为安全研究和授权测试使用, 相关人员对因误用和滥用该项目造成的一切损害概不负责**
 
 ## 0x01简介
 
@@ -68,11 +72,9 @@ java -jar SpringBootVul_GUI.jar
 
 ## 0x04短期目标 Prepare
 
-一键打入内存马
-
-加入Bypass逻辑
-
-加入深度扫描任务
+* [x] 一键打入内存马(目前只有Spring Cloud Gateway)
+* [ ] 加入Bypass逻辑
+* [ ] 加入深度扫描任务
 
 ## 0x05项目演示
 
@@ -94,10 +96,18 @@ java -jar SpringBootVul_GUI.jar
 
 ![](./image/1725462287383.jpg)
 
+### #4 一键上马
+
+![](./image/WechatIMG1409.jpg)
+
+![](./image/WechatIMG1415.jpg)
+
 ## 0x06参考项目
 
-感谢以下项目提供帮助和支持，部分原理可参考以下地址
+感谢以下项目或文章提供帮助和支持，具体漏洞原理可参考以下地址
 
 1、https://github.com/LandGrey/SpringBootVulExploit
 
 2、https://mp.weixin.qq.com/s/2wKB3jACAkIiIZ96tVb5fA
+
+3、https://xz.aliyun.com/t/11331?time__1311=Cq0xR70QoiqDqGXYYIhxWucgYDkIHT1iT4D#toc-3

