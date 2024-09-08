@@ -5,7 +5,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import src.main.Exp.ExpCore.ExpCore;
-import src.main.MemshellLoad.MemshellLoad;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;

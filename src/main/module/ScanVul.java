@@ -1,4 +1,4 @@
-package src.main.vul;
+package src.main.module;
 
 import src.main.impl.ResultCallback;
 
@@ -97,13 +97,11 @@ public class ScanVul {
                     poc = site + " " + exp;
                     resultList.add(site + " " + exp);
                     curlines++;
-                    System.out.println(poc);
                     callback.onResult(poc);
                     callback.onResult("curlines: "+curlines);
                 } else if (responseCode == HttpURLConnection.HTTP_BAD_METHOD) {
                     poc = site + " " + err1;
                     curlines++;
-                    System.out.println(poc);
                     callback.onResult(poc);
                     callback.onResult("curlines: "+curlines);
                     callback.onResult("totalLines: "+totalLines);
@@ -126,15 +124,17 @@ public class ScanVul {
         boolean containsHeapdump = resultList.stream().anyMatch(line -> line.contains("/heapdump"));
         if (containsHeapdump) {
             callback.onResult("发现heapdump文件！正在下载");
-            Thread.sleep(3000);
+            Thread.sleep(2000);
             downloadFuture = downloadHPAsync();
         } else {
             callback.onResult("未找到heapdump文件");
         }
-
         // 等待下载完成并获取文件名
-        downloadFuture.thenApply(fileName -> {
-            if (fileName != null && !fileName.isEmpty()) {
+        downloadFuture.handle((fileName,throwable)->{
+            if (throwable != null){
+                callback.onResult("文件下载失败");
+                callback.onResult("发生异常: " + throwable.getMessage());
+            }else if (fileName != null && !fileName.isEmpty()) {
                 callback.onResult(String.format("文件下载完成，文件名为: %s", fileName));
             } else {
                 callback.onResult("文件下载失败！");
@@ -142,6 +142,6 @@ public class ScanVul {
             }
             callback.onComplete();
             return null;
-        }).join();
+        });
     }
 }

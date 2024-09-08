@@ -54,8 +54,9 @@ java -jar SpringBootVul_GUI.jar
 * [x] 命令执行漏洞式支持交互式执行命令
 * [x] Spring Gateway RCE
 * [x] heapdump文件下载导致敏感信息泄露
-* [ ] 脱敏密码明文(2)
-* [ ] 脱敏密码明文(3)
+* [x] druid数据连接池
+* [x] 脱敏密码明文(2)
+* [x] 脱敏密码明文(3)
 * [ ] 基于SpEL注入的RCE
 * [ ] SpringCloud的SnakeYaml的RCE
 * [ ] eureka中xstream基于反序列化的RCE
@@ -68,7 +69,6 @@ java -jar SpringBootVul_GUI.jar
 * [ ] logging.config的groovyRCE
 * [ ] spring.main.source的groovyRCE
 * [ ] spring.datasource.data 基于h2数据库的RCE
-* [ ] druid数据连接池
 
 ## 0x04短期目标 Prepare
 
@@ -80,9 +80,23 @@ java -jar SpringBootVul_GUI.jar
 
 ### #1 密码脱敏
 
+脱敏（1）
+
 ![](./image/1725461792423.jpg)
 
 ![](./image/1725461834405.jpg)
+
+脱敏（2）
+
+得到Authorization字段的数据，用base64解码即可，有时间再优化下能直接显示到文本框里
+
+![](/Users/wh1t3zer/hacker/渗透/springboot利用/GUI利用工具-sp/image/image-20240908184925841.png)
+
+![](/Users/wh1t3zer/hacker/渗透/springboot利用/GUI利用工具-sp/image/image-20240908184831197.png)
+
+脱敏（3）
+
+![](/Users/wh1t3zer/hacker/渗透/springboot利用/GUI利用工具-sp/image/image-20240908185521389.png)
 
 ### #2 Spring Cloud Gateway 交互式命令
 

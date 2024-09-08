@@ -1,4 +1,4 @@
-package src.main.vul;
+package src.main.module;
 
 public class SpelRCE {
 

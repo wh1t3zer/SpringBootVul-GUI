@@ -1,4 +1,4 @@
-package src.main.vul;
+package src.main.module;
 
 import java.io.BufferedReader;
 import java.io.IOException;
