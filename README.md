@@ -90,13 +90,13 @@ java -jar SpringBootVul_GUI.jar
 
 得到Authorization字段的数据，用base64解码即可，有时间再优化下能直接显示到文本框里
 
-![](/Users/wh1t3zer/hacker/渗透/springboot利用/GUI利用工具-sp/image/image-20240908184925841.png)
+![](./image/image-20240908184925841.png)
 
-![](/Users/wh1t3zer/hacker/渗透/springboot利用/GUI利用工具-sp/image/image-20240908184831197.png)
+![](./image/image-20240908184831197.png)
 
 脱敏（3）
 
-![](/Users/wh1t3zer/hacker/渗透/springboot利用/GUI利用工具-sp/image/image-20240908185521389.png)
+![](./image/image-20240908185521389.png)
 
 ### #2 Spring Cloud Gateway 交互式命令
 
