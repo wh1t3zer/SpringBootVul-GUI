@@ -9,7 +9,7 @@
 
 ## 0x01简介
 
-本着简单到极致的原则，开发了这么一款半自动化工具（PS：这个工具所包含了20个漏洞，代码工作量也不是一般得多，开发不易，有任何问题可提issue）
+本着简单到极致的原则，开发了这么一款半自动化工具（PS：这个工具所包含了20个漏洞，开发不易，有任何问题可提issue）
 
 尽管是一个为懒人量身打造的工具，但是还是有几点需要注意
 
@@ -46,6 +46,20 @@ java -jar SpringBootVul_GUI.jar
 
 本项目中的heapdump转存会自动下载网站上的文件，并会放到jar包下的HFile文件夹
 
+
+
+**文件结构**
+
+```
+├──SpringbootVul-GUI
+  ├── META-INF/
+  ├── resources/		# 存放资源文件、字典和exp的跨文件
+  ├── HPFile/				# 存放下载的heapdump
+  ├── src/					# 工程代码
+  ├── image/				
+  ├── libs/					# 所需依赖
+```
+
 ## 0x03开发进度 TODO
 
 * [x] 配置不正当导致的泄露
@@ -57,9 +71,9 @@ java -jar SpringBootVul_GUI.jar
 * [x] druid数据连接池
 * [x] 脱敏密码明文(2)
 * [x] 脱敏密码明文(3)
+* [x] eureka中xstream基于反序列化的RCE
 * [ ] 基于SpEL注入的RCE
 * [ ] SpringCloud的SnakeYaml的RCE
-* [ ] eureka中xstream基于反序列化的RCE
 * [ ] jolokia中logback基于JNDI注入的RCE
 * [ ] jolokia中realm基于JNDI注入的RCE
 * [ ] H2数据库设置query属性的RCE
@@ -104,13 +118,21 @@ java -jar SpringBootVul_GUI.jar
 
 ![](./image/1725462104669.jpg)
 
-### #3 端点扫描
+### #3Eureka 反序列化RCE（慎用）
+
+直接点击getshell反弹，单纯poc测试的没写，python文件放同一目录下了，需要在vps启用2个端口，一个是你python服务器的端口，一个是反弹端口，写在python文件中，反弹端口默认是9000，注意这两个端口区别，输入框的端口是python端口
+
+**注意！！！**该数据包发送后会驻留到目标Eureka，会不断请求，若造成服务器出错时，可能会导致无法访问网站的路由
+
+![](./image/image-20240911124128856.png)
+
+### #4 端点扫描
 
 端点扫描经过延时降速处理，防止请求频繁，heapdump文件无法下载，不过偶尔还会发生，直接手动下载就可以了
 
 ![](./image/1725462287383.jpg)
 
-### #4 一键上马
+### #5 一键上马
 
 ![](./image/WechatIMG1409.jpg)
 

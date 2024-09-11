@@ -74,33 +74,17 @@
     },
     {
       "label": "全部",
-      "value": 19
+      "value": 0
     }
   ],
   "ClassList": [
     {
-      "label": "",
+      "label": "SpringApplicationAdminMXBeanRegistrar类",
       "value": 1
     },
     {
-      "label": "",
+      "label": "EnvironmentManager类",
       "value": 2
-    },
-    {
-      "label": "",
-      "value": 3
-    },
-    {
-      "label": "",
-      "value": 4
-    },
-    {
-      "label": "",
-      "value": 5
-    },
-    {
-      "label": "",
-      "value": 6
     }
   ]
 }

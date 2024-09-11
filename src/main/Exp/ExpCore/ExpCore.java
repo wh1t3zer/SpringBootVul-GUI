@@ -1,7 +1,6 @@
 package src.main.Exp.ExpCore;
 
-import src.main.MemshellLoad.MemshellLoad;
-import src.main.impl.ResultCallback;
+import src.main.LoadLib.MemshellLoad.MemshellLoad;
 
 import java.io.BufferedReader;
 import java.io.IOException;

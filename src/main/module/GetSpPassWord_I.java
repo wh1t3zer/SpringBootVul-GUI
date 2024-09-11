@@ -50,7 +50,7 @@ public class GetSpPassWord_I {
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(response.toString());
                 if(matcher.find()){
-                    text = String.format("jolokia依赖为: %s",matcher.group(1));
+                    text = String.format("jolokia 依赖为: %s",matcher.group(1));
                     callback.onResult(text);
                 }
                 URL obj1 = new URL(site);
@@ -115,7 +115,7 @@ public class GetSpPassWord_I {
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(response.toString());
                 if(matcher.find()){
-                    text = String.format("jolokia依赖为: %s",matcher.group(1));
+                    text = String.format("jolokia 依赖为: %s",matcher.group(1));
                     callback.onResult(text);
                 }
                 URL obj1 = new URL(site);
@@ -183,7 +183,7 @@ public class GetSpPassWord_I {
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(response.toString());
                 if(matcher.find()){
-                    text = String.format("jolokia依赖为: %s",matcher.group(1));
+                    text = String.format("jolokia 依赖为: %s",matcher.group(1));
                     callback.onResult(text);                }
                 URL obj1 = new URL(site);
                 HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
@@ -248,7 +248,7 @@ public class GetSpPassWord_I {
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(response.toString());
                 if(matcher.find()) {
-                    text = String.format("jolokia依赖为: %s", matcher.group(1));
+                    text = String.format("jolokia 依赖为: %s", matcher.group(1));
                     callback.onResult(text);
                     URL obj1 = new URL(site);
                     HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
@@ -295,29 +295,35 @@ public class GetSpPassWord_I {
         // Result1 3 为 sp1
         // Result2 4 为 sp2
         String site = address + "/actuator/env";
-        URL obj = new URL(site);
-        HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-        conn.setRequestMethod("GET");
-        int responseCode = conn.getResponseCode();
-        if (responseCode == 200){
-            // 存在路径是springboot2，否则是springboot1
-            callback.onResult("当前版本为springboot2");
-            if (clsvalue == 1){
-                callback.onResult("当前调用类为SpringApplicationAdminMXBeanRegistrar类");
-                Result2(callback);
-            }else if(clsvalue == 2){
-                callback.onResult("当前调用类为EnvironmentManager类");
-                Result4(callback);
+        try {
+            URL obj = new URL(site);
+            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            conn.setRequestMethod("GET");
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // 存在路径是springboot2，否则是springboot1
+                callback.onResult("当前版本为springboot2");
+                if (clsvalue == 1) {
+                    callback.onResult("当前调用类为SpringApplicationAdminMXBeanRegistrar类");
+                    Result2(callback);
+                } else if (clsvalue == 2) {
+                    callback.onResult("当前调用类为EnvironmentManager类");
+                    Result4(callback);
+                }
+            } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                callback.onResult("当前版本为springboot1");
+                if (clsvalue == 1) {
+                    callback.onResult("当前调用类为SpringApplicationAdminMXBeanRegistrar类");
+                    Result1(callback);
+                } else if (clsvalue == 2) {
+                    callback.onResult("当前调用类为EnvironmentManager类");
+                    Result3(callback);
+                }
+            } else {
+                callback.onResult("未识别springboot版本");
             }
-        }else{
-            callback.onResult("当前版本为springboot1");
-            if(clsvalue == 1){
-                callback.onResult("当前调用类为SpringApplicationAdminMXBeanRegistrar类");
-                Result1(callback);
-            }else if(clsvalue == 2){
-                callback.onResult("当前调用类为EnvironmentManager类");
-                Result3(callback);
-            }
+        }catch (IOException e){
+            e.printStackTrace();
         }
     }
 

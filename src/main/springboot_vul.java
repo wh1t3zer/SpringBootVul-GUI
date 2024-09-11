@@ -1,5 +1,8 @@
 package src.main;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -12,11 +15,14 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import src.main.Exp.ExpImp.ExpImp;
+import src.main.FileCommon.File;
 import src.main.impl.ResultCallback;
 import src.main.module.*;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
@@ -31,7 +37,33 @@ public class springboot_vul extends Application {
         public static ProgressBar progressBar; // 进度条
 
         @Override
-        public void start(Stage stage) throws UnsupportedEncodingException {
+        public void start(Stage stage) throws IOException {
+                File f = new File();
+                Map<Integer, JsonArray> totallist = f.parseVulList("list.json");
+                List<String> vulnLabels = new ArrayList<>();
+                List<Integer> vulnValues = new ArrayList<>();
+                for (JsonElement elem : totallist.get(1)) {
+                        JsonObject vulnList = elem.getAsJsonObject();
+                        String vulabel = vulnList.get("label").getAsString();
+                        int vulvalue = vulnList.get("value").getAsInt();
+                        vulnLabels.add(vulabel);
+                        vulnValues.add(vulvalue);
+                }
+                String[] vulnLabelsArray = vulnLabels.toArray(new String[0]);
+                int[] vulnValuesArray = vulnValues.stream().mapToInt(i -> i).toArray();
+
+                List<String> clsLabels = new ArrayList<>();
+                List<Integer> clsValues = new ArrayList<>();
+                for (JsonElement elem : totallist.get(2)) {
+                        JsonObject clsList = elem.getAsJsonObject();
+                        String clslabel = clsList.get("label").getAsString();
+                        int clsvalue = clsList.get("value").getAsInt();
+                        clsLabels.add(clslabel);
+                        clsValues.add(clsvalue);
+                }
+                String[] clsLabelsArray = clsLabels.toArray(new String[0]);
+                int[] clsValuesArray = clsValues.stream().mapToInt(i -> i).toArray();
+
                 // 地址标签
                 Label addlabel = new Label("地址: ");
                 addlabel.setMaxSize(50, 30);
@@ -46,71 +78,15 @@ public class springboot_vul extends Application {
                 Label curstatuslabel = new Label("当前状态： ");
                 curstatuslabel.setMaxSize(70,30);
 
-                // 漏洞类型  后续优化修改
-                // 定义选项的显示文本和对应的值
-                String[] VulList = {
-                        "全部",
-                        "端点泄露扫描",
-                        "密码脱敏漏洞1",
-                        "密码脱敏漏洞2",
-                        "密码脱敏漏洞3",
-                        "Spring Cloud SnakeYaml RCE漏洞",
-                        "Spring Cloud Gateway RCE漏洞",
-                        "SpEl注入 RCE漏洞",
-                        "Eureka Xstream Serialize RCE漏洞",
-                        "Jolokia Logback JNDI RCE漏洞",
-                        "Jolokia Realm JNDI RCE漏洞",
-                        "H2 Database Query属性 RCE漏洞",
-                        "H2 Database JNDI RCE漏洞",
-                        "Mysql Jdbc Serialize RCE漏洞",
-                        "Logging属性 Logback JNDI RCE漏洞",
-                        "Logging属性 Groovy RCE漏洞",
-                        "MainSource Groovy RCE漏洞",
-                        "H2 Database Datasource RCE漏洞",
-                        "Druid连接池密码爆破",
-                };
-
-                int[] VulListValue = {
-                        1,  // 全部
-                        2,  // 端点泄露扫描
-                        3,  // 密码脱敏漏洞1
-                        4,  // 密码脱敏漏洞2
-                        5,  // 密码脱敏漏洞3
-                        6,  // Spring Cloud SnakeYaml RCE漏洞
-                        7,  // Spring Cloud Gateway RCE漏洞
-                        8,  // SpEl注入 RCE漏洞
-                        9,  // Eureka Xstream Serialize RCE漏洞
-                        10,  // Jolokia Logback JNDI RCE漏洞
-                        11, // Jolokia Realm JNDI RCE漏洞
-                        12, // H2 Database Query属性 RCE漏洞
-                        13, // H2 Database JNDI RCE漏洞
-                        14, // Mysql Jdbc Serialize RCE漏洞
-                        15, // Logging属性 Logback JNDI RCE漏洞
-                        16, // Logging属性 Groovy RCE漏洞
-                        17, // MainSource Groovy RCE漏洞
-                        18, // H2 Database Datasource RCE漏洞
-                        19, // Druid连接池密码爆破
-                };
-
-                String[] ClassNameList = {
-                        "SpringApplicationAdminMXBeanRegistrar类",
-                        "EnvironmentManager类",
-                };
-
-                int[] ClassNameListValue = {
-                        1, //SpringApplicationAdminMXBeanRegistrar类
-                        2  //EnvironmentManager类
-                };
-
                 // 类方法调用下拉框
                 ComboBox<String> clsComboBox = new ComboBox<>();
-                clsComboBox.getItems().addAll(ClassNameList);
+                clsComboBox.getItems().addAll(clsLabelsArray);
                 clsComboBox.setOnAction(event -> {
                         String optionsValue = clsComboBox.getValue();
                         // 查找选项对应的值
-                        for (int i = 0; i < ClassNameList.length; i++) {
-                                if (ClassNameList[i].equals(optionsValue)) {
-                                        clsValue = ClassNameListValue[i];
+                        for (int i = 0; i < clsLabelsArray.length; i++) {
+                                if (clsLabelsArray[i].equals(optionsValue)) {
+                                        clsValue = clsValuesArray[i];
                                         break;
                                 }
                         }
@@ -139,14 +115,14 @@ public class springboot_vul extends Application {
 
                 // 下拉框
                 ComboBox<String> comboBox = new ComboBox<>();
-                comboBox.getItems().addAll(VulList);
+                comboBox.getItems().addAll(vulnLabelsArray);
                 comboBox.setOnAction(event -> {
                         String optionsValue = comboBox.getValue();
                         Vulvalue = -1;
                         // 查找选项对应的值
-                        for (int i = 0; i < VulList.length; i++) {
-                                if (VulList[i].equals(optionsValue)) {
-                                        Vulvalue = VulListValue[i];
+                        for (int i = 0; i < vulnLabelsArray.length; i++) {
+                                if (vulnLabelsArray[i].equals(optionsValue)) {
+                                        Vulvalue = vulnValuesArray[i];
                                         break;
                                 }
                         }
@@ -167,7 +143,6 @@ public class springboot_vul extends Application {
                 TextField Clstf = new TextField();
                 Clstf.setPrefWidth(200);
 
-
                 // 按钮
                 Button Expbtn = new Button("开干");
                 Expbtn.setOnAction(event -> {
@@ -181,7 +156,7 @@ public class springboot_vul extends Application {
                 Button Shellbtn = new Button("Getshell");
                 Shellbtn.setOnAction(event -> {
                         try {
-                                handlerGetshell(Addrtf);
+                                handlerGetshell(Addrtf,VpsAddrtf,VpsPorttf);
                         } catch (IOException e) {
                                 throw new RuntimeException(e);
                         }
@@ -475,8 +450,42 @@ public class springboot_vul extends Application {
         public void handlerSpElRCE(String address,String command){
 
         }
-        public void handlerEurekaXstreamRCE(String address,String command){
+        public void handlerEurekaXstreamRCE(String address,String vpsIP,String vpsPORT) throws IOException {
+                // 清空控制台输出
+                consoleOutput.getChildren().clear();
+                // 暂无证书模块，待设置
+                if (address.isEmpty()){
+                        showAlertEmpty("地址为空！");
+                }else {
+                        if (address.endsWith("/")) {
+                                address = address.replaceAll("/$", "");
+                        }
+                        if (!address.startsWith("http://") && !address.startsWith("https://")) {
+                                address = "http://" + address;
+                        }
+                        if (vpsIP.isEmpty() && vpsPORT.isEmpty()){
+                                showAlertEmpty("反弹vps的IP和端口为空！");
+                        }else {
+                                EurekaXsRCE ekx = new EurekaXsRCE(address, vpsIP, vpsPORT);
+                                ekx.Exp(new ResultCallback() {
+                                        @Override
+                                        public void onResult(String result) {
+                                                Platform.runLater(() -> {
+                                                        // 输出其他内容到控制台
+                                                        Text text = new Text(result + "\n");
+                                                        consoleOutput.getChildren().add(text);
+                                                        // 自动滚动到最新内容
+                                                        scrollPane.setVvalue(1.0);
+                                                });
+                                        }
 
+                                        @Override
+                                        public void onComplete() {
+                                        }
+                                });
+                        }
+
+                }
         }
         public void handlerJolokiaLogbackRCE(String address,String command){
 
@@ -544,11 +553,13 @@ public class springboot_vul extends Application {
         public void handleAllVulnerabilities(String address,String command){
 
         }
-        public void handlerGetshell(TextField addr) throws IOException {
+        public void handlerGetshell(TextField addr,TextField vpsobj,TextField portobj) throws IOException {
                 consoleOutput.getChildren().clear();
                 // 一键上内存马
                 String address = addr.getText();
                 String command = "";
+                String vpsIP = vpsobj.getText();
+                String vpsPort = portobj.getText();
                 ExpImp exp = new ExpImp(address);
                 if (address.isEmpty()){
                         showAlertEmpty("地址为空！");
@@ -572,7 +583,7 @@ public class springboot_vul extends Application {
                                         handlerSpElRCE(address, command);
                                         break;
                                 case 8:
-                                        handlerEurekaXstreamRCE(address, command);
+                                        handlerEurekaXstreamRCE(address, vpsIP, vpsPort);
                                         break;
                                 case 9:
                                         handlerJolokiaLogbackRCE(address, command);
@@ -609,6 +620,7 @@ public class springboot_vul extends Application {
                                         break;
                                 default:
                                         showAlertEmpty("你踏马还没选择漏洞类型呢！");
+                                        break;
                         }
                 }
 
@@ -619,71 +631,83 @@ public class springboot_vul extends Application {
                 String command = cmdobj.getText();
                 String vpsIP = vpsobj.getText();
                 String vpsPort = portobj.getText();
+                if (address.isEmpty()) {
+                        showAlertEmpty("地址为空！");
+                } else {
                         switch (Vulvalue) {
                                 case -1:
                                         showAlertEmpty("你踏马还没选择漏洞类型呢！");
-                                case 1:
-                                        handlerAllScan(address);
                                         break;
-                                case 2:
+                                case 0:
+                                        handlerAllScan(address);
+
+                                case 1:
                                         handlerScanVul(address);
                                         break;
+                                case 2:
+                                        handlerGetSp_1(address, arg);
+                                        break;
                                 case 3:
-                                        handlerGetSp_1(address,arg);
+                                        handlerGetSp_2(address, arg, vpsIP, vpsPort);
                                         break;
                                 case 4:
-                                        handlerGetSp_2(address,arg,vpsIP,vpsPort);
+                                        handlerGetSp_3(address, arg, vpsIP, vpsPort);
                                         break;
                                 case 5:
-                                        handlerGetSp_3(address,arg,vpsIP,vpsPort);
+                                        handlerSnakeYamlRce(address, command);
                                         break;
                                 case 6:
-                                        handlerSnakeYamlRce(address,command);
+                                        handlerSpgRCE(address, command);
                                         break;
                                 case 7:
-                                        handlerSpgRCE(address,command);
-                                        break;
-                                case 8:
                                         handlerSpElRCE(address, command);
                                         break;
-                                case 9:
-                                        handlerEurekaXstreamRCE(address, command);
+                                case 8:
+//                                        handlerEurekaXstreamRCE(address, vpsIP, vpsPort);
+                                        showAlertEmpty("暂时没有写这里，直接getshell");
                                         break;
-                                case 10:
+                                case 9:
                                         handlerJolokiaLogbackRCE(address, command);
                                         break;
-                                case 11:
+                                case 10:
                                         handlerJolokiaRealmRCE(address, command);
                                         break;
-                                case 12:
+                                case 11:
                                         handlerH2DatabaseQueryRCE(address, command);
                                         break;
-                                case 13:
+                                case 12:
                                         handlerH2DatabaseJNDIRCE(address, command);
                                         break;
-                                case 14:
+                                case 13:
                                         handlerMysqlJdbcRCE(address, command);
                                         break;
-                                case 15:
+                                case 14:
                                         handlerLoggingLogbackRCE(address, command);
                                         break;
-                                case 16:
+                                case 15:
                                         handlerLoggingGroovyRCE(address, command);
                                         break;
-                                case 17:
+                                case 16:
                                         handlerMainSourceGroovyRCE(address, command);
                                         break;
-                                case 18:
+                                case 17:
                                         handlerH2DatabaseDatasourceRCE(address, command);
                                         break;
-                                case 19:
+                                case 18:
                                         handlerDruidBruteForce(address);
                                         break;
                                 default:
                                         showAlertEmpty("你踏马还没选择漏洞类型呢！");
+                                        break;
                         }
+                }
         }
 
+        public void handlerDelData(TextField addr) throws IOException{
+                // 痕迹清除
+
+
+        }
         public void showAlertEmpty(String text) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.initStyle(StageStyle.UNDECORATED);

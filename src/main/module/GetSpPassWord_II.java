@@ -49,9 +49,9 @@ public class GetSpPassWord_II {
                 Pattern pattern2 = Pattern.compile(regex2);
                 Matcher matcher2 = pattern2.matcher(response.toString());
                 if (matcher1.find() && matcher2.find()) {
-                    text = String.format("eureka-client依赖为: %s", matcher1.group(1));
+                    text = String.format("eureka-client 依赖为: %s", matcher1.group(1));
                     callback.onResult(text);
-                    text = String.format("spring-boot-starter-actuator依赖为: %s", matcher2.group(1));
+                    text = String.format("spring-boot-starter-actuator 依赖为: %s", matcher2.group(1));
                     callback.onResult(text);
                     URL obj1 = new URL(site);
                     HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
@@ -118,9 +118,9 @@ public class GetSpPassWord_II {
                 Pattern pattern2 = Pattern.compile(regex2);
                 Matcher matcher2 = pattern2.matcher(response.toString());
                 if (matcher1.find() && matcher2.find()) {
-                    text = String.format("eureka-client依赖为: %s", matcher1.group(1));
+                    text = String.format("eureka-client 依赖为: %s", matcher1.group(1));
                     callback.onResult(text);
-                    text = String.format("spring-boot-starter-actuator依赖为: %s", matcher2.group(1));
+                    text = String.format("spring-boot-starter-actuator 依赖为: %s", matcher2.group(1));
                     callback.onResult(text);
                     URL obj1 = new URL(site);
                     HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();

