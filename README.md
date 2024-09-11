@@ -1,4 +1,7 @@
+![views since 2024/09/06](https://visitor-badge-deno.deno.dev/wh1t3zer.SpringBootVul-GUI.svg)
+
 # SpringBootVul-GUI
+
 一个半自动化springboot打点工具，内置目前springboot所有漏洞
 
 ## 声明
@@ -140,8 +143,6 @@ python -m http.server 80
 
 ![](./image/1726047278563.jpg)
 
-![](./image/1726047278563.jpg)
-
 ### #5 端点扫描
 
 端点扫描经过延时降速处理，防止请求频繁，heapdump文件无法下载，不过偶尔还会发生，直接手动下载就可以了
@@ -163,3 +164,10 @@ python -m http.server 80
 2、https://mp.weixin.qq.com/s/2wKB3jACAkIiIZ96tVb5fA
 
 3、https://xz.aliyun.com/t/11331?time__1311=Cq0xR70QoiqDqGXYYIhxWucgYDkIHT1iT4D#toc-3
+
+
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=wh1t3zer/SpringBootVul-GUI&type=Date)](https://star-history.com/#wh1t3zer/SpringBootVul-GUI&Date)
+
