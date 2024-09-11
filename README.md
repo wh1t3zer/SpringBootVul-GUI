@@ -72,6 +72,7 @@ java -jar SpringBootVul_GUI.jar
 * [x] 脱敏密码明文(2)
 * [x] 脱敏密码明文(3)
 * [x] eureka中xstream基于反序列化的RCE
+* [x] spring.datasource.data 基于h2数据库的RCE
 * [ ] 基于SpEL注入的RCE
 * [ ] SpringCloud的SnakeYaml的RCE
 * [ ] jolokia中logback基于JNDI注入的RCE
@@ -82,7 +83,6 @@ java -jar SpringBootVul_GUI.jar
 * [ ] logging.config的logback基于JNDI的RCE
 * [ ] logging.config的groovyRCE
 * [ ] spring.main.source的groovyRCE
-* [ ] spring.datasource.data 基于h2数据库的RCE
 
 ## 0x04短期目标 Prepare
 
@@ -126,13 +126,29 @@ java -jar SpringBootVul_GUI.jar
 
 ![](./image/image-20240911124128856.png)
 
-### #4 端点扫描
+### #4H2DatabaseSource RCE（慎用）
+
+目前已经基本完成一键getshell，理论上只要在不关闭的情况下可以无限弹，因为目前的payload是从T5开始的，如果遇到网站被测试过时，那大概率会报错而导致对方服务宕机，因为这是不回显RCE，无法判断到底有没有被测试过。
+
+监听端口默认是**8881**
+
+输入框中填写你开启服务器的端口，目前为了能无限弹的机制，暂时只能设置在该项目的resources文件夹开启
+
+```bash
+python -m http.server 80
+```
+
+![](./image/1726047278563.jpg)
+
+![](./image/1726047278563.jpg)
+
+### #5 端点扫描
 
 端点扫描经过延时降速处理，防止请求频繁，heapdump文件无法下载，不过偶尔还会发生，直接手动下载就可以了
 
 ![](./image/1725462287383.jpg)
 
-### #5 一键上马
+### #6 一键上马
 
 ![](./image/WechatIMG1409.jpg)
 

