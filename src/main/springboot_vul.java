@@ -87,8 +87,7 @@ public class springboot_vul extends Application {
 
                 // 类方法调用下拉框
                 ComboBox<String> clsComboBox = new ComboBox<>();
-                clsComboBox.setStyle("-fx-font-family: 'SimSun'; -fx-font-size: 14;");
-                clsComboBox.getItems().addAll(clsLabelsArray);
+                clsComboBox.setStyle("-fx-font-family: 'Microsoft YaHei, SimSun, PingFang SC'; -fx-font-size: 14;");                clsComboBox.getItems().addAll(clsLabelsArray);
                 clsComboBox.setOnAction(event -> {
                         String optionsValue = clsComboBox.getValue();
                         // 查找选项对应的值
@@ -125,8 +124,7 @@ public class springboot_vul extends Application {
 
                 // 下拉框
                 ComboBox<String> comboBox = new ComboBox<>();
-                comboBox.setStyle("-fx-font-family: 'SimSun'; -fx-font-size: 14;"); // 设置字体为宋体，大小为 14
-                comboBox.getItems().addAll(vulnLabelsArray);
+                comboBox.setStyle("-fx-font-family: 'Microsoft YaHei, SimSun, PingFang SC'; -fx-font-size: 14;");                comboBox.getItems().addAll(vulnLabelsArray);
                 comboBox.setOnAction(event -> {
                         String optionsValue = comboBox.getValue();
                         Vulvalue = -1;
