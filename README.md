@@ -178,7 +178,7 @@ getshell功能可以直接弹shell，getshell模块直接输入地址+路由+参
 
 3、https://xz.aliyun.com/t/11331?time__1311=Cq0xR70QoiqDqGXYYIhxWucgYDkIHT1iT4D#toc-3
 
-
+4、https://blog.csdn.net/weixin_50464560/article/details/121193783
 
 ## Star History
 
