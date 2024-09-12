@@ -457,8 +457,56 @@ public class springboot_vul extends Application {
                         });
                 }
         }
-        public void handlerSpElRCE(String address,String command){
+        public void handlerSpElRCE(String address,String vpsIP,String vpsPORT) throws IOException {
+                consoleOutput.getChildren().clear();
+                // 暂无证书模块，待设置
+                if (address.isEmpty()){
+                        showAlertEmpty("地址为空！");
+                }else {
+                        if (address.endsWith("/")) {
+                                address = address.replaceAll("/$", "");
+                        }
+                        if (!address.startsWith("http://") && !address.startsWith("https://")) {
+                                address = "http://" + address;
+                        }
+                        SpelRCE sp = new SpelRCE(address,vpsIP,vpsPORT);
+                        if (vpsIP.isEmpty() && vpsPORT.isEmpty()){
+                                sp.Poc(new ResultCallback() {
+                                        @Override
+                                        public void onResult(String result) {
+                                                Platform.runLater(() -> {
+                                                        // 输出其他内容到控制台
+                                                        Text text = new Text(result + "\n");
+                                                        consoleOutput.getChildren().add(text);
+                                                        // 自动滚动到最新内容
+                                                        scrollPane.setVvalue(1.0);
+                                                });
+                                        }
 
+                                        @Override
+                                        public void onComplete() {
+                                        }
+                                });
+                        }else {
+                                sp.Exp(new ResultCallback() {
+                                        @Override
+                                        public void onResult(String result) {
+                                                Platform.runLater(() -> {
+                                                        // 输出其他内容到控制台
+                                                        Text text = new Text(result + "\n");
+                                                        consoleOutput.getChildren().add(text);
+                                                        // 自动滚动到最新内容
+                                                        scrollPane.setVvalue(1.0);
+                                                });
+                                        }
+
+                                        @Override
+                                        public void onComplete() {
+                                        }
+                                });
+                        }
+
+                }
         }
         public void handlerEurekaXstreamRCE(String address,String vpsIP,String vpsPORT) throws IOException {
                 // 清空控制台输出
@@ -623,7 +671,7 @@ public class springboot_vul extends Application {
                                         exp.handlerSpgRCE(address);
                                         break;
                                 case 7:
-                                        handlerSpElRCE(address, command);
+                                        handlerSpElRCE(address,vpsIP,vpsPort);
                                         break;
                                 case 8:
                                         handlerEurekaXstreamRCE(address, vpsIP, vpsPort);
@@ -703,7 +751,7 @@ public class springboot_vul extends Application {
                                         handlerSpgRCE(address, command);
                                         break;
                                 case 7:
-                                        handlerSpElRCE(address, command);
+                                        handlerSpElRCE(address,vpsIP,vpsPort);
                                         break;
                                 case 8:
 //                                        handlerEurekaXstreamRCE(address, vpsIP, vpsPort);

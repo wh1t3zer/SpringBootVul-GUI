@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import static src.main.SSLVerify.sslVer.disableSSLVerification;
+
 public class ScanVul {
     private final String address;
 
@@ -67,6 +69,7 @@ public class ScanVul {
     }
 
     public void scanVul(ResultCallback callback) throws InterruptedException {
+        disableSSLVerification();
         String filepath = "./resources/dict.txt";
         List<String> resultList = new ArrayList<>();
         String poc;

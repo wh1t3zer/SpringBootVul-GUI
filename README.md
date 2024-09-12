@@ -76,7 +76,7 @@ java -jar SpringBootVul_GUI.jar
 * [x] 脱敏密码明文(3)
 * [x] eureka中xstream基于反序列化的RCE
 * [x] spring.datasource.data 基于h2数据库的RCE
-* [ ] 基于SpEL注入的RCE
+* [x] 基于SpEL注入的RCE
 * [ ] SpringCloud的SnakeYaml的RCE
 * [ ] jolokia中logback基于JNDI注入的RCE
 * [ ] jolokia中realm基于JNDI注入的RCE
@@ -92,6 +92,7 @@ java -jar SpringBootVul_GUI.jar
 * [x] 一键打入内存马(目前只有Spring Cloud Gateway)
 * [ ] 加入Bypass逻辑
 * [ ] 加入深度扫描任务
+* [ ] 部分RCE的痕迹一键清除
 
 ## 0x05项目演示
 
@@ -121,7 +122,7 @@ java -jar SpringBootVul_GUI.jar
 
 ![](./image/1725462104669.jpg)
 
-### #3Eureka 反序列化RCE（慎用）
+### #3 Eureka 反序列化RCE（慎用）
 
 直接点击getshell反弹，单纯poc测试的没写，python文件放同一目录下了，需要在vps启用2个端口，一个是你python服务器的端口，一个是反弹端口，写在python文件中，反弹端口默认是9000，注意这两个端口区别，输入框的端口是python端口
 
@@ -129,7 +130,7 @@ java -jar SpringBootVul_GUI.jar
 
 ![](./image/image-20240911124128856.png)
 
-### #4H2DatabaseSource RCE（慎用）
+### #4 H2DatabaseSource RCE（慎用）
 
 目前已经基本完成一键getshell，理论上只要在不关闭的情况下可以无限弹，因为目前的payload是从T5开始的，如果遇到网站被测试过时，那大概率会报错而导致对方服务宕机，因为这是不回显RCE，无法判断到底有没有被测试过。
 
@@ -143,13 +144,25 @@ python -m http.server 80
 
 ![](./image/1726047278563.jpg)
 
-### #5 端点扫描
+### #5 SpEL注入导致的RCE
+
+可以同时检测多个参数值，要在参数值上打上一个单引号'作为标记'
+
+http://127.0.0.1:9091/article?id=1'&b=2'
+
+getshell功能可以直接弹shell，getshell模块直接输入地址+路由+参数，无需加=和后面的值
+
+![](./image/image-20240912201142594.png)
+
+![](./image/image-20240912201344077.png)
+
+### #6 端点扫描
 
 端点扫描经过延时降速处理，防止请求频繁，heapdump文件无法下载，不过偶尔还会发生，直接手动下载就可以了
 
 ![](./image/1725462287383.jpg)
 
-### #6 一键上马
+### #7 一键上马
 
 ![](./image/WechatIMG1409.jpg)
 

