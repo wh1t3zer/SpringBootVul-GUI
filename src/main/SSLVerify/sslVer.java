@@ -31,7 +31,6 @@ public class sslVer {
 
             // 安装主机名验证器
             HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-            System.out.println("SSL certificate validation disabled.");
         } catch (Exception e) {
             e.printStackTrace();
         }

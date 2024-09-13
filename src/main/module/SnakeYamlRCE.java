@@ -67,7 +67,7 @@ public class SnakeYamlRCE {
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
-            if (responseCode == 200) {
+            if (responseCode == HttpURLConnection.HTTP_OK) {
                 // 存在路径是springboot2，否则是springboot1
                 text = "当前版本为springboot2";
 //                callback.onResult("当前版本为springboot2");

