@@ -77,6 +77,7 @@ java -jar SpringBootVul_GUI.jar
 * [x] eureka中xstream基于反序列化的RCE
 * [x] spring.datasource.data 基于h2数据库的RCE
 * [x] 基于SpEL注入的RCE
+* [x] spring.main.source的groovyRCE
 * [ ] SpringCloud的SnakeYaml的RCE
 * [ ] jolokia中logback基于JNDI注入的RCE
 * [ ] jolokia中realm基于JNDI注入的RCE
@@ -85,7 +86,6 @@ java -jar SpringBootVul_GUI.jar
 * [ ] mysql中jdbc基于反序列化的RCE
 * [ ] logging.config的logback基于JNDI的RCE
 * [ ] logging.config的groovyRCE
-* [ ] spring.main.source的groovyRCE
 
 ## 0x04短期目标 Prepare
 
