@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import src.main.Exp.ExpImp.ExpImp;
 import src.main.FileCommon.File;
+import src.main.common.DownLoadHP;
 import src.main.impl.ResultCallback;
 import src.main.module.*;
 
@@ -36,6 +37,8 @@ public class springboot_vul extends Application {
         public static ExecutorService executorService;
         public static ScrollPane scrollPane; // 滚动
         public static ProgressBar progressBar; // 进度条
+        public static ProgressBar progressBar1; // 进度条
+
 
         @Override
         public void start(Stage stage) throws IOException {
@@ -284,23 +287,23 @@ public class springboot_vul extends Application {
                                                                 int delimiterIndex = result.indexOf(":");
                                                                 if (delimiterIndex != -1) {
                                                                         curlines.set(Double.parseDouble(result.substring(delimiterIndex + 1).trim()));
+                                                                        // 更新进度条
+                                                                        if ((curlines.get() > 0) && totalLines.get() > 0) {
+                                                                                double progress = curlines.get() / totalLines.get();
+                                                                                progressBar.setProgress(progress);
+                                                                        }
                                                                 }
                                                         } else if (result.contains("totalLines")) {
                                                                 int delimiterIndex = result.indexOf(":");
                                                                 if (delimiterIndex != -1) {
                                                                         totalLines.set(Double.parseDouble(result.substring(delimiterIndex + 1).trim()));
                                                                 }
-                                                        } else {
+                                                        }else {
                                                                 // 输出其他内容到控制台
                                                                 Text text = new Text(result + "\n");
                                                                 consoleOutput.getChildren().add(text);
                                                                 // 自动滚动到最新内容
                                                                 scrollPane.setVvalue(1.0);
-                                                        }
-                                                        // 更新进度条
-                                                        if ((curlines.get() > 0)&&totalLines.get()>0) {
-                                                                double progress = curlines.get() / totalLines.get();
-                                                                progressBar.setProgress(progress);
                                                         }
                                                 });
 
