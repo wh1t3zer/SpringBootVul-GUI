@@ -156,13 +156,25 @@ getshell功能可以直接弹shell，getshell模块直接输入地址+路由+参
 
 ![](./image/image-20240912201344077.png)
 
-### #6 端点扫描
+### #6 MainSourceGroovyRCE
+
+poc测试暂时没写，一键getshell监听的端口是托管groovy文件的端口，反弹端口默认为7777
+
+输入框中填写你开启服务器的端口，目前为了更好弹shell，最好设置在该项目的resources文件夹开启
+
+```bash
+python -m http.server 80
+```
+
+![](./image/image-20240913231419290.png)
+
+### #7 端点扫描
 
 端点扫描经过延时降速处理，防止请求频繁，heapdump文件无法下载，不过偶尔还会发生，直接手动下载就可以了
 
 ![](./image/1725462287383.jpg)
 
-### #7 一键上马
+### #8 一键上马
 
 ![](./image/WechatIMG1409.jpg)
 

