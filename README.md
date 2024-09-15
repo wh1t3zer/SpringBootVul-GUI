@@ -66,26 +66,48 @@ java -jar SpringBootVul_GUI.jar
 ## 0x03开发进度 TODO
 
 * [x] 配置不正当导致的泄露
+
 * [x] 脱敏密码明文(1)
+
 * [x] 增加漏洞利用选择模块，可以选择单一或多个漏洞进行检测
+
 * [x] 命令执行漏洞式支持交互式执行命令
+
 * [x] Spring Gateway RCE
+
 * [x] heapdump文件下载导致敏感信息泄露
+
 * [x] druid数据连接池
+
 * [x] 脱敏密码明文(2)
+
 * [x] 脱敏密码明文(3)
+
 * [x] eureka中xstream基于反序列化的RCE
+
 * [x] spring.datasource.data 基于h2数据库的RCE
+
 * [x] 基于SpEL注入的RCE
+
 * [x] spring.main.source的groovyRCE
+
+* [x] logging.config的groovyRCE
+
 * [ ] SpringCloud的SnakeYaml的RCE
+
 * [ ] jolokia中logback基于JNDI注入的RCE
+
 * [ ] jolokia中realm基于JNDI注入的RCE
+
 * [ ] H2数据库设置query属性的RCE
+
 * [ ] h2数据库的控制台基于JNDI注入的RCE
+
 * [ ] mysql中jdbc基于反序列化的RCE
+
 * [ ] logging.config的logback基于JNDI的RCE
-* [ ] logging.config的groovyRCE
+
+  
 
 ## 0x04短期目标 Prepare
 
@@ -162,19 +184,39 @@ poc测试暂时没写，一键getshell监听的端口是托管groovy文件的端
 
 输入框中填写你开启服务器的端口，目前为了更好弹shell，最好设置在该项目的resources文件夹开启
 
+**注意！！！**：“HTTP 服务器如果返回含有畸形 groovy 语法内容的文件，会导致程序异常退出”
+
+所以师傅有需要修改代码或者其他用途的时候，修改代码的时候不要改错groovy内容，并且文件内容也不要随意修改，以防万一
+
 ```bash
 python -m http.server 80
 ```
 
 ![](./image/image-20240913231419290.png)
 
-### #7 端点扫描
+### #7 LoggingConfigGroovyRCE
+
+poc测试暂时没写，一键getshell监听的端口是托管groovy文件的端口，反弹端口默认为4444，开启的方法同上
+
+**注意！！！**：“HTTP 服务器如果返回含有畸形 groovy 语法内容的文件，会导致程序异常退出”
+
+所以师傅有需要修改代码或者其他用途的时候，修改代码的时候不要改错groovy内容，并且文件内容也不要随意修改，以防万一
+
+![](./image/image-20240915162516029.png)
+
+### #8 H2DatabaseQueryRCE(慎用)
+
+这个也是跟H2dataSource漏洞一样，会使用sql语句来触发，考虑到无限弹shell并且如果一个网站同时测这两个漏洞，默认设置的含T5类似的，初始值是T15，代码写了递增，测试次数上要注意
+
+![](./image/image-20240915232444633.png)
+
+### #9 端点扫描
 
 端点扫描经过延时降速处理，heapdump可以下载大文件，用了分块，做了个小进度条，以后优化下，textflow布局以后要改
 
 ![](./image/image-20240914013633068.png)
 
-### #8 一键上马
+### #10 一键上马
 
 ![](./image/WechatIMG1409.jpg)
 

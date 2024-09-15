@@ -17,7 +17,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import src.main.Exp.ExpImp.ExpImp;
 import src.main.FileCommon.File;
-import src.main.common.DownLoadHP;
 import src.main.impl.ResultCallback;
 import src.main.module.*;
 
@@ -555,8 +554,40 @@ public class springboot_vul extends Application {
 
         }
 
-        public void handlerH2DatabaseQueryRCE(String address,String command){
+        public void handlerH2DatabaseQueryRCE(String address,String vpsIP,String vpsPORT){
+                consoleOutput.getChildren().clear();
+                // 暂无证书模块，待设置
+                if (address.isEmpty()){
+                        showAlertEmpty("地址为空！");
+                }else {
+                        if (address.endsWith("/")) {
+                                address = address.replaceAll("/$", "");
+                        }
+                        if (!address.startsWith("http://") && !address.startsWith("https://")) {
+                                address = "http://" + address;
+                        }
+                        if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
+                                showAlertEmpty("反弹vps的IP和端口为空！");
+                        } else {
+                                H2DataQueryRCE hq = new H2DataQueryRCE(address,vpsIP,vpsPORT);
+                                hq.Exp(new ResultCallback() {
+                                        @Override
+                                        public void onResult(String result) {
+                                                Platform.runLater(() -> {
+                                                        // 输出其他内容到控制台
+                                                        Text text = new Text(result + "\n");
+                                                        consoleOutput.getChildren().add(text);
+                                                        // 自动滚动到最新内容
+                                                        scrollPane.setVvalue(1.0);
+                                                });
+                                        }
 
+                                        @Override
+                                        public void onComplete() {
+                                        }
+                                });
+                        }
+                }
         }
         public void handlerH2DatabaseJNDIRCE(String address,String command){
 
@@ -566,9 +597,41 @@ public class springboot_vul extends Application {
         }
         public void handlerLoggingLogbackRCE(String address,String command){
 
-        }
-        public void handlerLoggingGroovyRCE(String address,String command){
 
+        }
+        public void handlerLoggingGroovyRCE(String address,String vpsIP,String vpsPORT){
+                consoleOutput.getChildren().clear();
+                if (address.isEmpty()){
+                        showAlertEmpty("地址为空！");
+                }else {
+                        if (address.endsWith("/")) {
+                                address = address.replaceAll("/$", "");
+                        }
+                        if (!address.startsWith("http://") && !address.startsWith("https://")) {
+                                address = "http://" + address;
+                        }
+                        if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
+                                showAlertEmpty("反弹vps的IP和端口为空！");
+                        } else {
+                                LoggingGroovyRCE lr = new LoggingGroovyRCE(address,vpsIP,vpsPORT);
+                                lr.Exp(new ResultCallback() {
+                                        @Override
+                                        public void onResult(String result) {
+                                                Platform.runLater(() -> {
+                                                        // 输出其他内容到控制台
+                                                        Text text = new Text(result + "\n");
+                                                        consoleOutput.getChildren().add(text);
+                                                        // 自动滚动到最新内容
+                                                        scrollPane.setVvalue(1.0);
+                                                });
+                                        }
+
+                                        @Override
+                                        public void onComplete() {
+                                        }
+                                });
+                        }
+                }
         }
         public void handlerMainSourceGroovyRCE(String address,String vpsIP,String vpsPORT){
                 consoleOutput.getChildren().clear();
@@ -584,7 +647,7 @@ public class springboot_vul extends Application {
                         if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
                                 showAlertEmpty("反弹vps的IP和端口为空！");
                         } else {
-                                MainSourceGrooyRCE mr = new MainSourceGrooyRCE(address,vpsIP,vpsPORT);
+                                MainSourceGroovyRCE mr = new MainSourceGroovyRCE(address,vpsIP,vpsPORT);
                                 mr.Exp(new ResultCallback() {
                                         @Override
                                         public void onResult(String result) {
@@ -717,7 +780,7 @@ public class springboot_vul extends Application {
                                         handlerJolokiaRealmRCE(address, command);
                                         break;
                                 case 11:
-                                        handlerH2DatabaseQueryRCE(address, command);
+                                        handlerH2DatabaseQueryRCE(address,vpsIP,vpsPort);
                                         break;
                                 case 12:
                                         handlerH2DatabaseJNDIRCE(address, command);
@@ -729,7 +792,7 @@ public class springboot_vul extends Application {
                                         handlerLoggingLogbackRCE(address, command);
                                         break;
                                 case 15:
-                                        handlerLoggingGroovyRCE(address, command);
+                                        handlerLoggingGroovyRCE(address,vpsIP,vpsPort);
                                         break;
                                 case 16:
                                         handlerMainSourceGroovyRCE(address,vpsIP,vpsPort);
@@ -798,7 +861,8 @@ public class springboot_vul extends Application {
                                         handlerJolokiaRealmRCE(address, command);
                                         break;
                                 case 11:
-                                        handlerH2DatabaseQueryRCE(address, command);
+//                                        handlerH2DatabaseQueryRCE(address, command);
+                                        showAlertEmpty("你踏马还没选择漏洞类型呢！");
                                         break;
                                 case 12:
                                         handlerH2DatabaseJNDIRCE(address, command);
@@ -810,10 +874,10 @@ public class springboot_vul extends Application {
                                         handlerLoggingLogbackRCE(address, command);
                                         break;
                                 case 15:
-                                        handlerLoggingGroovyRCE(address, command);
+                                        showAlertEmpty("暂时没有写这里，直接getshell");
                                         break;
                                 case 16:
-                                        handlerMainSourceGroovyRCE(address,vpsIP,vpsPort);
+                                        showAlertEmpty("暂时没有写这里，直接getshell");
                                         break;
                                 case 17:
                                         showAlertEmpty("暂时没有写这里，直接getshell");
