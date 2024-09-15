@@ -93,13 +93,13 @@ java -jar SpringBootVul_GUI.jar
 
 * [x] logging.config的groovyRCE
 
+* [x] H2数据库设置query属性的RCE
+
 * [ ] SpringCloud的SnakeYaml的RCE
 
 * [ ] jolokia中logback基于JNDI注入的RCE
 
 * [ ] jolokia中realm基于JNDI注入的RCE
-
-* [ ] H2数据库设置query属性的RCE
 
 * [ ] h2数据库的控制台基于JNDI注入的RCE
 
