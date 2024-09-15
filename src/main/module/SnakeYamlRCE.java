@@ -59,6 +59,9 @@ public class SnakeYamlRCE {
             e.printStackTrace();
         }
     }
+    public void Result2(){
+
+    }
     public void Exp() throws IOException {
         String api ="/actuator/env";
         String site = address + api;
@@ -72,6 +75,7 @@ public class SnakeYamlRCE {
                 text = "当前版本为springboot2";
 //                callback.onResult("当前版本为springboot2");
                 System.out.println(text);
+                Result2();
             }else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND){
                 text = "当前版本为springboot1";
                 //                callback.onResult("当前版本为springboot1");
@@ -85,8 +89,8 @@ public class SnakeYamlRCE {
         }
     }
 
-//    public static void main(String[] args) throws IOException {
-//        SnakeYamlRCE s = new SnakeYamlRCE("http://127.0.0.1:9092");
-//        s.Exp();
-//    }
+    public static void main(String[] args) throws IOException {
+        SnakeYamlRCE s = new SnakeYamlRCE("http://127.0.0.1:9092");
+        s.Exp();
+    }
 }

