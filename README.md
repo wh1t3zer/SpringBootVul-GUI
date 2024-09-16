@@ -36,7 +36,7 @@
 
 ```bash
 # git clone下载本项目
-git clone https://github.com/wh1t3zer/SpringBootVul-GUI/tree/develop
+git clone https://github.com/wh1t3zer/SpringBootVul-GUI
 可直接运行Springboot_vul.java
 
 # 也可直接下载jar包
