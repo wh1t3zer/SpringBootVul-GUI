@@ -438,23 +438,19 @@ public class springboot_vul extends Application {
                                 address = "http://" + address;
                         }
                         SpringGawRCE spg = command.isEmpty() ? new SpringGawRCE(address) : new SpringGawRCE(address, command);
-                        executorService.submit(() -> {
-                                try {
-                                        Stream<String> result = spg.GawExp();
-                                        result.forEach(line -> {
-                                                Platform.runLater(() -> {
-                                                        Text text = new Text(line + "\n");
-                                                        consoleOutput.getChildren().add(text);
-                                                        // 自动滚动到最新内容
-                                                        scrollPane.setVvalue(1.0);
-                                                });
-                                        });
-                                } catch (IOException e) {
-                                        e.printStackTrace();
+                        spg.GawExp(new ResultCallback() {
+                                @Override
+                                public void onResult(String result) {
                                         Platform.runLater(() -> {
-                                                Text errorText = new Text("发生错误，请检查与服务器的连接！\n");
-                                                consoleOutput.getChildren().add(errorText);
+                                                // 输出其他内容到控制台
+                                                Text text = new Text(result + "\n");
+                                                consoleOutput.getChildren().add(text);
+                                                // 自动滚动到最新内容
+                                                scrollPane.setVvalue(1.0);
                                         });
+                                }
+                                @Override
+                                public void onComplete() {
                                 }
                         });
                 }

