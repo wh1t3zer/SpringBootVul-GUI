@@ -31,7 +31,6 @@ public class ScanVul {
         String ua = "";
         int totalLines = 0;
         int curlines = 0;
-
         try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
             // 计算总行数
             while (br.readLine() != null) {
@@ -40,7 +39,6 @@ public class ScanVul {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
             String line;
             while ((line = br.readLine()) != null) {

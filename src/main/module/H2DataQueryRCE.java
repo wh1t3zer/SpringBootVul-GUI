@@ -58,6 +58,7 @@ public class H2DataQueryRCE {
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
+            in.close();
             if (responseCode == HttpURLConnection.HTTP_OK && (response.toString().contains(llib))) {
                 String regex = llib + "/h2/" + "(\\d+\\.\\d+\\.\\d+)";
                 Pattern pattern = Pattern.compile(regex);
@@ -139,6 +140,7 @@ public class H2DataQueryRCE {
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
+            in.close();
             if (responseCode == HttpURLConnection.HTTP_OK && (response.toString().contains(llib))) {
                 String regex = llib + "/h2/" + "(\\d+\\.\\d+\\.\\d+)";
                 Pattern pattern = Pattern.compile(regex);

