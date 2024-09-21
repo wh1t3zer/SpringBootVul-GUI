@@ -94,6 +94,8 @@ public class LoggingGroovyRCE {
                                 if (responseCode2 == HttpURLConnection.HTTP_OK) {
                                     text = "执行命令成功";
                                     callback.onResult(text);
+                                    text = "当前反弹vpsIP: " + vpsIP + " " + "vpsPort: 4444";
+                                    callback.onResult(text);
                                 } else {
                                     text = "错误：发送restart请求失败，状态码为: " + responseCode2;
                                     callback.onResult(text);
@@ -194,7 +196,7 @@ public class LoggingGroovyRCE {
                                 if (responseCode2 == HttpURLConnection.HTTP_OK) {
                                     text = "执行命令成功";
                                     callback.onResult(text);
-                                    text = "当前反弹vpsIP: " + vpsIP + "vpsPort: 4444";
+                                    text = "当前反弹vpsIP: " + vpsIP + " " + "vpsPort: 4444";
                                     callback.onResult(text);
                                 } else {
                                     text = "错误：发送restart请求失败，状态码为: " + responseCode2;
@@ -254,5 +256,4 @@ public class LoggingGroovyRCE {
             e.printStackTrace();
         }
     }
-
 }

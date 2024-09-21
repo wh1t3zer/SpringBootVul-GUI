@@ -51,6 +51,7 @@ public class GetSpPassWord_II {
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
+            in.close();
             if (responseCode == HttpURLConnection.HTTP_OK && (response.toString().contains(llib))&&(response.toString().contains(llib1))) {
                 String regex1 = llib + "-(\\d+\\.\\d+\\.\\d+)";
                 Pattern pattern1 = Pattern.compile(regex1);
@@ -130,6 +131,7 @@ public class GetSpPassWord_II {
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
+            in.close();
             if (responseCode == HttpURLConnection.HTTP_OK && (response.toString().contains(llib))&&(response.toString().contains(llib1))) {
                 String regex1 = llib + "-(\\d+\\.\\d+\\.\\d+)";
                 Pattern pattern1 = Pattern.compile(regex1);

