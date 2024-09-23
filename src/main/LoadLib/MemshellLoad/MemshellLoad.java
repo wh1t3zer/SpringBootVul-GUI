@@ -36,7 +36,7 @@ public class MemshellLoad {
     }
 
     public String run(){
-        byte[] code = MemshellLoad.load(System.getProperty("user.dir") + "/src/main/MemshellLoad/GMemShell.class");
+        byte[] code = MemshellLoad.load(System.getProperty("user.dir") + "/src/main/LoadLib/MemshellLoad/GMemShell.class");
         String b64exp = Base64.getEncoder().encodeToString(code);
         return b64exp;
     }
