@@ -80,10 +80,10 @@ java -jar SpringBootVul_GUI.jar
 * [x] H2数据库设置query属性的RCE
 * [x] logging.config的logback基于JNDI的RCE
 * [x] CVE-2021-21234任意文件读取
+* [x] h2数据库的控制台基于JNDI注入的RCE
 * [ ] SpringCloud的SnakeYaml的RCE
 * [ ] jolokia中logback基于JNDI注入的RCE
 * [ ] jolokia中realm基于JNDI注入的RCE
-* [ ] h2数据库的控制台基于JNDI注入的RCE
 * [ ] mysql中jdbc基于反序列化的RCE
 
 ## 0x04短期目标 Prepare
