@@ -83,8 +83,8 @@ java -jar SpringBootVul_GUI.jar
 * [x] h2数据库的控制台基于JNDI注入的RCE
 * [x] SpringCloud的SnakeYaml的RCE
 * [x] jolokia中logback基于JNDI注入的RCE
-* [ ] jolokia中realm基于JNDI注入的RCE(需要ysoserial工具)
-* [ ] mysql中jdbc基于反序列化的RCE(暂不写，需配合痕迹清除一起用，不然造成对方数据库业务异常)
+* [ ] jolokia中realm基于JNDI注入的RCE
+* [ ] mysql中jdbc基于反序列化的RCE(暂不写，需配合痕迹清除一起用，不然造成对方数据库业务异常)(需ysoserial工具)
 
 ## 0x04短期目标 Prepare
 
