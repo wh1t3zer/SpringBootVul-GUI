@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -108,12 +109,67 @@ public class springboot_vul extends Application {
                 vpsaddrlabel.setMaxSize(60, 30);
                 vpsaddrlabel.setFont(new Font("宋体", 13));
                 TextField VpsAddrtf = new TextField();
-                VpsAddrtf.setPrefWidth(140);
+                VpsAddrtf.setPrefWidth(100);
                 Label vpsportlabel = new Label("port：");
                 vpsportlabel.setMaxSize(60,30);
                 vpsaddrlabel.setFont(new Font("宋体", 13));
                 TextField VpsPorttf = new TextField();
-                VpsPorttf.setPrefWidth(60);
+                VpsPorttf.setPrefWidth(80);
+
+                // 代理
+                Button proxybtn = new Button("设置代理");
+                proxybtn.setPrefWidth(80);
+                proxybtn.setOnAction(event -> {
+                        Stage dialog = new Stage();
+                        dialog.initOwner(stage); // 在显示之前设置拥有者
+                        HBox hb1 = new HBox(10);
+                        hb1.setAlignment(Pos.CENTER); // 设置hb1居中对齐
+                        HBox hb2 = new HBox(10);
+                        hb2.setAlignment(Pos.CENTER); // 设置hb2居中对齐
+                        VBox vb1 = new VBox(10);
+                        vb1.setAlignment(Pos.CENTER); // 设置VBox居中对齐
+                        TextField ipField = new TextField();
+                        TextField portField = new TextField();
+                        ipField.setMaxWidth(80);
+                        portField.setMaxWidth(80);
+
+
+                        Button updateButton = new Button("确定");
+                        Button canccelButton = new Button("取消");
+                        HBox hb3 = new HBox(10);
+                        hb3.setAlignment(Pos.CENTER); // 设置hb3居中对齐
+                        hb3.getChildren().addAll(updateButton,canccelButton);
+
+                        hb1.getChildren().addAll(new Label("代理IP:"),ipField);
+                        HBox.setMargin(ipField, new Insets(0, 0, 0, 15)); // 设置ipField左侧边距为10
+                        hb2.getChildren().addAll(new Label("代理端口:"),portField);
+
+                        vb1.getChildren().addAll(hb1,hb2,hb3);
+                        Scene dialogScene = new Scene(vb1, 300, 200);
+                        dialog.setScene(dialogScene);
+                        dialog.show();
+                        dialog.setOnCloseRequest(e -> {
+                                dialog.close();
+                        });
+
+                        updateButton.setOnAction(e -> {
+                                String ip = ipField.getText();
+                                String port = portField.getText();
+                                String ipPattern =
+                                        "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}" +
+                                                "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
+                                if (ip.isEmpty()) {
+                                        dialog.close();
+                                } else if (ip.matches(ipPattern)){
+                                        applyProxy(ip, port);  // 调用applyProxy方法应用新的代理设置
+                                } else{
+                                        showAlertEmpty("IP设置错误");
+                                }
+                        });
+                        canccelButton.setOnAction(e -> {
+                                dialog.close();
+                        });
+                });
 
                 // 调用类输入框容器
                 HBox clsBox = new HBox(10);
@@ -163,7 +219,7 @@ public class springboot_vul extends Application {
                                 throw new RuntimeException(e);
                         }
                 });
-                Expbtn.setPrefSize(60,60);
+                Expbtn.setPrefWidth(80);
                 Button Shellbtn = new Button("Getshell");
                 Shellbtn.setOnAction(event -> {
                         try {
@@ -172,7 +228,7 @@ public class springboot_vul extends Application {
                                 throw new RuntimeException(e);
                         }
                 });
-                Shellbtn.setPrefSize(70,60);
+                Shellbtn.setPrefWidth(80);
                 Button Delbtn = new Button("痕迹清除");
                 Delbtn.setOnAction(event -> {
                         try {
@@ -181,10 +237,15 @@ public class springboot_vul extends Application {
                                 throw new RuntimeException(e);
                         }
                 });
-                Delbtn.setPrefSize(70,60);
-                HBox btnBox = new HBox(5);
-                btnBox.getChildren().addAll(Expbtn,Shellbtn,Delbtn);
-                HBox.setMargin(Expbtn,new Insets(0,0,0,0));
+                Delbtn.setPrefWidth(80);
+                FlowPane btnFlowPane = new FlowPane(Orientation.HORIZONTAL, 10, 10);
+                btnFlowPane.getChildren().addAll(Expbtn, Shellbtn, Delbtn);
+                btnFlowPane.setPrefWrapLength(200); // 设置宽度阈值，超出后换行
+
+                VBox proxybtnBox = new VBox(20,btnFlowPane,proxybtn);
+                proxybtnBox.setAlignment(Pos.TOP_LEFT);
+                proxybtnBox.setPadding(new Insets(0, 10, 10, 10)); // 整体边距
+
 
                 // 地址框和漏洞列表框
                 HBox addrBox = new HBox(10);
@@ -206,7 +267,7 @@ public class springboot_vul extends Application {
 
                 HBox boxContainer = new HBox();
                 // 左右两边各为一个容器
-                boxContainer.getChildren().addAll(buttonBox,btnBox);
+                boxContainer.getChildren().addAll(buttonBox,proxybtnBox);
 
                 // 添加间隔区域
                 Region topSpacer = new Region();
@@ -1136,8 +1197,13 @@ public class springboot_vul extends Application {
                                         break;
                         }
                 }
+        }
 
-
+        private void applyProxy(String ip, String port) {
+                System.setProperty("http.proxyHost", ip);
+                System.setProperty("http.proxyPort", port);
+                System.setProperty("https.proxyHost", ip);
+                System.setProperty("https.proxyPort", port);
         }
         public void showAlertEmpty(String text) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
