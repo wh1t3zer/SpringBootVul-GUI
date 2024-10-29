@@ -132,7 +132,10 @@ public class springboot_vul extends Application {
                         TextField portField = new TextField();
                         ipField.setMaxWidth(80);
                         portField.setMaxWidth(80);
-
+                        String systemIp = System.getProperty("http.proxyHost", "");
+                        String systemPort = System.getProperty("http.proxyPort", "");
+                        ipField.setText(systemIp);
+                        portField.setText(systemPort);
 
                         Button updateButton = new Button("确定");
                         Button canccelButton = new Button("取消");
@@ -140,9 +143,9 @@ public class springboot_vul extends Application {
                         hb3.setAlignment(Pos.CENTER); // 设置hb3居中对齐
                         hb3.getChildren().addAll(updateButton,canccelButton);
 
-                        hb1.getChildren().addAll(new Label("代理IP:"),ipField);
+                        hb1.getChildren().addAll(new Label("http(s)代理IP:"),ipField);
                         HBox.setMargin(ipField, new Insets(0, 0, 0, 15)); // 设置ipField左侧边距为10
-                        hb2.getChildren().addAll(new Label("代理端口:"),portField);
+                        hb2.getChildren().addAll(new Label("http(s)代理端口:"),portField);
 
                         vb1.getChildren().addAll(hb1,hb2,hb3);
                         Scene dialogScene = new Scene(vb1, 300, 200);
@@ -159,11 +162,15 @@ public class springboot_vul extends Application {
                                         "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}" +
                                                 "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
                                 if (ip.isEmpty()) {
+                                        applyProxy(ip, port);
                                         dialog.close();
-                                } else if (ip.matches(ipPattern)){
-                                        applyProxy(ip, port);  // 调用applyProxy方法应用新的代理设置
-                                } else{
-                                        showAlertEmpty("IP设置错误");
+                                } else {
+                                        if (ip.matches(ipPattern)){
+                                                applyProxy(ip, port);
+                                                dialog.close();
+                                        } else{
+                                                showAlertEmpty("IP设置错误");
+                                        }
                                 }
                         });
                         canccelButton.setOnAction(e -> {
