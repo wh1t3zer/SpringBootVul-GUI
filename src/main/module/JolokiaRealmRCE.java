@@ -19,11 +19,13 @@ public class JolokiaRealmRCE {
     public  String text;
     private String vpsIP;
     private String vpsPort;
+    private boolean isPoc;
 
-    public JolokiaRealmRCE(String address, String vpsIP, String vpsPort){
+    public JolokiaRealmRCE(String address, String vpsIP, String vpsPort,boolean isPoc){
         this.address = address;
         this.vpsIP = vpsIP;
         this.vpsPort = vpsPort;
+        this.isPoc = isPoc;
     }
 
     public void Result1(ResultCallback callback) {

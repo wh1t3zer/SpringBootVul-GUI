@@ -12,8 +12,8 @@ import java.net.Socket;
 public class H2DataConsole {
     static {
         try{
-            String ip = "127.0.0.1";
-            String port = "7777";
+            String ip = "";
+            String port = "";
             String py_path = null;
             String[] cmd;
             if (!System.getProperty("os.name").toLowerCase().contains("windows")) {

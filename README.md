@@ -141,6 +141,10 @@ python -m http.server 80
 
 ### #4 H2DatabaseSource RCE（慎用）
 
+POC
+
+![](./image/image-20241102143548720.png)
+
 目前已经基本完成一键getshell，理论上只要在不关闭的情况下可以无限弹，~~因为目前的payload是从T5开始的，如果遇到网站被测试过时，那大概率会报错而导致对方服务宕机~~，因为这是不回显RCE，无法判断到底有没有被测试过。现为随机生成3位数字，没有关闭工具的情况下默认递增。
 
 监听端口默认是**8881**
@@ -174,7 +178,11 @@ nc -lvp port # linux
 
 ### #6 MainSourceGroovyRCE
 
-poc测试暂时没写，一键getshell监听的端口是托管groovy文件的端口，反弹端口默认为7777
+POC
+
+![](./image/image-20241101170030848.png)
+
+一键getshell监听的端口是托管groovy文件的端口，反弹端口默认为7777
 
 输入框中填写你开启服务器的端口，目前为了更好弹shell，最好设置在该项目的resources文件夹开启
 
@@ -192,7 +200,11 @@ python -m http.server 80
 
 ### #7 LoggingConfigGroovyRCE
 
-poc测试暂时没写，一键getshell监听的端口是托管groovy文件的端口，反弹端口默认为4444，开启的方法同上
+POC
+
+![](./image/image-20241101172846179.png)
+
+一键getshell监听的端口是托管groovy文件的端口，反弹端口默认为4444，开启的方法同上
 
 ```bash
 nc -lvk 4444 # mac
@@ -208,6 +220,10 @@ python -m http.server 80
 
 ### #8 H2DatabaseQueryRCE(慎用)
 
+POC
+
+![](./image/image-20241102142732354.png)
+
 这个也是跟H2dataSource漏洞一样，会使用sql语句来触发，考虑到无限弹shell并且如果一个网站同时测这两个漏洞，~~默认设置的含T5类似的，初始值是T15，代码写了递增，测试次数上要注意~~
 
 现在为随机生成四位数字，没关闭工具情况下还是默认递增
@@ -220,6 +236,10 @@ nc -lvp 8000 # linux
 ![](./image/image-20240915232444633.png)
 
 ### #9 LoggingConfigJNDIRCE(慎用) 
+
+POC
+
+![](./image/image-20241102140130045.png)
 
 端口输入用的是托管xml文件的端口，监听默认9990，需要resources文件夹的jndi服务器配合一起。
 
@@ -238,11 +258,17 @@ java -jar JNDIExploit-1.0-SNAPSHOT.jar -i ip
 
 ![](./image/image-20240921141501679.png)
 
-### #10 CVE-2021-21234任意文件读取(仅做poc测试，后续加入输入文件名)
+### #10 CVE-2021-21234任意文件读取
+
+(仅做poc测试，后续加入输入文件名)
 
 ![](./image/image-20240921163721471.png)
 
 ### #11 H2数据库的JNDI的RCE
+
+POC
+
+![](./image/image-20241101163455286.png)
 
 漏洞利用的路径是访问恶意ladp服务器->通过转发到托管服务器的class->getshell
 
@@ -279,6 +305,10 @@ https://tttang.com/archive/1405/
 
 ### #12 SnakeYamlRCE
 
+POC
+
+![](./image/image-20241101163350718.png)
+
 漏洞触发流程：
 
 SnakeYamlYml.yml - > SnakeYaml.jar - > getshell
@@ -302,6 +332,10 @@ nc -lvp 9950 #linux
 ![](./image/image-20241010151607414.png)
 
 ### #13 JolokiaLogback的JNDI的RCE
+
+POC
+
+![](./image/image-20241102141814771.png)
 
 漏洞执行流程：服务器访问xml文件，通过xxe漏洞去访问ldap，然后跳转到JNDI恶意类加载
 

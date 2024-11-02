@@ -22,6 +22,7 @@ public class SnakeYamlRCE {
     private String address;
     private String vpsIP;
     public String text;
+    private boolean isPoc;
     public static  int count= 9950;
     public static  int count1 = 0;
 
@@ -37,8 +38,9 @@ public class SnakeYamlRCE {
         this.address = address;
         this.vpsIP = vpsIP;
     }
-    public SnakeYamlRCE(String address){
+    public SnakeYamlRCE(String address,boolean isPoc){
         this.address = address;
+        this.isPoc = isPoc;
     }
 
 
@@ -331,6 +333,137 @@ public class SnakeYamlRCE {
             e.printStackTrace();
         }
     }
+
+    public void Result3(ResultCallback callback){
+        String site = address + "/env";
+        String llib = "spring-boot-starter-actuator";
+        String llib1 = "spring-cloud-starter";
+        String ua = "";
+        disableSSLVerification();
+        try {
+            URL obj = new URL(site);
+            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            conn.setRequestMethod("GET");
+            UA_Config uacf = new UA_Config();
+            List<String> ualist = uacf.loadUserAgents();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn.setRequestProperty("User-Agent", ua);
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK || (responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR && count != 0)) {
+                InputStream inputStream = (responseCode == HttpURLConnection.HTTP_OK) ? conn.getInputStream() : conn.getErrorStream();
+                BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+                if ((response.toString().contains(llib) && response.toString().contains(llib1)) || count != 0) {
+                    String regex = llib + "-(\\d+\\.\\d+\\.\\d+)";
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher(response.toString());
+                    String regex1 = llib1 + "-(\\d+\\.\\d+\\.\\d+)";
+                    Pattern pattern1 = Pattern.compile(regex1);
+                    Matcher matcher1 = pattern1.matcher(response.toString());
+                    if (matcher.find() && matcher1.find()) {
+                        text = String.format("spring-boot-starter-actuator 依赖为: %s", matcher.group(1));
+                        callback.onResult(text);
+                        text = String.format("spring-cloud-starter 依赖为: %s", matcher1.group(1));
+                        callback.onResult(text);
+                        URL obj1 = new URL(address + "/actuator");
+                        HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                        conn1.setDoOutput(true);
+                        conn1.setRequestProperty("User-Agent", ua);
+                        conn1.setRequestMethod("GET");
+                        int responseCode1 = conn1.getResponseCode();
+                        BufferedReader in1 = new BufferedReader(new InputStreamReader(conn1.getInputStream()));
+                        String inputLine1;
+                        StringBuilder response1 = new StringBuilder();
+                        while ((inputLine1 = in1.readLine()) != null) {
+                            response1.append(inputLine1);
+                        }
+                        in1.close();
+                        if (responseCode1 == HttpURLConnection.HTTP_OK &&(response1.toString().contains("/refresh")) && matcher1.group(1).compareTo("1.3.0") < 0 && !matcher.group(1).isEmpty()){
+                            text = "可能存在漏洞";
+                            callback.onResult(text);
+                        }else {
+                            text = "不存在可利用漏洞";
+                            callback.onResult(text);
+                        }
+                    }
+                }
+            }
+        }catch (Exception e){
+            text = "检测依赖异常";
+            callback.onResult(text);
+            e.printStackTrace();
+        }
+    }
+    public void Result4(ResultCallback callback){
+        String site = address + "/actuator/env";
+        String llib = "spring-boot-starter-actuator";
+        String llib1 = "spring-cloud-starter";
+        String ua = "";
+        disableSSLVerification();
+        try {
+            URL obj = new URL(site);
+            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            conn.setRequestMethod("GET");
+            UA_Config uacf = new UA_Config();
+            List<String> ualist = uacf.loadUserAgents();
+            ua = uacf.getRandomUserAgent(ualist);
+            conn.setRequestProperty("User-Agent", ua);
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK || (responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR && count != 0)) {
+                InputStream inputStream = (responseCode == HttpURLConnection.HTTP_OK) ? conn.getInputStream() : conn.getErrorStream();
+                BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+                if ((response.toString().contains(llib) && response.toString().contains(llib1)) || count != 0) {
+                    String regex = llib + "-(\\d+\\.\\d+\\.\\d+)";
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher(response.toString());
+                    String regex1 = llib1 + "-(\\d+\\.\\d+\\.\\d+)";
+                    Pattern pattern1 = Pattern.compile(regex1);
+                    Matcher matcher1 = pattern1.matcher(response.toString());
+                    if (matcher.find() && matcher1.find()) {
+                        text = String.format("spring-boot-starter-actuator 依赖为: %s", matcher.group(1));
+                        callback.onResult(text);
+                        text = String.format("spring-cloud-starter 依赖为: %s", matcher1.group(1));
+                        callback.onResult(text);
+                        URL obj1 = new URL(address + "/actuator");
+                        HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                        conn1.setDoOutput(true);
+                        conn1.setRequestProperty("User-Agent", ua);
+                        conn1.setRequestMethod("GET");
+                        int responseCode1 = conn1.getResponseCode();
+                        BufferedReader in1 = new BufferedReader(new InputStreamReader(conn1.getInputStream()));
+                        String inputLine1;
+                        StringBuilder response1 = new StringBuilder();
+                        while ((inputLine1 = in1.readLine()) != null) {
+                            response1.append(inputLine1);
+                        }
+                        in1.close();
+                        if (responseCode1 == HttpURLConnection.HTTP_OK &&(response1.toString().contains("/refresh")) && matcher1.group(1).compareTo("1.3.0") < 0 && !matcher.group(1).isEmpty()){
+                            text = "可能存在漏洞";
+                            callback.onResult(text);
+                        }else {
+                            text = "不存在可利用漏洞";
+                            callback.onResult(text);
+                        }
+                    }
+                }
+            }
+        }catch (Exception e){
+            text = "检测依赖异常";
+            callback.onResult(text);
+            e.printStackTrace();
+        }
+    }
     public void Exp(ResultCallback callback) throws IOException {
         String api ="/actuator/env";
         String site = address + api;
@@ -348,11 +481,19 @@ public class SnakeYamlRCE {
                 // 存在路径是springboot2，否则是springboot1
                 text = "当前版本为springboot2";
                 callback.onResult("当前版本为springboot2");
-                Result2(callback);
+                if (isPoc && vpsIP == null){
+                    Result4(callback);
+                }else{
+                    Result2(callback);
+                }
             }else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND){
                 text = "当前版本为springboot1";
                 callback.onResult("当前版本为springboot1");
-                Result1(callback);
+                if (isPoc && vpsIP == null){
+                    Result3(callback);
+                }else{
+                    Result1(callback);
+                }
             }else{
                 callback.onResult("未识别springboot版本");
             }

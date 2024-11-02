@@ -96,6 +96,8 @@ public class SpelRCE {
                     callback.onResult(text);
                 }
             } catch (IOException e) {
+                text = "发起请求异常";
+                callback.onResult(text);
                 e.printStackTrace();
             }
 //        }

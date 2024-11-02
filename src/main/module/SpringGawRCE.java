@@ -181,7 +181,6 @@ public class SpringGawRCE {
     public void DelGaw(ResultCallback callback) throws IOException{
         String api = "";
         String api1 = "";
-        String res = "";
         String ua = "";
         String expapi = "";
         String text = "";

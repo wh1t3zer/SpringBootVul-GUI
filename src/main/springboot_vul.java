@@ -343,7 +343,7 @@ public class springboot_vul extends Application {
         public void handlerScanVul(String address) throws IOException {
                 final AtomicReference<Double> curlines = new AtomicReference<>(0.0);
                 final AtomicReference<Double> totalLines = new AtomicReference<>(0.0);
-                // 暂无证书模块，待设置
+                
                 if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
                 }
@@ -434,7 +434,7 @@ public class springboot_vul extends Application {
         }
         public void handlerGetSp_2(String address,String args,String vpsIP,String vpsPORT) throws IOException {
                 consoleOutput.getChildren().clear();
-                // 暂无证书模块，待设置
+                
                 if (address.isEmpty()){
                         showAlertEmpty("地址为空！");
                 }else {
@@ -498,9 +498,9 @@ public class springboot_vul extends Application {
                         });
                 }
         }
-        public void handlerSnakeYamlRce(String address,String vpsIP) throws IOException {
+        public void handlerSnakeYamlRce(String address,String vpsIP, boolean isPoc) throws IOException {
                 consoleOutput.getChildren().clear();
-                // 暂无证书模块，待设置
+
                 if (address.isEmpty()){
                         showAlertEmpty("地址为空！");
                 }else {
@@ -510,7 +510,12 @@ public class springboot_vul extends Application {
                         if (!address.startsWith("http://") && !address.startsWith("https://")) {
                                 address = "http://" + address;
                         }
-                        SnakeYamlRCE syr = new SnakeYamlRCE(address,vpsIP);
+                        SnakeYamlRCE syr;
+                        if (isPoc){
+                               syr = new SnakeYamlRCE(address,isPoc);
+                        }else{
+                                syr = new SnakeYamlRCE(address,vpsIP);
+                        }
                         syr.Exp(new ResultCallback() {
                                 @Override
                                 public void onResult(String result) {
@@ -531,7 +536,7 @@ public class springboot_vul extends Application {
         public void handlerSpgRCE(String address, String command) throws IOException {
                 // 清空控制台输出
                 consoleOutput.getChildren().clear();
-                // 暂无证书模块，待设置
+                
                 if (address.isEmpty()){
                         showAlertEmpty("地址为空！");
                 }else {
@@ -564,7 +569,7 @@ public class springboot_vul extends Application {
         public void handlerDelSpg(String address) throws IOException {
                 // 清空控制台输出
                 consoleOutput.getChildren().clear();
-                // 暂无证书模块，待设置
+                
                 if (address.isEmpty()){
                         showAlertEmpty("地址为空！");
                 }else {
@@ -594,7 +599,7 @@ public class springboot_vul extends Application {
         }
         public void handlerSpElRCE(String address,String vpsIP,String vpsPORT) throws IOException {
                 consoleOutput.getChildren().clear();
-                // 暂无证书模块，待设置
+                
                 if (address.isEmpty()){
                         showAlertEmpty("地址为空！");
                 }else {
@@ -646,7 +651,7 @@ public class springboot_vul extends Application {
         public void handlerEurekaXstreamRCE(String address,String vpsIP,String vpsPORT) throws IOException {
                 // 清空控制台输出
                 consoleOutput.getChildren().clear();
-                // 暂无证书模块，待设置
+                
                 if (address.isEmpty()){
                         showAlertEmpty("地址为空！");
                 }else {
@@ -680,9 +685,9 @@ public class springboot_vul extends Application {
 
                 }
         }
-        public void handlerJolokiaLogbackRCE(String address,String vpsIP,String vpsPORT){
+        public void handlerJolokiaLogbackRCE(String address,String vpsIP,String vpsPORT,boolean isPoc){
                 consoleOutput.getChildren().clear();
-                // 暂无证书模块，待设置
+                
                 if (address.isEmpty()){
                         showAlertEmpty("地址为空！");
                 }else {
@@ -692,32 +697,34 @@ public class springboot_vul extends Application {
                         if (!address.startsWith("http://") && !address.startsWith("https://")) {
                                 address = "http://" + address;
                         }
-                        if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
-                                showAlertEmpty("反弹vps的IP和端口为空！");
-                        } else {
-                                JolokiaLogbackRCE jlb = new JolokiaLogbackRCE(address,vpsIP,vpsPORT);
-                                jlb.Exp(new ResultCallback() {
-                                        @Override
-                                        public void onResult(String result) {
-                                                Platform.runLater(() -> {
-                                                        // 输出其他内容到控制台
-                                                        Text text = new Text(result + "\n");
-                                                        consoleOutput.getChildren().add(text);
-                                                        // 自动滚动到最新内容
-                                                        scrollPane.setVvalue(1.0);
-                                                });
-                                        }
-
-                                        @Override
-                                        public void onComplete() {
-                                        }
-                                });
+                        if (!isPoc) {
+                                if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
+                                        showAlertEmpty("反弹vps的IP和端口为空！");
+                                        return;
+                                }
                         }
+                        JolokiaLogbackRCE jlb = new JolokiaLogbackRCE(address,vpsIP,vpsPORT,isPoc);
+                        jlb.Exp(new ResultCallback() {
+                                @Override
+                                public void onResult(String result) {
+                                        Platform.runLater(() -> {
+                                                // 输出其他内容到控制台
+                                                Text text = new Text(result + "\n");
+                                                consoleOutput.getChildren().add(text);
+                                                // 自动滚动到最新内容
+                                                scrollPane.setVvalue(1.0);
+                                        });
+                                }
+
+                                @Override
+                                public void onComplete() {
+                                }
+                        });
                 }
         }
-        public void handlerJolokiaRealmRCE(String address,String vpsIP,String vpsPORT){
+        public void handlerJolokiaRealmRCE(String address,String vpsIP,String vpsPORT,boolean isPoc){
                 consoleOutput.getChildren().clear();
-                // 暂无证书模块，待设置
+                
                 if (address.isEmpty()){
                         showAlertEmpty("地址为空！");
                 }else {
@@ -727,7 +734,7 @@ public class springboot_vul extends Application {
                         if (!address.startsWith("http://") && !address.startsWith("https://")) {
                                 address = "http://" + address;
                         }
-                        JolokiaRealmRCE jrl = new JolokiaRealmRCE(address,vpsIP,vpsPORT);
+                        JolokiaRealmRCE jrl = new JolokiaRealmRCE(address,vpsIP,vpsPORT,isPoc);
                         jrl.Exp(new ResultCallback() {
                                 @Override
                                 public void onResult(String result) {
@@ -747,9 +754,9 @@ public class springboot_vul extends Application {
                 }
         }
 
-        public void handlerH2DatabaseQueryRCE(String address,String vpsIP,String vpsPORT){
+        public void handlerH2DatabaseQueryRCE(String address,String vpsIP,String vpsPORT,boolean isPoc){
                 consoleOutput.getChildren().clear();
-                // 暂无证书模块，待设置
+                
                 if (address.isEmpty()){
                         showAlertEmpty("地址为空！");
                 }else {
@@ -759,30 +766,32 @@ public class springboot_vul extends Application {
                         if (!address.startsWith("http://") && !address.startsWith("https://")) {
                                 address = "http://" + address;
                         }
-                        if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
-                                showAlertEmpty("反弹vps的IP和端口为空！");
-                        } else {
-                                H2DataQueryRCE hq = new H2DataQueryRCE(address,vpsIP,vpsPORT);
-                                hq.Exp(new ResultCallback() {
-                                        @Override
-                                        public void onResult(String result) {
-                                                Platform.runLater(() -> {
-                                                        // 输出其他内容到控制台
-                                                        Text text = new Text(result + "\n");
-                                                        consoleOutput.getChildren().add(text);
-                                                        // 自动滚动到最新内容
-                                                        scrollPane.setVvalue(1.0);
-                                                });
-                                        }
-
-                                        @Override
-                                        public void onComplete() {
-                                        }
-                                });
+                        if (!isPoc) {
+                                if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
+                                        showAlertEmpty("反弹vps的IP和端口为空！");
+                                        return;
+                                }
                         }
+                        H2DataQueryRCE hq = new H2DataQueryRCE(address,vpsIP,vpsPORT,isPoc);
+                        hq.Exp(new ResultCallback() {
+                                @Override
+                                public void onResult(String result) {
+                                        Platform.runLater(() -> {
+                                                // 输出其他内容到控制台
+                                                Text text = new Text(result + "\n");
+                                                consoleOutput.getChildren().add(text);
+                                                // 自动滚动到最新内容
+                                                scrollPane.setVvalue(1.0);
+                                        });
+                                }
+
+                                @Override
+                                public void onComplete() {
+                                }
+                        });
                 }
         }
-        public void handlerH2DatabaseJNDIRCE(String address,String vpsIP,String vpsPORT){
+        public void handlerH2DatabaseJNDIRCE(String address,String vpsIP,String vpsPORT,boolean isPoc){
                 consoleOutput.getChildren().clear();
                 if (address.isEmpty()){
                         showAlertEmpty("地址为空！");
@@ -793,32 +802,28 @@ public class springboot_vul extends Application {
                         if (!address.startsWith("http://") && !address.startsWith("https://")) {
                                 address = "http://" + address;
                         }
-                        if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
-                                showAlertEmpty("反弹vps的IP和端口为空！");
-                        } else {
-                                H2DataConsoleRCE hc = new H2DataConsoleRCE(address,vpsIP,vpsPORT);
-                                hc.Exp(new ResultCallback() {
-                                        @Override
-                                        public void onResult(String result) {
-                                                Platform.runLater(() -> {
-                                                        // 输出其他内容到控制台
-                                                        Text text = new Text(result + "\n");
-                                                        consoleOutput.getChildren().add(text);
-                                                        // 自动滚动到最新内容
-                                                        scrollPane.setVvalue(1.0);
-                                                });
-                                        }
-                                        @Override
-                                        public void onComplete() {
-                                        }
-                                });
-                        }
+                        H2DataConsoleRCE hc = new H2DataConsoleRCE(address,vpsIP,vpsPORT,isPoc);
+                        hc.Exp(new ResultCallback() {
+                                @Override
+                                public void onResult(String result) {
+                                        Platform.runLater(() -> {
+                                                // 输出其他内容到控制台
+                                                Text text = new Text(result + "\n");
+                                                consoleOutput.getChildren().add(text);
+                                                // 自动滚动到最新内容
+                                                scrollPane.setVvalue(1.0);
+                                        });
+                                }
+                                @Override
+                                public void onComplete() {
+                                }
+                        });
                 }
         }
         public void handlerMysqlJdbcRCE(String address,String command){
 
         }
-        public void handlerLoggingLogbackRCE(String address,String vpsIP,String vpsPORT){
+        public void handlerLoggingLogbackRCE(String address,String vpsIP,String vpsPORT,boolean isPoc){
                 consoleOutput.getChildren().clear();
                 if (address.isEmpty()){
                         showAlertEmpty("地址为空！");
@@ -829,31 +834,27 @@ public class springboot_vul extends Application {
                         if (!address.startsWith("http://") && !address.startsWith("https://")) {
                                 address = "http://" + address;
                         }
-                        if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
-                                showAlertEmpty("反弹vps的IP和端口为空！");
-                        } else {
-                                LoggingConfigRCE lr = new LoggingConfigRCE(address,vpsIP,vpsPORT);
-                                lr.Exp(new ResultCallback() {
-                                        @Override
-                                        public void onResult(String result) {
-                                                Platform.runLater(() -> {
-                                                        // 输出其他内容到控制台
-                                                        Text text = new Text(result + "\n");
-                                                        consoleOutput.getChildren().add(text);
-                                                        // 自动滚动到最新内容
-                                                        scrollPane.setVvalue(1.0);
-                                                });
-                                        }
+                        LoggingConfigRCE lr = new LoggingConfigRCE(address,vpsIP,vpsPORT,isPoc);
+                        lr.Exp(new ResultCallback() {
+                                @Override
+                                public void onResult(String result) {
+                                        Platform.runLater(() -> {
+                                                // 输出其他内容到控制台
+                                                Text text = new Text(result + "\n");
+                                                consoleOutput.getChildren().add(text);
+                                                // 自动滚动到最新内容
+                                                scrollPane.setVvalue(1.0);
+                                        });
+                                }
 
-                                        @Override
-                                        public void onComplete() {
-                                        }
-                                });
+                                @Override
+                                public void onComplete() {
+                                }
+                        });
                         }
-                }
 
         }
-        public void handlerLoggingGroovyRCE(String address,String vpsIP,String vpsPORT){
+        public void handlerLoggingGroovyRCE(String address,String vpsIP,String vpsPORT,boolean isPoc){
                 consoleOutput.getChildren().clear();
                 if (address.isEmpty()){
                         showAlertEmpty("地址为空！");
@@ -864,30 +865,32 @@ public class springboot_vul extends Application {
                         if (!address.startsWith("http://") && !address.startsWith("https://")) {
                                 address = "http://" + address;
                         }
-                        if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
-                                showAlertEmpty("反弹vps的IP和端口为空！");
-                        } else {
-                                LoggingGroovyRCE lr = new LoggingGroovyRCE(address,vpsIP,vpsPORT);
-                                lr.Exp(new ResultCallback() {
-                                        @Override
-                                        public void onResult(String result) {
-                                                Platform.runLater(() -> {
-                                                        // 输出其他内容到控制台
-                                                        Text text = new Text(result + "\n");
-                                                        consoleOutput.getChildren().add(text);
-                                                        // 自动滚动到最新内容
-                                                        scrollPane.setVvalue(1.0);
-                                                });
-                                        }
-
-                                        @Override
-                                        public void onComplete() {
-                                        }
-                                });
+                        if (!isPoc){
+                                if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
+                                        showAlertEmpty("反弹vps的IP和端口为空！");
+                                        return;
+                                }
                         }
+                        LoggingGroovyRCE lr = new LoggingGroovyRCE(address,vpsIP,vpsPORT,isPoc);
+                        lr.Exp(new ResultCallback() {
+                                @Override
+                                public void onResult(String result) {
+                                        Platform.runLater(() -> {
+                                                // 输出其他内容到控制台
+                                                Text text = new Text(result + "\n");
+                                                consoleOutput.getChildren().add(text);
+                                                // 自动滚动到最新内容
+                                                scrollPane.setVvalue(1.0);
+                                        });
+                                }
+
+                                @Override
+                                public void onComplete() {
+                                }
+                        });
                 }
         }
-        public void handlerMainSourceGroovyRCE(String address,String vpsIP,String vpsPORT){
+        public void handlerMainSourceGroovyRCE(String address,String vpsIP,String vpsPORT, boolean isPoc){
                 consoleOutput.getChildren().clear();
                 if (address.isEmpty()){
                         showAlertEmpty("地址为空！");
@@ -898,33 +901,35 @@ public class springboot_vul extends Application {
                         if (!address.startsWith("http://") && !address.startsWith("https://")) {
                                 address = "http://" + address;
                         }
-                        if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
-                                showAlertEmpty("反弹vps的IP和端口为空！");
-                        } else {
-                                MainSourceGroovyRCE mr = new MainSourceGroovyRCE(address,vpsIP,vpsPORT);
-                                mr.Exp(new ResultCallback() {
-                                        @Override
-                                        public void onResult(String result) {
-                                                Platform.runLater(() -> {
-                                                        // 输出其他内容到控制台
-                                                        Text text = new Text(result + "\n");
-                                                        consoleOutput.getChildren().add(text);
-                                                        // 自动滚动到最新内容
-                                                        scrollPane.setVvalue(1.0);
-                                                });
-                                        }
-
-                                        @Override
-                                        public void onComplete() {
-                                        }
-                                });
+                        if (!isPoc){
+                                if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
+                                        showAlertEmpty("反弹vps的IP和端口为空！");
+                                        return;
+                                }
                         }
-                }
+                        MainSourceGroovyRCE mr = new MainSourceGroovyRCE(address,vpsIP,vpsPORT,isPoc);
+                        mr.Exp(new ResultCallback() {
+                                @Override
+                                public void onResult(String result) {
+                                        Platform.runLater(() -> {
+                                                // 输出其他内容到控制台
+                                                Text text = new Text(result + "\n");
+                                                consoleOutput.getChildren().add(text);
+                                                // 自动滚动到最新内容
+                                                scrollPane.setVvalue(1.0);
+                                        });
+                                }
+
+                                @Override
+                                public void onComplete() {
+                                }
+                        });
+                        }
         }
-        public void handlerH2DatabaseDatasourceRCE(String address,String vpsIP,String vpsPORT){
+        public void handlerH2DatabaseDatasourceRCE(String address,String vpsIP,String vpsPORT,boolean isPoc){
                 // 清空控制台输出
                 consoleOutput.getChildren().clear();
-                // 暂无证书模块，待设置
+                
                 if (address.isEmpty()){
                         showAlertEmpty("地址为空！");
                 }else {
@@ -934,32 +939,34 @@ public class springboot_vul extends Application {
                         if (!address.startsWith("http://") && !address.startsWith("https://")) {
                                 address = "http://" + address;
                         }
-                        if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
-                                showAlertEmpty("反弹vps的IP和端口为空！");
-                        } else {
-                                H2DataSourceRCE hd = new H2DataSourceRCE(address,vpsIP,vpsPORT);
-                                hd.Exp(new ResultCallback() {
-                                        @Override
-                                        public void onResult(String result) {
-                                                Platform.runLater(() -> {
-                                                        // 输出其他内容到控制台
-                                                        Text text = new Text(result + "\n");
-                                                        consoleOutput.getChildren().add(text);
-                                                        // 自动滚动到最新内容
-                                                        scrollPane.setVvalue(1.0);
-                                                });
-                                        }
-
-                                        @Override
-                                        public void onComplete() {
-                                        }
-                                });
+                        if (!isPoc){
+                                if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
+                                        showAlertEmpty("反弹vps的IP和端口为空！");
+                                        return;
+                                }
                         }
+                        H2DataSourceRCE hd = new H2DataSourceRCE(address,vpsIP,vpsPORT,isPoc);
+                        hd.Exp(new ResultCallback() {
+                                @Override
+                                public void onResult(String result) {
+                                        Platform.runLater(() -> {
+                                                // 输出其他内容到控制台
+                                                Text text = new Text(result + "\n");
+                                                consoleOutput.getChildren().add(text);
+                                                // 自动滚动到最新内容
+                                                scrollPane.setVvalue(1.0);
+                                        });
+                                }
+
+                                @Override
+                                public void onComplete() {
+                                }
+                        });
                 }
         }
         public void handlerDruidBruteForce(String address){
                 consoleOutput.getChildren().clear();
-                // 暂无证书模块，待设置
+                
                 if (address.isEmpty()){
                         showAlertEmpty("地址为空！");
                 }else {
@@ -994,7 +1001,7 @@ public class springboot_vul extends Application {
         }
         public void handlerLogViewFile(String address,String filename){
                 consoleOutput.getChildren().clear();
-                // 暂无证书模块，待设置
+                
                 if (address.isEmpty()){
                         showAlertEmpty("地址为空！");
                 }else {
@@ -1027,6 +1034,7 @@ public class springboot_vul extends Application {
 
         }
         public void handlerGetshell(TextField addr,TextField vpsobj,TextField portobj) throws IOException {
+                boolean isPoc = false;
                 consoleOutput.getChildren().clear();
                 // 一键上内存马
                 String address = addr.getText();
@@ -1047,7 +1055,7 @@ public class springboot_vul extends Application {
                                 case -1:
                                         showAlertEmpty("你踏马还没选择漏洞类型呢！");
                                 case 5:
-                                        handlerSnakeYamlRce(address,vpsIP);
+                                        handlerSnakeYamlRce(address,vpsIP,isPoc);
                                         break;
                                 case 6:
                                         exp.handlerSpgRCE(address);
@@ -1059,31 +1067,31 @@ public class springboot_vul extends Application {
                                         handlerEurekaXstreamRCE(address, vpsIP, vpsPort);
                                         break;
                                 case 9:
-                                        handlerJolokiaLogbackRCE(address,vpsIP,vpsPort);
+                                        handlerJolokiaLogbackRCE(address,vpsIP,vpsPort,isPoc);
                                         break;
                                 case 10:
-                                        handlerJolokiaRealmRCE(address,vpsIP,vpsPort);
+                                        handlerJolokiaRealmRCE(address,vpsIP,vpsPort,isPoc);
                                         break;
                                 case 11:
-                                        handlerH2DatabaseQueryRCE(address,vpsIP,vpsPort);
+                                        handlerH2DatabaseQueryRCE(address,vpsIP,vpsPort,isPoc);
                                         break;
                                 case 12:
-                                        handlerH2DatabaseJNDIRCE(address,vpsIP,vpsPort);
+                                        handlerH2DatabaseJNDIRCE(address,vpsIP,vpsPort,isPoc);
                                         break;
                                 case 13:
                                         handlerMysqlJdbcRCE(address, command);
                                         break;
                                 case 14:
-                                        handlerLoggingLogbackRCE(address,vpsIP,vpsPort);
+                                        handlerLoggingLogbackRCE(address,vpsIP,vpsPort,isPoc);
                                         break;
                                 case 15:
-                                        handlerLoggingGroovyRCE(address,vpsIP,vpsPort);
+                                        handlerLoggingGroovyRCE(address,vpsIP,vpsPort,isPoc);
                                         break;
                                 case 16:
-                                        handlerMainSourceGroovyRCE(address,vpsIP,vpsPort);
+                                        handlerMainSourceGroovyRCE(address,vpsIP,vpsPort,isPoc);
                                         break;
                                 case 17:
-                                        handlerH2DatabaseDatasourceRCE(address, vpsIP, vpsPort);
+                                        handlerH2DatabaseDatasourceRCE(address, vpsIP, vpsPort,isPoc);
                                         break;
                                 case 18:
                                         handlerDruidBruteForce(address);
@@ -1099,94 +1107,84 @@ public class springboot_vul extends Application {
 
         }
         public void handlerExp(TextField addr,TextField args,TextField cmdobj,TextField vpsobj,TextField portobj) throws IOException {
-                boolean isPoc = false;
+                boolean isPoc = true;
                 String address = addr.getText();
                 String arg = args.getText();
                 String command = cmdobj.getText();
                 String vpsIP = vpsobj.getText();
                 String vpsPort = portobj.getText();
                 String filename = "";
-                if (address.isEmpty()) {
-                        showAlertEmpty("地址为空！");
-                } else {
-                        switch (Vulvalue) {
-                                case -1:
-                                        showAlertEmpty("你踏马还没选择漏洞类型呢！");
-                                        break;
-                                case 0:
-                                        handlerAllScan(address);
-                                        break;
-                                case 1:
-                                        handlerScanVul(address);
-                                        break;
-                                case 2:
-                                        handlerGetSp_1(address, arg);
-                                        break;
-                                case 3:
-                                        handlerGetSp_2(address, arg, vpsIP, vpsPort);
-                                        break;
-                                case 4:
-                                        handlerGetSp_3(address, arg, vpsIP, vpsPort);
-                                        break;
-                                case 5:
-                                        showAlertEmpty("暂时没有写这里，直接getshell");
-//                                        handlerSnakeYamlRce(address, vpsIP);
-                                        break;
-                                case 6:
-                                        handlerSpgRCE(address, command);
-                                        break;
-                                case 7:
-                                        handlerSpElRCE(address,vpsIP,vpsPort);
-                                        break;
-                                case 8:
+                switch (Vulvalue) {
+                        case -1:
+                                showAlertEmpty("你踏马还没选择漏洞类型呢！");
+                                break;
+                        case 0:
+                                handlerAllScan(address);
+                                break;
+                        case 1:
+                                handlerScanVul(address);
+                                break;
+                        case 2:
+                                handlerGetSp_1(address, arg);
+                                break;
+                        case 3:
+                                handlerGetSp_2(address, arg, vpsIP, vpsPort);
+                                break;
+                        case 4:
+                                handlerGetSp_3(address, arg, vpsIP, vpsPort);
+                                break;
+                        case 5:
+                                handlerSnakeYamlRce(address, vpsIP, isPoc);
+                                break;
+                        case 6:
+                                handlerSpgRCE(address, command);
+                                break;
+                        case 7:
+                                handlerSpElRCE(address,vpsIP,vpsPort);
+                                break;
+                        case 8:
 //                                        handlerEurekaXstreamRCE(address, vpsIP, vpsPort);
-                                        showAlertEmpty("暂时没有写这里，直接getshell");
-                                        break;
-                                case 9:
-//                                        handlerJolokiaLogbackRCE(address, command);
-                                        showAlertEmpty("暂时没有写这里，直接getshell");
-                                        break;
-                                case 10:
-//                                        handlerJolokiaRealmRCE(address, command);
-                                        showAlertEmpty("暂时没有写这里，直接getshell");
-                                        break;
-                                case 11:
-//                                        handlerH2DatabaseQueryRCE(address, command);
-                                        showAlertEmpty("你踏马还没选择漏洞类型呢！");
-                                        break;
-                                case 12:
-                                        showAlertEmpty("暂时没有写这里，直接getshell");
-//                                        handlerH2DatabaseJNDIRCE(address, command);
-                                        break;
-                                case 13:
+                                showAlertEmpty("暂时没有写这里，直接getshell");
+                                break;
+                        case 9:
+                                handlerJolokiaLogbackRCE(address,vpsIP,vpsPort,isPoc);
+                                break;
+                        case 10:
+//                                        handlerJolokiaRealmRCE(address,vpsIP,vpsPort,isPoc);
+                                showAlertEmpty("暂时没有写这里，直接getshell");
+                                break;
+                        case 11:
+                                handlerH2DatabaseQueryRCE(address,vpsIP,vpsPort,isPoc);
+                                break;
+                        case 12:
+                                handlerH2DatabaseJNDIRCE(address,vpsIP,vpsPort,isPoc);
+                                break;
+                        case 13:
 //                                        handlerMysqlJdbcRCE(address, command);
-                                        showAlertEmpty("暂时没有写这里，直接getshell");
-                                        break;
-                                case 14:
-//                                        handlerLoggingLogbackRCE(address,vpsIP,vpsPort);
-                                        showAlertEmpty("暂时没有写这里，直接getshell");
-                                        break;
-                                case 15:
-                                        showAlertEmpty("暂时没有写这里，直接getshell");
-                                        break;
-                                case 16:
-                                        showAlertEmpty("暂时没有写这里，直接getshell");
-                                        break;
-                                case 17:
-                                        showAlertEmpty("暂时没有写这里，直接getshell");
-//                                        handlerH2DatabaseDatasourceRCE(address, vpsIP, vpsPort);
-                                        break;
-                                case 18:
-                                        handlerDruidBruteForce(address);
-                                        break;
-                                case 19:
-                                        handlerLogViewFile(address,filename);
-                                        break;
-                                default:
-                                        showAlertEmpty("你踏马还没选择漏洞类型呢！");
-                                        break;
+                                showAlertEmpty("暂时没有写这里，直接getshell");
+                                break;
+                        case 14:
+                                handlerLoggingLogbackRCE(address,vpsIP,vpsPort,isPoc);
+                                break;
+                        case 15:
+                                handlerLoggingGroovyRCE(address,vpsIP,vpsPort,isPoc);
+                                break;
+                        case 16:
+                                handlerMainSourceGroovyRCE(address,vpsIP,vpsPort,isPoc);
+                                break;
+                        case 17:
+                                handlerH2DatabaseDatasourceRCE(address, vpsIP, vpsPort,isPoc);
+                                break;
+                        case 18:
+                                handlerDruidBruteForce(address);
+                                break;
+                        case 19:
+                                handlerLogViewFile(address,filename);
+                                break;
+                        default:
+                                showAlertEmpty("你踏马还没选择漏洞类型呢！");
+                                break;
                         }
-                }
         }
 
         public void handlerDelData(TextField addr) throws IOException{
