@@ -362,6 +362,8 @@ nc -lvk 9090 #mac
 
 ### #15 一键上马
 
+密钥默认为hackfunny
+
 ![](./image/WechatIMG1409.jpg)
 
 ![](./image/WechatIMG1415.jpg)

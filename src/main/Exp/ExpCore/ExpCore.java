@@ -81,7 +81,7 @@ public class ExpCore {
                 HttpURLConnection conn3 = (HttpURLConnection) obj3.openConnection();
                 conn3.setRequestMethod("GET");
                 conn3.setDoOutput(true);
-                BufferedReader in = new BufferedReader(new InputStreamReader(conn2.getInputStream()));
+                BufferedReader in = new BufferedReader(new InputStreamReader(conn3.getInputStream()));
                 String inputLine;
                 StringBuilder content = new StringBuilder();
                 while ((inputLine = in.readLine()) != null) {
