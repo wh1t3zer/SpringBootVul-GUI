@@ -1,17 +1,17 @@
 package src.main.module;
 
 import src.main.common.DownLoadHP;
+import src.main.common.HTTPConfig;
 import src.main.common.UA_Config;
 import src.main.impl.ResultCallback;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static src.main.SSLVerify.sslVer.disableSSLVerification;
+import static src.main.ssl.sslVer.disableSSLVerification;
 
 public class ScanVul {
     private final String address;
@@ -28,7 +28,6 @@ public class ScanVul {
         String poc;
         String exp = "发现端点泄露";
         String err1 = "发现端点泄露但无法返回内容";
-        String ua = "";
         int totalLines = 0;
         int curlines = 0;
         try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
@@ -43,12 +42,7 @@ public class ScanVul {
             String line;
             while ((line = br.readLine()) != null) {
                 String site = address + line;
-                URL obj = new URL(site);
-                HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-                UA_Config uacf = new UA_Config();
-                List<String> ualist = uacf.loadUserAgents();
-                ua = uacf.getRandomUserAgent(ualist);
-                conn.setRequestProperty("User-Agent", ua);
+                HttpURLConnection conn = HTTPConfig.createConnection(site);
                 conn.setRequestMethod("GET");
                 int responseCode = conn.getResponseCode();
 

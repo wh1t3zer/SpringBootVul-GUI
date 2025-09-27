@@ -1,4 +1,4 @@
-package src.main.LoadLib.MemshellLoad;
+package src.main.loadlib.MemshellLoad;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.util.Base64;

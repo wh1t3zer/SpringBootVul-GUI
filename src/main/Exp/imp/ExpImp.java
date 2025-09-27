@@ -1,10 +1,10 @@
-package src.main.Exp.ExpImp;
+package src.main.exp.imp;
 
 import javafx.application.Platform;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import src.main.Exp.ExpCore.ExpCore;
+import src.main.exp.core.ExpCore;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;

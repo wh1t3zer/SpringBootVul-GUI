@@ -1,4 +1,4 @@
-package src.main.LoadLib.JARLoad;
+package src.main.loadlib.JARLoad;
 
 import src.main.impl.ResultCallback;
 

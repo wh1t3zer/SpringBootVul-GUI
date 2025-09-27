@@ -9,6 +9,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class DownLoadHP {
@@ -73,7 +74,6 @@ public class DownLoadHP {
 
     // 分块下载文件
     private void downloadFileInChunks(String fileURL, String saveDir, String fileName, long totalSize, ProgressCallback progressCallback) throws IOException {
-        URL url = new URL(fileURL);
         File outputFile = new File(saveDir + File.separator + fileName);
 
         try (RandomAccessFile raf = new RandomAccessFile(outputFile, "rw")) {

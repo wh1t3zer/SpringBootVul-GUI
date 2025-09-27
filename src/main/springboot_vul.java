@@ -16,8 +16,10 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import src.main.Exp.ExpImp.ExpImp;
-import src.main.FileCommon.File;
+import src.main.common.Header_Config;
+import src.main.exp.imp.ExpImp;
+import src.main.file.File;
+import src.main.finger.Finger;
 import src.main.impl.ResultCallback;
 import src.main.module.*;
 
@@ -37,8 +39,6 @@ public class springboot_vul extends Application {
         public static ExecutorService executorService;
         public static ScrollPane scrollPane; // 滚动
         public static ProgressBar progressBar; // 进度条
-        public static ProgressBar progressBar1; // 进度条
-
 
         @Override
         public void start(Stage stage) throws IOException {
@@ -90,10 +90,10 @@ public class springboot_vul extends Application {
 
                 // 类方法调用下拉框
                 ComboBox<String> clsComboBox = new ComboBox<>();
-                clsComboBox.setStyle("-fx-font-family: 'Microsoft YaHei, SimSun, PingFang SC'; -fx-font-size: 14;");                clsComboBox.getItems().addAll(clsLabelsArray);
+                clsComboBox.setStyle("-fx-font-family: 'Microsoft YaHei, SimSun, PingFang SC'; -fx-font-size: 14;");
+                clsComboBox.getItems().addAll(clsLabelsArray);
                 clsComboBox.setOnAction(event -> {
                         String optionsValue = clsComboBox.getValue();
-                        // 查找选项对应的值
                         for (int i = 0; i < clsLabelsArray.length; i++) {
                                 if (clsLabelsArray[i].equals(optionsValue)) {
                                         clsValue = clsValuesArray[i];
@@ -102,7 +102,7 @@ public class springboot_vul extends Application {
                         }
                 });
                 clsComboBox.setPrefWidth(200);
-                clsComboBox.setValue(null); // 默认无
+                clsComboBox.setValue(null);
 
                 //设置VPS内容
                 Label vpsaddrlabel = new Label("IP：");
@@ -121,13 +121,13 @@ public class springboot_vul extends Application {
                 proxybtn.setPrefWidth(80);
                 proxybtn.setOnAction(event -> {
                         Stage dialog = new Stage();
-                        dialog.initOwner(stage); // 在显示之前设置拥有者
+                        dialog.initOwner(stage);
                         HBox hb1 = new HBox(10);
-                        hb1.setAlignment(Pos.CENTER); // 设置hb1居中对齐
+                        hb1.setAlignment(Pos.CENTER);
                         HBox hb2 = new HBox(10);
-                        hb2.setAlignment(Pos.CENTER); // 设置hb2居中对齐
+                        hb2.setAlignment(Pos.CENTER);
                         VBox vb1 = new VBox(10);
-                        vb1.setAlignment(Pos.CENTER); // 设置VBox居中对齐
+                        vb1.setAlignment(Pos.CENTER);
                         TextField ipField = new TextField();
                         TextField portField = new TextField();
                         ipField.setMaxWidth(80);
@@ -140,11 +140,11 @@ public class springboot_vul extends Application {
                         Button updateButton = new Button("确定");
                         Button canccelButton = new Button("取消");
                         HBox hb3 = new HBox(10);
-                        hb3.setAlignment(Pos.CENTER); // 设置hb3居中对齐
+                        hb3.setAlignment(Pos.CENTER);
                         hb3.getChildren().addAll(updateButton,canccelButton);
 
                         hb1.getChildren().addAll(new Label("http(s)代理IP:"),ipField);
-                        HBox.setMargin(ipField, new Insets(0, 0, 0, 15)); // 设置ipField左侧边距为10
+                        HBox.setMargin(ipField, new Insets(0, 0, 0, 15));
                         hb2.getChildren().addAll(new Label("http(s)代理端口:"),portField);
 
                         vb1.getChildren().addAll(hb1,hb2,hb3);
@@ -169,12 +169,65 @@ public class springboot_vul extends Application {
                                                 applyProxy(ip, port);
                                                 dialog.close();
                                         } else{
-                                                showAlertEmpty("IP设置错误");
+                                                showAlert("IP设置错误");
                                         }
                                 }
                         });
                         canccelButton.setOnAction(e -> {
                                 dialog.close();
+                        });
+                });
+
+                // 请求头
+                Button headerbtn = new Button("请求头");
+                headerbtn.setPrefWidth(80);
+                headerbtn.setOnAction(event -> {
+                        Stage hdialog = new Stage();
+                        hdialog.initOwner(stage);
+                        HBox hhb = new HBox(10);
+                        hhb.setAlignment(Pos.CENTER);
+                        HBox hhb1 = new HBox(10);
+                        hhb1.setAlignment(Pos.CENTER);
+                        VBox hvb = new VBox(10);
+                        hvb.setAlignment(Pos.CENTER);
+                        TextField header = new TextField();
+                        TextField header_value = new TextField();
+                        header.setMaxWidth(150);
+                        header_value.setMaxWidth(150);
+                        header.setText(Header_Config.getAuthHeaderName());
+                        header_value.setText(Header_Config.getAuthHeaderValue());
+
+                        Button updateButton = new Button("确定");
+                        Button canccelButton = new Button("取消");
+                        HBox hhb2 = new HBox(10);
+                        hhb2.setAlignment(Pos.CENTER);
+                        hhb2.getChildren().addAll(updateButton,canccelButton);
+
+                        hhb.getChildren().addAll(new Label("Header头:"),header);
+                        HBox.setMargin(header, new Insets(0, 0, 0, 15));
+                        hhb1.getChildren().addAll(new Label("Header头值:"),header_value);
+
+                        hvb.getChildren().addAll(hhb,hhb1,hhb2);
+                        Scene dialogScene = new Scene(hvb, 300, 200);
+                        hdialog.setScene(dialogScene);
+                        hdialog.show();
+                        hdialog.setOnCloseRequest(e -> {
+                                hdialog.close();
+                        });
+
+                        updateButton.setOnAction(e -> {
+                                String head = header.getText().trim();
+                                String headvalue = header_value.getText().trim();
+                                if (!head.isEmpty() && !headvalue.isEmpty()) {
+                                        Header_Config.setAuthHeader(head, headvalue);
+                                        hdialog.close();
+                                } else {
+                                        Header_Config.clearAuthHeader();
+                                        hdialog.close();
+                                }
+                        });
+                        canccelButton.setOnAction(e -> {
+                                hdialog.close();
                         });
                 });
 
@@ -189,11 +242,11 @@ public class springboot_vul extends Application {
 
                 // 下拉框
                 ComboBox<String> comboBox = new ComboBox<>();
-                comboBox.setStyle("-fx-font-family: 'Microsoft YaHei, SimSun, PingFang SC'; -fx-font-size: 14;");                comboBox.getItems().addAll(vulnLabelsArray);
+                comboBox.setStyle("-fx-font-family: 'Microsoft YaHei, SimSun, PingFang SC'; -fx-font-size: 14;");
+                comboBox.getItems().addAll(vulnLabelsArray);
                 comboBox.setOnAction(event -> {
                         String optionsValue = comboBox.getValue();
                         Vulvalue = -1;
-                        // 查找选项对应的值
                         for (int i = 0; i < vulnLabelsArray.length; i++) {
                                 if (vulnLabelsArray[i].equals(optionsValue)) {
                                         Vulvalue = vulnValuesArray[i];
@@ -202,7 +255,7 @@ public class springboot_vul extends Application {
                         }
                 });
                 comboBox.setPrefWidth(200);
-                comboBox.setValue(null); // 默认选中“无”
+                comboBox.setValue("全部");
 
                 // 输入框
                 TextField Addrtf = new TextField();
@@ -246,20 +299,18 @@ public class springboot_vul extends Application {
                 });
                 Delbtn.setPrefWidth(80);
                 FlowPane btnFlowPane = new FlowPane(Orientation.HORIZONTAL, 10, 10);
-                btnFlowPane.getChildren().addAll(Expbtn, Shellbtn, Delbtn);
-                btnFlowPane.setPrefWrapLength(200); // 设置宽度阈值，超出后换行
-
+                btnFlowPane.getChildren().addAll(Expbtn, Shellbtn, Delbtn,headerbtn);
+                btnFlowPane.setPrefWrapLength(200);
                 VBox proxybtnBox = new VBox(20,btnFlowPane,proxybtn);
                 proxybtnBox.setAlignment(Pos.TOP_LEFT);
-                proxybtnBox.setPadding(new Insets(0, 10, 10, 10)); // 整体边距
-
+                proxybtnBox.setPadding(new Insets(0, 10, 10, 10));
 
                 // 地址框和漏洞列表框
                 HBox addrBox = new HBox(10);
                 addrBox.getChildren().addAll(addlabel, Addrtf, explabel, comboBox);
                 addrBox.setAlignment(Pos.TOP_LEFT);
                 addrBox.setPadding(new Insets(0, 0, 0, 20));
-                HBox.setMargin(Addrtf, new Insets(0, 0, 0, 25));  // 向右移动地址框
+                HBox.setMargin(Addrtf, new Insets(0, 0, 0, 25));
 
                 // 漏洞利用框
                 HBox menuBox = new HBox(10);
@@ -273,7 +324,6 @@ public class springboot_vul extends Application {
                 buttonBox.getChildren().addAll(addrBox, menuBox, clsBox);
 
                 HBox boxContainer = new HBox();
-                // 左右两边各为一个容器
                 boxContainer.getChildren().addAll(buttonBox,proxybtnBox);
 
                 // 添加间隔区域
@@ -291,21 +341,14 @@ public class springboot_vul extends Application {
                         scrollPane.setVvalue(1.0);
                 });
 
-                // 为 Text 添加右键菜单，允许复制
-                ContextMenu contextMenu = new ContextMenu();
-                MenuItem copyItem = new MenuItem("复制");
-                contextMenu.getItems().add(copyItem);
-
                 // 状态栏
                 HBox statusBar = new HBox();
-                // 创建容器，将“当前状态”标签和进度条放在里面
                 HBox statusContainer = new HBox();
                 Label statusLabel = new Label("禁止用于未授权测试！");
                 statusLabel.setFont(new Font("宋体", 13));
                 statusLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: red;");
-                progressBar = new ProgressBar(0);  // 初始化进度条，默认值为0
-                progressBar.setPrefWidth(200);     // 设置进度条的宽度
-                // 创建一个空的区域占位符，推动右边的内容到最右侧
+                progressBar = new ProgressBar(0);
+                progressBar.setPrefWidth(200);
                 Region spacer = new Region();
                 HBox.setHgrow(spacer, Priority.ALWAYS);
 
@@ -319,15 +362,14 @@ public class springboot_vul extends Application {
 
                 // 创建主界面布局
                 BorderPane mainLayout = new BorderPane();
-                mainLayout.setCenter(scrollPane);         // ScrollPane (包裹TextFlow) 放在中间
-                mainLayout.setBottom(statusBar);          // 状态栏放在底部
+                mainLayout.setCenter(scrollPane);
+                mainLayout.setBottom(statusBar);
 
                 VBox topLayout = new VBox(10);
                 topLayout.getChildren().addAll(topSpacer, boxContainer); // Add spacer before buttonBox
 
                 mainLayout.setTop(topLayout);
 
-                // 创建场景并设置到舞台
                 Scene scene = new Scene(mainLayout, 800, 600);
                 stage.setTitle("SpringBootGUI by wh1t3zer");
                 stage.setScene(scene);
@@ -337,74 +379,76 @@ public class springboot_vul extends Application {
                 executorService = Executors.newSingleThreadExecutor();
         }
 
-        public void handlerAllScan(String address){
-                showAlertEmpty("暂时未开启全部扫描功能，防止批量造成服务器崩溃服务停止");
+        public void handlerAllScan(){
+                showAlert("暂时未开启全部扫描功能，防止批量造成服务器崩溃服务停止");
         }
         public void handlerScanVul(String address) throws IOException {
                 final AtomicReference<Double> curlines = new AtomicReference<>(0.0);
                 final AtomicReference<Double> totalLines = new AtomicReference<>(0.0);
-                
-                if (address.endsWith("/")) {
+                if (address.isEmpty()){
+                        showAlert("地址为空！");
+                }else {
+                        if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
-                }
-                if (!address.startsWith("http://") && !address.startsWith("https://")) {
-                                address = "http://" + address;
-                }
-                consoleOutput.getChildren().clear();
-                consoleOutput.getChildren().addAll(new Text("端点扫描进行中，请勿关闭！\n"));
-                ScanVul sv = new ScanVul(address);  // 执行具体扫描操作
-                executorService.submit(() -> {
-                        try {
-                                sv.scanVul(new ResultCallback() {
-                                        @Override
-                                        public void onResult(String result) {
-                                                Platform.runLater(() -> {
-                                                        if (result.contains("curlines")) {
-                                                                int delimiterIndex = result.indexOf(":");
-                                                                if (delimiterIndex != -1) {
-                                                                        curlines.set(Double.parseDouble(result.substring(delimiterIndex + 1).trim()));
-                                                                        // 更新进度条
-                                                                        if ((curlines.get() > 0) && totalLines.get() > 0) {
-                                                                                double progress = curlines.get() / totalLines.get();
-                                                                                progressBar.setProgress(progress);
-                                                                        }
-                                                                }
-                                                        } else if (result.contains("totalLines")) {
-                                                                int delimiterIndex = result.indexOf(":");
-                                                                if (delimiterIndex != -1) {
-                                                                        totalLines.set(Double.parseDouble(result.substring(delimiterIndex + 1).trim()));
-                                                                }
-                                                        }else {
-                                                                // 输出其他内容到控制台
-                                                                Text text = new Text(result + "\n");
-                                                                consoleOutput.getChildren().add(text);
-                                                                // 自动滚动到最新内容
-                                                                scrollPane.setVvalue(1.0);
-                                                        }
-                                                });
-
-                                        }
-                                        @Override
-                                        public void onComplete() {
-                                                Platform.runLater(() -> {
-                                                        Text completeText = new Text("扫描完成！\n");
-                                                        consoleOutput.getChildren().add(completeText);
-                                                        // 自动滚动到最新内容
-                                                        scrollPane.setVvalue(1.0);
-                                                });
-                                        }
-                                });
-                        } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
                         }
-                });
+                        if (!address.startsWith("http://") && !address.startsWith("https://")) {
+                                address = "http://" + address;
+                        }
+                        consoleOutput.getChildren().clear();
+                        consoleOutput.getChildren().addAll(new Text("端点扫描进行中，请勿关闭！\n"));
+                        ScanVul sv = new ScanVul(address);  // 执行具体扫描操作
+                        executorService.submit(() -> {
+                                try {
+                                        sv.scanVul(new ResultCallback() {
+                                                @Override
+                                                public void onResult(String result) {
+                                                        Platform.runLater(() -> {
+                                                                if (result.contains("curlines")) {
+                                                                        int delimiterIndex = result.indexOf(":");
+                                                                        if (delimiterIndex != -1) {
+                                                                                curlines.set(Double.parseDouble(result.substring(delimiterIndex + 1).trim()));
+                                                                                // 更新进度条
+                                                                                if ((curlines.get() > 0) && totalLines.get() > 0) {
+                                                                                        double progress = curlines.get() / totalLines.get();
+                                                                                        progressBar.setProgress(progress);
+                                                                                }
+                                                                        }
+                                                                } else if (result.contains("totalLines")) {
+                                                                        int delimiterIndex = result.indexOf(":");
+                                                                        if (delimiterIndex != -1) {
+                                                                                totalLines.set(Double.parseDouble(result.substring(delimiterIndex + 1).trim()));
+                                                                        }
+                                                                } else {
+                                                                        // 输出其他内容到控制台
+                                                                        Text text = new Text(result + "\n");
+                                                                        consoleOutput.getChildren().add(text);
+                                                                        // 自动滚动到最新内容
+                                                                        scrollPane.setVvalue(1.0);
+                                                                }
+                                                        });
 
+                                                }
+
+                                                @Override
+                                                public void onComplete() {
+                                                        Platform.runLater(() -> {
+                                                                Text completeText = new Text("扫描完成！\n");
+                                                                consoleOutput.getChildren().add(completeText);
+                                                                scrollPane.setVvalue(1.0);
+                                                        });
+                                                }
+                                        });
+                                } catch (InterruptedException e) {
+                                        throw new RuntimeException(e);
+                                }
+                        });
+                }
         }
 
         public void handlerGetSp_1(String address,String args) throws IOException {
                 consoleOutput.getChildren().clear();
                 if (args.isEmpty()){
-                        showAlertEmpty("脱敏参数为空！");
+                        showAlert("脱敏参数为空！");
                 }else{
                         if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
@@ -424,7 +468,6 @@ public class springboot_vul extends Application {
                                                         scrollPane.setVvalue(1.0);
                                         });
                                 }
-
                                 @Override
                                 public void onComplete() {
 
@@ -436,7 +479,7 @@ public class springboot_vul extends Application {
                 consoleOutput.getChildren().clear();
                 
                 if (address.isEmpty()){
-                        showAlertEmpty("地址为空！");
+                        showAlert("地址为空！");
                 }else {
                         if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
@@ -445,7 +488,7 @@ public class springboot_vul extends Application {
                                 address = "http://" + address;
                         }
                         if (vpsIP.isEmpty()) {
-                                showAlertEmpty("反弹IP为空！");
+                                showAlert("反弹IP为空！");
                         }
                         GetSpPassWord_II gsp = new GetSpPassWord_II(address,vpsIP,vpsPORT,args);
                         gsp.Exp(new ResultCallback() {
@@ -469,7 +512,7 @@ public class springboot_vul extends Application {
         public void handlerGetSp_3(String address,String args,String vpsIP,String vpsPORT) throws IOException {
                 consoleOutput.getChildren().clear();
                 if (address.isEmpty()){
-                        showAlertEmpty("地址为空！");
+                        showAlert("地址为空！");
                 }else {
                         if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
@@ -478,7 +521,7 @@ public class springboot_vul extends Application {
                                 address = "http://" + address;
                         }
                         if (vpsIP.isEmpty()) {
-                                showAlertEmpty("反弹IP为空！");
+                                showAlert("反弹IP为空！");
                         }
                         GetSpPassWord_III gsp = new GetSpPassWord_III(address,vpsIP,vpsPORT,args);
                         gsp.Exp(new ResultCallback() {
@@ -502,7 +545,7 @@ public class springboot_vul extends Application {
                 consoleOutput.getChildren().clear();
 
                 if (address.isEmpty()){
-                        showAlertEmpty("地址为空！");
+                        showAlert("地址为空！");
                 }else {
                         if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
@@ -538,7 +581,7 @@ public class springboot_vul extends Application {
                 consoleOutput.getChildren().clear();
                 
                 if (address.isEmpty()){
-                        showAlertEmpty("地址为空！");
+                        showAlert("地址为空！");
                 }else {
                         if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
@@ -571,7 +614,7 @@ public class springboot_vul extends Application {
                 consoleOutput.getChildren().clear();
                 
                 if (address.isEmpty()){
-                        showAlertEmpty("地址为空！");
+                        showAlert("地址为空！");
                 }else {
                         if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
@@ -601,7 +644,7 @@ public class springboot_vul extends Application {
                 consoleOutput.getChildren().clear();
                 
                 if (address.isEmpty()){
-                        showAlertEmpty("地址为空！");
+                        showAlert("地址为空！");
                 }else {
                         if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
@@ -653,7 +696,7 @@ public class springboot_vul extends Application {
                 consoleOutput.getChildren().clear();
                 
                 if (address.isEmpty()){
-                        showAlertEmpty("地址为空！");
+                        showAlert("地址为空！");
                 }else {
                         if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
@@ -662,7 +705,7 @@ public class springboot_vul extends Application {
                                 address = "http://" + address;
                         }
                         if (vpsIP.isEmpty() && vpsPORT.isEmpty()){
-                                showAlertEmpty("反弹vps的IP和端口为空！");
+                                showAlert("反弹vps的IP和端口为空！");
                         }else {
                                 EurekaXsRCE ekx = new EurekaXsRCE(address, vpsIP, vpsPORT);
                                 ekx.Exp(new ResultCallback() {
@@ -689,7 +732,7 @@ public class springboot_vul extends Application {
                 consoleOutput.getChildren().clear();
                 
                 if (address.isEmpty()){
-                        showAlertEmpty("地址为空！");
+                        showAlert("地址为空！");
                 }else {
                         if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
@@ -699,7 +742,7 @@ public class springboot_vul extends Application {
                         }
                         if (!isPoc) {
                                 if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
-                                        showAlertEmpty("反弹vps的IP和端口为空！");
+                                        showAlert("反弹vps的IP和端口为空！");
                                         return;
                                 }
                         }
@@ -726,7 +769,7 @@ public class springboot_vul extends Application {
                 consoleOutput.getChildren().clear();
                 
                 if (address.isEmpty()){
-                        showAlertEmpty("地址为空！");
+                        showAlert("地址为空！");
                 }else {
                         if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
@@ -758,7 +801,7 @@ public class springboot_vul extends Application {
                 consoleOutput.getChildren().clear();
                 
                 if (address.isEmpty()){
-                        showAlertEmpty("地址为空！");
+                        showAlert("地址为空！");
                 }else {
                         if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
@@ -768,7 +811,7 @@ public class springboot_vul extends Application {
                         }
                         if (!isPoc) {
                                 if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
-                                        showAlertEmpty("反弹vps的IP和端口为空！");
+                                        showAlert("反弹vps的IP和端口为空！");
                                         return;
                                 }
                         }
@@ -794,7 +837,7 @@ public class springboot_vul extends Application {
         public void handlerH2DatabaseJNDIRCE(String address,String vpsIP,String vpsPORT,boolean isPoc){
                 consoleOutput.getChildren().clear();
                 if (address.isEmpty()){
-                        showAlertEmpty("地址为空！");
+                        showAlert("地址为空！");
                 }else {
                         if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
@@ -826,7 +869,7 @@ public class springboot_vul extends Application {
         public void handlerLoggingLogbackRCE(String address,String vpsIP,String vpsPORT,boolean isPoc){
                 consoleOutput.getChildren().clear();
                 if (address.isEmpty()){
-                        showAlertEmpty("地址为空！");
+                        showAlert("地址为空！");
                 }else {
                         if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
@@ -857,7 +900,7 @@ public class springboot_vul extends Application {
         public void handlerLoggingGroovyRCE(String address,String vpsIP,String vpsPORT,boolean isPoc){
                 consoleOutput.getChildren().clear();
                 if (address.isEmpty()){
-                        showAlertEmpty("地址为空！");
+                        showAlert("地址为空！");
                 }else {
                         if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
@@ -867,7 +910,7 @@ public class springboot_vul extends Application {
                         }
                         if (!isPoc){
                                 if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
-                                        showAlertEmpty("反弹vps的IP和端口为空！");
+                                        showAlert("反弹vps的IP和端口为空！");
                                         return;
                                 }
                         }
@@ -893,7 +936,7 @@ public class springboot_vul extends Application {
         public void handlerMainSourceGroovyRCE(String address,String vpsIP,String vpsPORT, boolean isPoc){
                 consoleOutput.getChildren().clear();
                 if (address.isEmpty()){
-                        showAlertEmpty("地址为空！");
+                        showAlert("地址为空！");
                 }else {
                         if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
@@ -903,7 +946,7 @@ public class springboot_vul extends Application {
                         }
                         if (!isPoc){
                                 if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
-                                        showAlertEmpty("反弹vps的IP和端口为空！");
+                                        showAlert("反弹vps的IP和端口为空！");
                                         return;
                                 }
                         }
@@ -931,7 +974,7 @@ public class springboot_vul extends Application {
                 consoleOutput.getChildren().clear();
                 
                 if (address.isEmpty()){
-                        showAlertEmpty("地址为空！");
+                        showAlert("地址为空！");
                 }else {
                         if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
@@ -941,7 +984,7 @@ public class springboot_vul extends Application {
                         }
                         if (!isPoc){
                                 if (vpsIP.isEmpty() && vpsPORT.isEmpty()) {
-                                        showAlertEmpty("反弹vps的IP和端口为空！");
+                                        showAlert("反弹vps的IP和端口为空！");
                                         return;
                                 }
                         }
@@ -968,7 +1011,7 @@ public class springboot_vul extends Application {
                 consoleOutput.getChildren().clear();
                 
                 if (address.isEmpty()){
-                        showAlertEmpty("地址为空！");
+                        showAlert("地址为空！");
                 }else {
                         if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
@@ -1003,7 +1046,7 @@ public class springboot_vul extends Application {
                 consoleOutput.getChildren().clear();
                 
                 if (address.isEmpty()){
-                        showAlertEmpty("地址为空！");
+                        showAlert("地址为空！");
                 }else {
                         if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
@@ -1043,7 +1086,7 @@ public class springboot_vul extends Application {
                 String vpsPort = portobj.getText();
                 ExpImp exp = new ExpImp(address);
                 if (address.isEmpty()){
-                        showAlertEmpty("地址为空！");
+                        showAlert("地址为空！");
                 }else{
                         if (address.endsWith("/")) {
                                 address = address.replaceAll("/$", "");
@@ -1052,8 +1095,6 @@ public class springboot_vul extends Application {
                                 address = "http://" + address;
                         }
                         switch (Vulvalue){
-                                case -1:
-                                        showAlertEmpty("你踏马还没选择漏洞类型呢！");
                                 case 5:
                                         handlerSnakeYamlRce(address,vpsIP,isPoc);
                                         break;
@@ -1100,7 +1141,7 @@ public class springboot_vul extends Application {
                                         handleAllVulnerabilities(address, command);
                                         break;
                                 default:
-                                        showAlertEmpty("你踏马还没选择漏洞类型呢！");
+                                        showAlert("你踏马还没选择漏洞类型呢！");
                                         break;
                         }
                 }
@@ -1114,93 +1155,96 @@ public class springboot_vul extends Application {
                 String vpsIP = vpsobj.getText();
                 String vpsPort = portobj.getText();
                 String filename = "";
-                switch (Vulvalue) {
-                        case -1:
-                                showAlertEmpty("你踏马还没选择漏洞类型呢！");
-                                break;
-                        case 0:
-                                handlerAllScan(address);
-                                break;
-                        case 1:
-                                handlerScanVul(address);
-                                break;
-                        case 2:
-                                handlerGetSp_1(address, arg);
-                                break;
-                        case 3:
-                                handlerGetSp_2(address, arg, vpsIP, vpsPort);
-                                break;
-                        case 4:
-                                handlerGetSp_3(address, arg, vpsIP, vpsPort);
-                                break;
-                        case 5:
-                                handlerSnakeYamlRce(address, vpsIP, isPoc);
-                                break;
-                        case 6:
-                                handlerSpgRCE(address, command);
-                                break;
-                        case 7:
-                                handlerSpElRCE(address,vpsIP,vpsPort);
-                                break;
-                        case 8:
-//                                        handlerEurekaXstreamRCE(address, vpsIP, vpsPort);
-                                showAlertEmpty("暂时没有写这里，直接getshell");
-                                break;
-                        case 9:
-                                handlerJolokiaLogbackRCE(address,vpsIP,vpsPort,isPoc);
-                                break;
-                        case 10:
-//                                        handlerJolokiaRealmRCE(address,vpsIP,vpsPort,isPoc);
-                                showAlertEmpty("暂时没有写这里，直接getshell");
-                                break;
-                        case 11:
-                                handlerH2DatabaseQueryRCE(address,vpsIP,vpsPort,isPoc);
-                                break;
-                        case 12:
-                                handlerH2DatabaseJNDIRCE(address,vpsIP,vpsPort,isPoc);
-                                break;
-                        case 13:
-//                                        handlerMysqlJdbcRCE(address, command);
-                                showAlertEmpty("暂时没有写这里，直接getshell");
-                                break;
-                        case 14:
-                                handlerLoggingLogbackRCE(address,vpsIP,vpsPort,isPoc);
-                                break;
-                        case 15:
-                                handlerLoggingGroovyRCE(address,vpsIP,vpsPort,isPoc);
-                                break;
-                        case 16:
-                                handlerMainSourceGroovyRCE(address,vpsIP,vpsPort,isPoc);
-                                break;
-                        case 17:
-                                handlerH2DatabaseDatasourceRCE(address, vpsIP, vpsPort,isPoc);
-                                break;
-                        case 18:
-                                handlerDruidBruteForce(address);
-                                break;
-                        case 19:
-                                handlerLogViewFile(address,filename);
-                                break;
-                        default:
-                                showAlertEmpty("你踏马还没选择漏洞类型呢！");
-                                break;
+                Finger finger = new Finger(address);
+                if (address.isEmpty()) {
+                        showAlert("地址为空！");
+                } else {
+                        boolean isSpring =  finger.CheckedSpringBoot();
+                        if (!isSpring) {
+                                showAlert("该系统似乎不是springboot项目");
                         }
+                        switch (Vulvalue) {
+                                case 0:
+                                        handlerAllScan();
+                                        break;
+                                case 1:
+                                        handlerScanVul(address);
+                                        break;
+                                case 2:
+                                        handlerGetSp_1(address, arg);
+                                        break;
+                                case 3:
+                                        handlerGetSp_2(address, arg, vpsIP, vpsPort);
+                                        break;
+                                case 4:
+                                        handlerGetSp_3(address, arg, vpsIP, vpsPort);
+                                        break;
+                                case 5:
+                                        handlerSnakeYamlRce(address, vpsIP, isPoc);
+                                        break;
+                                case 6:
+                                        handlerSpgRCE(address, command);
+                                        break;
+                                case 7:
+                                        handlerSpElRCE(address,vpsIP,vpsPort);
+                                        break;
+                                case 8:
+//                                        handlerEurekaXstreamRCE(address, vpsIP, vpsPort);
+                                        showAlert("暂时没有写这里，直接getshell");
+                                        break;
+                                case 9:
+                                        handlerJolokiaLogbackRCE(address,vpsIP,vpsPort,isPoc);
+                                        break;
+                                case 10:
+//                                        handlerJolokiaRealmRCE(address,vpsIP,vpsPort,isPoc);
+                                        showAlert("暂时没有写这里，直接getshell");
+                                        break;
+                                case 11:
+                                        handlerH2DatabaseQueryRCE(address,vpsIP,vpsPort,isPoc);
+                                        break;
+                                case 12:
+                                        handlerH2DatabaseJNDIRCE(address,vpsIP,vpsPort,isPoc);
+                                        break;
+                                case 13:
+//                                        handlerMysqlJdbcRCE(address, command);
+                                        showAlert("暂时没有写这里，直接getshell");
+                                        break;
+                                case 14:
+                                        handlerLoggingLogbackRCE(address,vpsIP,vpsPort,isPoc);
+                                        break;
+                                case 15:
+                                        handlerLoggingGroovyRCE(address,vpsIP,vpsPort,isPoc);
+                                        break;
+                                case 16:
+                                        handlerMainSourceGroovyRCE(address,vpsIP,vpsPort,isPoc);
+                                        break;
+                                case 17:
+                                        handlerH2DatabaseDatasourceRCE(address, vpsIP, vpsPort,isPoc);
+                                        break;
+                                case 18:
+                                        handlerDruidBruteForce(address);
+                                        break;
+                                case 19:
+                                        handlerLogViewFile(address,filename);
+                                        break;
+                                default:
+                                        showAlert("你踏马还没选择漏洞类型呢！");
+                                        break;
+                        }
+                }
         }
 
         public void handlerDelData(TextField addr) throws IOException{
                 // 痕迹清除
                 String address = addr.getText();
                 if (address.isEmpty()) {
-                        showAlertEmpty("地址为空！");
+                        showAlert("地址为空！");
                 } else {
-                        switch (Vulvalue) {
-                                case 6:
-                                        handlerDelSpg(address);
-                                        break;
-                                default:
-                                        showAlertEmpty("目前只限于spring cloud gateway 漏洞");
-                                        break;
-                        }
+                    if (Vulvalue == 6) {
+                        handlerDelSpg(address);
+                    } else {
+                        showAlert("目前只限于spring cloud gateway 漏洞");
+                    }
                 }
         }
 
@@ -1210,7 +1254,7 @@ public class springboot_vul extends Application {
                 System.setProperty("https.proxyHost", ip);
                 System.setProperty("https.proxyPort", port);
         }
-        public void showAlertEmpty(String text) {
+        public void showAlert(String text) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.initStyle(StageStyle.UNDECORATED);
                 alert.setContentText(text);

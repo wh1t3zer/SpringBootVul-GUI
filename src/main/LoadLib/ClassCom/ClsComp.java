@@ -1,4 +1,4 @@
-package src.main.LoadLib.ClassCom;
+package src.main.loadlib.ClassCom;
 
 import src.main.impl.ResultCallback;
 
@@ -13,7 +13,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
-import java.util.Objects;
 
 public class ClsComp {
     private String vpsIP;

