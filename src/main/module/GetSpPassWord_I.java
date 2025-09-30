@@ -1,7 +1,6 @@
 package src.main.module;
 
 import src.main.common.HTTPConfig;
-import src.main.common.UA_Config;
 import src.main.impl.ResultCallback;
 
 import java.io.BufferedReader;
@@ -10,7 +9,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -180,8 +178,6 @@ public class GetSpPassWord_I {
         disableSSLVerification();
         try {
             HttpURLConnection conn = HTTPConfig.createConnection(pocsite);
-            UA_Config uacf = new UA_Config();
-            List<String> ualist = uacf.loadUserAgents();
             conn.setRequestMethod("GET");
             int responseCode = conn.getResponseCode();
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));

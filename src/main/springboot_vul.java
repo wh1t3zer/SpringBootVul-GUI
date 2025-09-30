@@ -17,7 +17,7 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import src.main.common.Header_Config;
-import src.main.exp.imp.ExpImp;
+import src.main.memory.imp.ExpImp;
 import src.main.file.File;
 import src.main.finger.Finger;
 import src.main.impl.ResultCallback;
@@ -576,7 +576,7 @@ public class springboot_vul extends Application {
                         });
                 }
         }
-        public void handlerSpgRCE(String address, String command) throws IOException {
+        public void handlerSpgRCE_1(String address, String command) throws IOException {
                 // 清空控制台输出
                 consoleOutput.getChildren().clear();
                 
@@ -589,7 +589,7 @@ public class springboot_vul extends Application {
                         if (!address.startsWith("http://") && !address.startsWith("https://")) {
                                 address = "http://" + address;
                         }
-                        SpringGawRCE spg = command.isEmpty() ? new SpringGawRCE(address) : new SpringGawRCE(address, command);
+                        SpringGawRCE_1 spg = command.isEmpty() ? new SpringGawRCE_1(address) : new SpringGawRCE_1(address, command);
                         spg.GawExp(new ResultCallback() {
                                 @Override
                                 public void onResult(String result) {
@@ -609,7 +609,7 @@ public class springboot_vul extends Application {
                 }
         }
 
-        public void handlerDelSpg(String address) throws IOException {
+        public void handlerDelSpg(String address,int value) throws IOException {
                 // 清空控制台输出
                 consoleOutput.getChildren().clear();
                 
@@ -622,22 +622,41 @@ public class springboot_vul extends Application {
                         if (!address.startsWith("http://") && !address.startsWith("https://")) {
                                 address = "http://" + address;
                         }
-                        SpringGawRCE spg = new SpringGawRCE(address);
-                        spg.DelGaw(new ResultCallback() {
-                                @Override
-                                public void onResult(String result) {
-                                        Platform.runLater(() -> {
-                                                // 输出其他内容到控制台
-                                                Text text = new Text(result + "\n");
-                                                consoleOutput.getChildren().add(text);
-                                                // 自动滚动到最新内容
-                                                scrollPane.setVvalue(1.0);
-                                        });
-                                }
-                                @Override
-                                public void onComplete() {
-                                }
-                        });
+                        if (value == 6) {
+                                SpringGawRCE_1 spg = new SpringGawRCE_1(address);
+                                spg.DelGaw(new ResultCallback() {
+                                        @Override
+                                        public void onResult(String result) {
+                                                Platform.runLater(() -> {
+                                                        // 输出其他内容到控制台
+                                                        Text text = new Text(result + "\n");
+                                                        consoleOutput.getChildren().add(text);
+                                                        // 自动滚动到最新内容
+                                                        scrollPane.setVvalue(1.0);
+                                                });
+                                        }
+                                        @Override
+                                        public void onComplete() {
+                                        }
+                                });
+                        }else if (value == 20) {
+                                SpringGawRCE_2 spg = new SpringGawRCE_2(address);
+                                spg.DelGaw(new ResultCallback() {
+                                        @Override
+                                        public void onResult(String result) {
+                                                Platform.runLater(() -> {
+                                                        // 输出其他内容到控制台
+                                                        Text text = new Text(result + "\n");
+                                                        consoleOutput.getChildren().add(text);
+                                                        // 自动滚动到最新内容
+                                                        scrollPane.setVvalue(1.0);
+                                                });
+                                        }
+                                        @Override
+                                        public void onComplete() {
+                                        }
+                                });
+                        }
                 }
         }
         public void handlerSpElRCE(String address,String vpsIP,String vpsPORT) throws IOException {
@@ -1073,13 +1092,44 @@ public class springboot_vul extends Application {
                         });
                 }
         }
+        public void handlerSpgRCE_2(String address, String command) throws IOException {
+                // 清空控制台输出
+                consoleOutput.getChildren().clear();
+
+                if (address.isEmpty()){
+                        showAlert("地址为空！");
+                }else {
+                        if (address.endsWith("/")) {
+                                address = address.replaceAll("/$", "");
+                        }
+                        if (!address.startsWith("http://") && !address.startsWith("https://")) {
+                                address = "http://" + address;
+                        }
+                        SpringGawRCE_2 spg = command.isEmpty() ? new SpringGawRCE_2(address) : new SpringGawRCE_2(address, command);
+                        spg.GawExp(new ResultCallback() {
+                                @Override
+                                public void onResult(String result) {
+                                        Platform.runLater(() -> {
+                                                // 输出其他内容到控制台
+                                                System.out.println(result);
+                                                Text text = new Text(result + "\n");
+                                                consoleOutput.getChildren().add(text);
+                                                // 自动滚动到最新内容
+                                                scrollPane.setVvalue(1.0);
+                                        });
+                                }
+                                @Override
+                                public void onComplete() {
+                                }
+                        });
+                }
+        }
         public void handleAllVulnerabilities(String address,String command){
 
         }
         public void handlerGetshell(TextField addr,TextField vpsobj,TextField portobj) throws IOException {
                 boolean isPoc = false;
                 consoleOutput.getChildren().clear();
-                // 一键上内存马
                 String address = addr.getText();
                 String command = "";
                 String vpsIP = vpsobj.getText();
@@ -1099,7 +1149,8 @@ public class springboot_vul extends Application {
                                         handlerSnakeYamlRce(address,vpsIP,isPoc);
                                         break;
                                 case 6:
-                                        exp.handlerSpgRCE(address);
+                                case 20:
+                                        exp.handlerSpgRCE(address,Vulvalue);
                                         break;
                                 case 7:
                                         handlerSpElRCE(address,vpsIP,vpsPort);
@@ -1140,7 +1191,7 @@ public class springboot_vul extends Application {
                                 case 19:
                                         handleAllVulnerabilities(address, command);
                                         break;
-                                default:
+                            default:
                                         showAlert("你踏马还没选择漏洞类型呢！");
                                         break;
                         }
@@ -1183,7 +1234,7 @@ public class springboot_vul extends Application {
                                         handlerSnakeYamlRce(address, vpsIP, isPoc);
                                         break;
                                 case 6:
-                                        handlerSpgRCE(address, command);
+                                        handlerSpgRCE_1(address, command);
                                         break;
                                 case 7:
                                         handlerSpElRCE(address,vpsIP,vpsPort);
@@ -1227,6 +1278,9 @@ public class springboot_vul extends Application {
                                 case 19:
                                         handlerLogViewFile(address,filename);
                                         break;
+                                case 20:
+                                        handlerSpgRCE_2(address,command);
+                                        break;
                                 default:
                                         showAlert("你踏马还没选择漏洞类型呢！");
                                         break;
@@ -1240,8 +1294,8 @@ public class springboot_vul extends Application {
                 if (address.isEmpty()) {
                         showAlert("地址为空！");
                 } else {
-                    if (Vulvalue == 6) {
-                        handlerDelSpg(address);
+                    if (Vulvalue == 6 || Vulvalue == 20) {
+                        handlerDelSpg(address,Vulvalue);
                     } else {
                         showAlert("目前只限于spring cloud gateway 漏洞");
                     }

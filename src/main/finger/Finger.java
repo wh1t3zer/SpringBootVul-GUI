@@ -12,7 +12,7 @@ public class Finger {
     public String address;
 
     public Finger(String address) {
-        this.address = address;
+        this.address = address.replaceAll("/$", "");
     }
 
     public Map<String, Boolean> checkSpringBoot() {
@@ -122,16 +122,23 @@ public class Finger {
             String url = address + path;
             HttpURLConnection conn = createConnection(url);
             conn.setRequestMethod("GET");
-
             int status = conn.getResponseCode();
-            if (status == 200 || status == 401 || status == 403) {
+            if (status >= 200 && status < 500) {
                 String contentType = conn.getContentType();
                 String content = readResponseContent(conn);
-
-                return content.contains("\"status\"") || // health 端点
-                        content.contains("\"beans\"") ||  // beans 端点
-                        content.contains("application/vnd.spring-boot") ||
-                        (contentType != null && contentType.contains("application/json"));
+                return
+                        content.contains("status") ||
+                                content.contains("beans") ||
+                                content.contains("mappings") ||
+                                content.contains("environment") ||
+                                content.contains("health") ||
+                                content.contains("info") ||
+                                content.contains("actuator") ||
+                                (contentType != null && contentType.contains("application/json")) ||
+                                contentType != null && contentType.contains("application/vnd.spring-boot") ||
+                                content.contains("/actuator") ||
+                                (contentType != null && contentType.contains("text/html") &&
+                                        (content.contains("Spring") || content.contains("spring")));
             }
         } catch (Exception e) {
             // 不处理
@@ -196,7 +203,6 @@ public class Finger {
         if (results.get("spring_headers")) score += 1;
         if (results.get("spring_favicon")) score += 1;
         if (results.get("spring_static_resources")) score += 1;
-
         return score >= 1;
     }
 

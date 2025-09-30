@@ -1,10 +1,10 @@
-package src.main.exp.imp;
+package src.main.memory.imp;
 
 import javafx.application.Platform;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import src.main.exp.core.ExpCore;
+import src.main.memory.core.ExpCore;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -23,7 +23,7 @@ public class ExpImp {
         scrollPane = springboot_vul.scrollPane;
     }
 
-    public void handlerSpgRCE(String address){
+    public void handlerSpgRCE(String address, int type){
         // 清空控制台输出
         consoleOutput.getChildren().clear();
         if (address.endsWith("/")) {
@@ -35,7 +35,7 @@ public class ExpImp {
         ExpCore ec = new ExpCore(address);
         executorService.submit(() -> {
             try {
-                Stream<String> result =ec.ShellGaw();
+                Stream<String> result =ec.ShellGaw(type);
                 result.forEach(line -> {
                     Platform.runLater(() -> {
                         Text text = new Text(line + "\n");

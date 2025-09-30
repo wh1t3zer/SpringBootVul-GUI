@@ -5,67 +5,67 @@
       "value": 1
     },
     {
-      "label": "密码脱敏漏洞1",
+      "label": "密码脱敏1",
       "value": 2
     },
     {
-      "label": "密码脱敏漏洞2",
+      "label": "密码脱敏2",
       "value": 3
     },
     {
-      "label": "密码脱敏漏洞3",
+      "label": "密码脱敏3",
       "value": 4
     },
     {
-      "label": "Spring Cloud SnakeYaml RCE漏洞",
+      "label": "Spring Cloud SnakeYaml RCE",
       "value": 5
     },
     {
-      "label": "Spring Cloud Gateway RCE漏洞",
+      "label": "Spring Cloud Gateway RCE_1",
       "value": 6
     },
     {
-      "label": "SpEl注入 RCE漏洞",
+      "label": "SpEl注入 RCE",
       "value": 7
     },
     {
-      "label": "Eureka Xstream Serialize RCE漏洞",
+      "label": "Eureka Xstream Serialize RCE",
       "value": 8
     },
     {
-      "label": "Jolokia Logback JNDI RCE漏洞",
+      "label": "Jolokia Logback JNDI RCE",
       "value": 9
     },
     {
-      "label": "Jolokia Realm JNDI RCE漏洞",
+      "label": "Jolokia Realm JNDI RCE",
       "value": 10
     },
     {
-      "label": "H2 Database Query属性 RCE漏洞",
+      "label": "H2 Database Query属性 RCE",
       "value": 11
     },
     {
-      "label": "H2 Database JNDI RCE漏洞",
+      "label": "H2 Database JNDI RCE",
       "value": 12
     },
     {
-      "label": "Mysql Jdbc Serialize RCE漏洞",
+      "label": "Mysql Jdbc Serialize RCE",
       "value": 13
     },
     {
-      "label": "Logging属性 Logback JNDI RCE漏洞",
+      "label": "Logging属性 Logback JNDI RCE",
       "value": 14
     },
     {
-      "label": "Logging属性 Groovy RCE漏洞",
+      "label": "Logging属性 Groovy RCE",
       "value": 15
     },
     {
-      "label": "MainSource Groovy RCE漏洞",
+      "label": "MainSource Groovy RCE",
       "value": 16
     },
     {
-      "label": "H2 Database Datasource RCE漏洞",
+      "label": "H2 Database Datasource RCE",
       "value": 17
     },
     {
@@ -75,6 +75,10 @@
     {
       "label": "SpringLogView任意文件读取",
       "value": 19
+    },
+    {
+      "label": "Spring Gateway RCE_2",
+      "value": 20
     },
     {
       "label": "全部",

@@ -116,7 +116,7 @@ java -jar SpringBootVul_GUI.jar
 
 ![](./image/image-20240908185521389.png)
 
-### #2 Spring Cloud Gateway 交互式命令
+### #2 Spring Cloud Gateway RCE
 
 ![](./image/1725462083302.jpg)
 
@@ -363,7 +363,23 @@ nc -lvk 9090 #mac
 
 ![](./image/image-20240914013633068.png)
 
-### #15 一键上马
+### #15 Spring Cloud GateWay CVE-2025-41243(#2的绕过方式)
+
+利用原理参考文章
+
+https://mp.weixin.qq.com/s/rFglNbnfcsAN9QpgYhHjCQ
+
+原理还是基于CVE-2022-22947的路由实现的rce，这个应该算是22947的bypass
+
+带痕迹清除和一键内存马，使用同CVE-2022-22947
+
+![](./image/image-20250930103808743.png)
+
+![](./image/image-20250930050752882.png)
+
+![](./image/image-20250930050910954.png)
+
+### #16 一键上马
 
 密钥默认为hackfunny
 
