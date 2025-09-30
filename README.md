@@ -90,7 +90,7 @@ java -jar SpringBootVul_GUI.jar
 
 * [x] 一键打入内存马(目前只有Spring Cloud Gateway)
 * [x] 部分RCE的痕迹一键清除(spring cloud gateway)
-* [ ] CVE-2025-41243 spring gateway属性修改
+* [x] CVE-2025-41243 spring gateway属性修改
 * [ ] CVE-2025-41234 spring 文件下载
 * [ ] CVE-2025-22235 spring端点认证绕过
 
